@@ -4,5 +4,13 @@
     <string name="app_name">Radio Hyrule</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
+    <string-array name="navigation_items">
+        <item>Foo</item>
+        <item>Bar</item>
+    </string-array>
+    
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>
