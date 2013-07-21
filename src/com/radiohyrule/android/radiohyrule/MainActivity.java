@@ -32,6 +32,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	protected CharSequence navigationDrawerTitle;
 
 	protected ListenFragment listenFragment;
+	protected LibraryFragment libraryFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,26 +102,37 @@ public class MainActivity extends SherlockFragmentActivity {
 					this.listenFragment = new ListenFragment();
 			}
 			return this.listenFragment;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			synchronized (this) {
+				if (this.libraryFragment == null)
+					this.libraryFragment = new LibraryFragment();
+			}
+			return this.libraryFragment;
 		}
 
 		return null;
 	}
 
 	protected void selectItem(int position) {
+		// get fragment for selected position, fall back to default in case of error
 		BaseFragment fragment = getFragmentAtPosition(position);
-		if (fragment != null) {
-			// set new fragment
-			getSupportFragmentManager()
-				.beginTransaction()
-				.replace(R.id.content_frame, fragment)
-				.commit();
-
-			// highlight the selected navigation list item
-			navigationListView.setItemChecked(position, true);
-			setTitle(fragment.getTitle());
-		} else {
-			navigationListView.setItemChecked(defaultNavigationItemPosition, true);
+		if (fragment == null) {
+			position = defaultNavigationItemPosition;
+			fragment = getFragmentAtPosition(position);
 		}
+		
+		// set new fragment
+		getSupportFragmentManager()
+			.beginTransaction()
+			.replace(R.id.content_frame, fragment)
+			.commit();
+
+		// highlight the selected navigation list item
+		navigationListView.setItemChecked(position, true);
+		setTitle(fragment.getTitle());
 
 		// close drawer
 		navigationDrawerLayout.closeDrawer(navigationListView);
