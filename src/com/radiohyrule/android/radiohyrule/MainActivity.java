@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 public class MainActivity extends SherlockFragmentActivity {
+	protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";
+	
 	protected DrawerLayout navigationDrawerLayout;
 	protected ListView navigationListView;
 	protected ActionBarDrawerToggle navigationDrawerToggle;
@@ -33,6 +36,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
 	protected ListenFragment listenFragment;
 	protected LibraryFragment libraryFragment;
+	protected AboutFragment aboutFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +115,12 @@ public class MainActivity extends SherlockFragmentActivity {
 					this.libraryFragment = new LibraryFragment();
 			}
 			return this.libraryFragment;
+		case 5:
+			synchronized (this) {
+				if (this.aboutFragment == null)
+					this.aboutFragment = new AboutFragment();
+			}
+			return this.aboutFragment;
 		}
 
 		return null;
@@ -120,6 +130,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		// get fragment for selected position, fall back to default in case of error
 		BaseFragment fragment = getFragmentAtPosition(position);
 		if (fragment == null) {
+			Log.e(tagMainActivity, "no fragment for position " + String.valueOf(position));
 			position = defaultNavigationItemPosition;
 			fragment = getFragmentAtPosition(position);
 		}
