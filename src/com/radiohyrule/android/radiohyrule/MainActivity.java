@@ -27,11 +27,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	protected DrawerLayout navigationDrawerLayout;
 	protected ListView navigationListView;
 	protected ActionBarDrawerToggle navigationDrawerToggle;
+	protected static final int defaultNavigationItemPosition = 0;
 
 	protected CharSequence title;
 	protected CharSequence navigationDrawerTitle;
-
-	protected String[] navigationItemTitles;
 
 	protected ListenFragment listenFragment;
 
@@ -42,7 +41,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.activity_main);
 
 		title = navigationDrawerTitle = getTitle();
-		navigationItemTitles = getResources().getStringArray(R.array.navigation_items);
 		navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		navigationListView = (ListView) findViewById(R.id.navigation_drawer);
 
@@ -78,7 +76,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
 		// initially activate Listen fragment
 		if (savedInstanceState == null) {
-			selectItem(0);
+			selectItem(defaultNavigationItemPosition);
 		}
 	}
 
@@ -96,7 +94,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		navigationDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
-	protected Fragment getFragmentAtPosition(int position) {
+	protected BaseFragment getFragmentAtPosition(int position) {
 		switch (position) {
 		case 0:
 			synchronized (this) {
@@ -110,7 +108,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 
 	protected void selectItem(int position) {
-		Fragment fragment = getFragmentAtPosition(position);
+		BaseFragment fragment = getFragmentAtPosition(position);
 		if (fragment != null) {
 			// set new fragment
 			getSupportFragmentManager()
@@ -120,9 +118,9 @@ public class MainActivity extends SherlockFragmentActivity {
 
 			// highlight the selected navigation list item
 			navigationListView.setItemChecked(position, true);
-			setTitle(navigationItemTitles[position]);
+			setTitle(fragment.getTitle());
 		} else {
-			navigationListView.setItemChecked(0, true);
+			navigationListView.setItemChecked(defaultNavigationItemPosition, true);
 		}
 
 		// close drawer

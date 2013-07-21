@@ -3,12 +3,6 @@
 
     <string name="app_name">Radio Hyrule</string>
     
-    <string-array name="navigation_items">
-        <item>Listen</item>
-        <item>Library</item>
-        <item>Info</item>
-    </string-array>
-    
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
