@@ -1,4 +1,4 @@
-package com.radiohyrule.android.radiohyrule;
+package com.radiohyrule.android.app;
 
 import android.annotation.TargetApi;
 import android.content.res.Configuration;
@@ -22,6 +22,10 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.radiohyrule.android.R;
+import com.radiohyrule.android.about.AboutFragment;
+import com.radiohyrule.android.library.LibraryFragment;
+import com.radiohyrule.android.listen.ListenFragment;
 
 public class MainActivity extends SherlockFragmentActivity {
 	protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";

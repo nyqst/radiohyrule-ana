@@ -1,4 +1,7 @@
-package com.radiohyrule.android.radiohyrule;
+package com.radiohyrule.android.listen;
+
+import com.radiohyrule.android.app.BaseFragment;
+import com.radiohyrule.android.R;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +18,7 @@ public class ListenFragment extends BaseFragment {
 	}
 
 	@Override
-	String getTitle() {
+	public String getTitle() {
 		return "Listen";
 	}
 }
