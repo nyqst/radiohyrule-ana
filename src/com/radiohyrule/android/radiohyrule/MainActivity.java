@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -156,31 +157,44 @@ public class MainActivity extends SherlockFragmentActivity {
 
 	public class NavigationListAdapter extends BaseAdapter implements
 			ListAdapter {
-		protected String[] parents  = { "Listen", "Library", null,     null,      null,  "Info" };
-		protected String[] children = {  null,     null,    "Albums", "Artists", "Songs", null };
+		protected String[] titles      = { "Listen", "Library", "Albums", "Artists", "Songs", "Info" };
+		protected boolean[] isIndented = {  false,    false,     true,     true,      true,    false };
+		protected int[] iconResources = {
+				R.drawable.navigation_item_listen_icon,
+				R.drawable.navigation_item_library_icon,
+				R.drawable.navigation_item_library_albums_icon,
+				R.drawable.navigation_item_library_artists_icon,
+				R.drawable.navigation_item_library_songs_icon,
+				R.drawable.navigation_item_about_icon,
+		};
 
 		protected static final int itemHeight = 64;
 		protected static final int itemLeftPaddingLevel0 = 32;
 		protected static final int itemLeftPaddingLevel1 = 64;
 		protected static final int itemRightPadding = 56;
+		protected static final int iconRightPadding = 16;
+		protected static final int iconSize = 64;
 
 		@Override
 		public int getCount() {
-			return parents.length;
-		}
-
-		public boolean isParent(int position) {
-			return parents[position] != null;
+			return titles.length;
 		}
 
 		@Override
 		public Object getItem(int position) {
-			String parent = parents[position];
-			if (parent != null) {
-				return parent;
-			} else {
-				return children[position];
-			}
+			return getItemTitle(position);
+		}
+		
+		protected String getItemTitle(int position) {
+			return titles[position];
+		}
+
+		public boolean isItemIndented(int position) {
+			return isIndented[position];
+		}
+		
+		public int getItemIconResource(int position) {
+			return iconResources[position];
 		}
 
 		@Override
@@ -194,17 +208,23 @@ public class MainActivity extends SherlockFragmentActivity {
 			LinearLayout layout = new LinearLayout(MainActivity.this);
 			layout.setOrientation(LinearLayout.HORIZONTAL);
 			layout.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, itemHeight));
-			if (isParent(position)) {
+			if (!isItemIndented(position)) {
 				layout.setPadding(itemLeftPaddingLevel0, 0, itemRightPadding, 0);
 			} else {
 				layout.setPadding(itemLeftPaddingLevel1, 0, itemRightPadding, 0);
 				layout.setBackgroundResource(R.drawable.navigation_drawer_item_level1_background);
 			}
+			
+			// icon
+			ImageView imageView = new ImageView(MainActivity.this);
+			imageView.setImageResource(getItemIconResource(position));
+			imageView.setPadding(0, (itemHeight-iconSize)/2, iconRightPadding, (itemHeight-iconSize)/2);
+			layout.addView(imageView, new LinearLayout.LayoutParams(iconSize, iconSize));
 
-			// group label
+			// label
 			TextView textView = new TextView(MainActivity.this);
 			textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-			textView.setText(getItem(position).toString());
+			textView.setText(getItemTitle(position));
 			layout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
 			return layout;
