@@ -8,5 +8,14 @@ public class LibraryFragment extends BaseFragment {
 	public String getTitle() {
 		return "Library";
 	}
+	
+	public void switchToView(ViewId viewId) {
+		// TODO
+	}
 
+	public enum ViewId {
+		Albums,
+		Artists,
+		Songs,
+	}
 }
