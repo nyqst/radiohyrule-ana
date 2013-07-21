@@ -38,16 +38,16 @@ public class NavigationManager {
 			@Override public LibraryFragment createFragment() { return new LibraryFragment(); }
 		};
 		navigationItems.add(libraryItem);
-		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_albums_icon, LibraryFragment.ViewId.Albums));
-		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_artists_icon, LibraryFragment.ViewId.Artists));
-		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_songs_icon, LibraryFragment.ViewId.Songs));
+		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_albums_icon, "Albums", LibraryFragment.ViewId.Albums));
+		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_artists_icon, "Artists", LibraryFragment.ViewId.Artists));
+		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_songs_icon, "Songs", LibraryFragment.ViewId.Songs));
 		navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.navigation_item_about_icon) {
 			@Override public AboutFragment createFragment() { return new AboutFragment(); }
 		});
 	}
 	
 	public BaseFragment prepareFragmentForDisplay(int position) {
-		if(position > 0 && position < navigationItems.size()) {
+		if(position >= 0 && position < navigationItems.size()) {
 			return navigationItems.get(position).prepareFragmentForDisplay();
 		} else {
 			return null;
@@ -97,16 +97,18 @@ public class NavigationManager {
 	protected class ChildNavigationItem<F extends BaseFragment> implements NavigationItem {
 		protected ParentNavigationItem<F> parent;
 		protected int iconResource;
-		public ChildNavigationItem(ParentNavigationItem<F> parent, int iconResource) {
+		protected String title;
+		public ChildNavigationItem(ParentNavigationItem<F> parent, int iconResource, String title) {
 			this.parent = parent;
 			this.iconResource = iconResource;
+			this.title = title;
 		}
 		public synchronized F getFragment() {
 			return parent.getFragment();
 		}
 		@Override
 		public String getTitle() {
-			return getFragment().getTitle();
+			return title;
 		}
 		@Override
 		public int getIconResource() {
@@ -123,15 +125,15 @@ public class NavigationManager {
 	}
 	protected class LibraryChildNavigationItem extends ChildNavigationItem<LibraryFragment> {
 		protected LibraryFragment.ViewId viewId;
-		public LibraryChildNavigationItem(ParentNavigationItem<LibraryFragment> parent, int iconResource, LibraryFragment.ViewId viewId) {
-			super(parent, iconResource);
+		public LibraryChildNavigationItem(ParentNavigationItem<LibraryFragment> parent, int iconResource, String navigationListTitle, LibraryFragment.ViewId viewId) {
+			super(parent, iconResource, navigationListTitle);
 			this.viewId = viewId;
 		}
 		@Override
 		public BaseFragment prepareFragmentForDisplay() {
 			BaseFragment fragment = super.prepareFragmentForDisplay();
 			if(fragment != null) {
-				((LibraryFragment)fragment).switchToView(viewId);
+				((LibraryFragment)fragment).switchToSubview(viewId);
 			}
 			return fragment;
 		}
@@ -162,21 +164,21 @@ public class NavigationManager {
 			return getItemTitle(position);
 		}
 		protected String getItemTitle(int position) {
-			if(position > 0 && position < getNavigationItems().size()) {
+			if(position >= 0 && position < getNavigationItems().size()) {
 				return getNavigationItems().get(position).getTitle();
 			} else {
 				return null;
 			}
 		}
 		protected boolean isItemIndented(int position) {
-			if(position > 0 && position < getNavigationItems().size()) {
+			if(position >= 0 && position < getNavigationItems().size()) {
 				return getNavigationItems().get(position).isIndented();
 			} else {
 				return false;
 			}
 		}
 		protected int getItemIconResource(int position) {
-			if(position > 0 && position < getNavigationItems().size()) {
+			if(position >= 0 && position < getNavigationItems().size()) {
 				return getNavigationItems().get(position).getIconResource();
 			} else {
 				return -1;

@@ -42,8 +42,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
 		// set a custom shadow that overlays the main content when the drawer
 		// opens
-		navigationDrawerLayout.setDrawerShadow(
-				R.drawable.navigation_drawer_shadow, GravityCompat.START);
+		navigationDrawerLayout.setDrawerShadow(R.drawable.navigation_drawer_shadow, GravityCompat.START);
 		// set up the drawer's list view with items and click listener
 		navigationListView.setAdapter(navigationManager.getListAdapter());
 		navigationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
