@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
@@ -153,8 +152,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public class NavigationListAdapter extends BaseAdapter implements
-			ListAdapter {
+	public class NavigationListAdapter extends BaseAdapter implements ListAdapter {
 		protected String[] titles      = { "Listen", "Library", "Albums", "Artists", "Songs", "Info" };
 		protected boolean[] isIndented = {  false,    false,     true,     true,      true,    false };
 		protected int[] iconResources = {
@@ -187,11 +185,11 @@ public class MainActivity extends SherlockFragmentActivity {
 			return titles[position];
 		}
 
-		public boolean isItemIndented(int position) {
+		protected boolean isItemIndented(int position) {
 			return isIndented[position];
 		}
 		
-		public int getItemIconResource(int position) {
+		protected int getItemIconResource(int position) {
 			return iconResources[position];
 		}
 
