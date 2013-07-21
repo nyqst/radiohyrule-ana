@@ -6,11 +6,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -21,7 +19,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity {
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
+
+public class MainActivity extends SherlockFragmentActivity {
 	protected DrawerLayout navigationDrawerLayout;
 	protected ListView navigationListView;
 	protected ActionBarDrawerToggle navigationDrawerToggle;
@@ -35,6 +36,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setTheme(R.style.Theme_Sherlock); // http://stackoverflow.com/questions/12864298/java-lang-runtimeexception-theme-sherlock
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -56,9 +58,9 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 
-		// enable ActionBar app icon to behave as action to toggle navigation
-		// drawer
-		this.setupHomeButton();
+		// enable ActionBar app icon to behave as action to toggle navigation drawer
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
 
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
@@ -133,26 +135,19 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	void setupHomeButton() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			getActionBar().setDisplayHomeAsUpEnabled(true);
-			getActionBar().setHomeButtonEnabled(true);
-		}
-	}
-
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	void setActionBarTitle(CharSequence title) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			getActionBar().setTitle(title);
-		}
+		getSupportActionBar().setTitle(title);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// The action bar home/up action should open or close the drawer.
-		// ActionBarDrawerToggle will take care of this.
-		if (navigationDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
+		if (item.getItemId() == android.R.id.home) {
+			if (navigationDrawerLayout.isDrawerOpen(navigationListView)) {
+				navigationDrawerLayout.closeDrawer(navigationListView);
+			} else {
+				navigationDrawerLayout.openDrawer(navigationListView);
+			}
 		}
 
 		// handle action buttons
