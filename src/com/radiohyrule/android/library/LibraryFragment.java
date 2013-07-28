@@ -17,7 +17,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 	
 	protected List<TabSpec> tabSpecs;
 	protected TabHost tabHost;
-	protected ViewId currentTabViewId;
+	protected ViewId currentTabViewId = ViewId._NotSet;
 	
 	protected boolean viewCreated = false;
 	
@@ -33,12 +33,23 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		tabHost = (TabHost) view.findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		for (TabSpec tab : tabSpecs) { tabHost.addTab(tab.createTab(tabHost)); }
-		currentTabViewId = tabSpecs.get(0).viewId;
+		if(currentTabViewId == ViewId._NotSet)
+			currentTabViewId = tabSpecs.get(0).viewId;
 		
 		viewCreated = true;
 		
 		return view;
-	};
+	}
+	@Override
+	public synchronized void onDestroyView() {
+		super.onDestroyView();
+		
+		tabSpecs = null;
+		tabHost = null;
+		currentTabViewId = ViewId._NotSet;
+		
+		viewCreated = false;
+	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -49,7 +60,6 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		// manually load first tab
 		String tag = getTabSpecByViewId(currentTabViewId).tag;
 		tabHost.setCurrentTabByTag(tag);
-		onTabChanged(tag);
 	}
 
 	@Override
@@ -105,6 +115,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		Songs,
 		
 		_Count,
+		_NotSet,
 	}
 	
 	protected class TabSpec {
