@@ -17,9 +17,11 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 	
 	protected List<TabSpec> tabSpecs;
 	protected TabHost tabHost;
-	protected String currentTabTag;
+	protected ViewId currentTabViewId;
 	
-	public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, Bundle savedInstanceState) {
+	protected boolean viewCreated = false;
+	
+	public synchronized View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, Bundle savedInstanceState) {
 		// setup tabs
 		tabSpecs = new ArrayList<TabSpec>();
 		tabSpecs.add(new TabSpec(ViewId.Albums, "tabAlbums", "Albums", R.id.library_tab_albums));
@@ -31,7 +33,9 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		tabHost = (TabHost) view.findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		for (TabSpec tab : tabSpecs) { tabHost.addTab(tab.createTab(tabHost)); }
-		currentTabTag = tabSpecs.get(0).tag;
+		currentTabViewId = tabSpecs.get(0).viewId;
+		
+		viewCreated = true;
 		
 		return view;
 	};
@@ -43,8 +47,9 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		
 		tabHost.setOnTabChangedListener(this);
 		// manually load first tab
-		tabHost.setCurrentTabByTag(currentTabTag);
-		onTabChanged(currentTabTag);
+		String tag = getTabSpecByViewId(currentTabViewId).tag;
+		tabHost.setCurrentTabByTag(tag);
+		onTabChanged(tag);
 	}
 
 	@Override
@@ -52,11 +57,15 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		return "Library";
 	}
 	
-	public void switchToSubview(ViewId viewId) {
-		TabSpec tab = getTabSpecByViewId(viewId);
-		if(tab != null) {
-			tabHost.setCurrentTabByTag(tab.tag);
-			onTabChanged(tab.tag);
+	public synchronized void switchToSubview(ViewId viewId) {
+		if(viewCreated) {
+			TabSpec tab = getTabSpecByViewId(viewId);
+			if(tab != null) {
+				tabHost.setCurrentTabByTag(tab.tag);
+				onTabChanged(tab.tag);
+			}
+		} else {
+			currentTabViewId = viewId;
 		}
 	}
 
@@ -70,7 +79,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 					.beginTransaction()
 					.replace(tabSpec.contentViewId, new LibraryTabFragment(), tabTag)
 					.commit();
-				currentTabTag = tabTag;
+				currentTabViewId = tabSpec.viewId;
 			}
 		}
 	}
