@@ -31,7 +31,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 		tabHost = (TabHost) view.findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		for (TabSpec tab : tabSpecs) { tabHost.addTab(tab.createTab(tabHost)); }
-		currentTabTag = tabSpecs.get(2).tag;
+		currentTabTag = tabSpecs.get(0).tag;
 		
 		return view;
 	};
