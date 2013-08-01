@@ -16,7 +16,10 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.R;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity
+	extends SherlockFragmentActivity
+	implements NavigationManager.NavigationItemChangedListener {
+	
 	protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";
 	
 	protected DrawerLayout navigationDrawerLayout;
@@ -35,6 +38,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.activity_main);
 		
 		navigationManager = new NavigationManager(this);
+		navigationManager.setNavigationItemChangedListener(this);
 
 		title = navigationDrawerTitle = getTitle();
 		navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -141,5 +145,12 @@ public class MainActivity extends SherlockFragmentActivity {
 
 		// handle action buttons
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void OnSelectedNavigationItemChanged(int position, BaseFragment fragment) {
+		// highlight the selected navigation list item
+		navigationListView.setItemChecked(position, true);
+		setTitle(fragment.getTitle());
 	}
 }

@@ -11,15 +11,22 @@ import android.widget.TabHost.OnTabChangeListener;
 
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.BaseFragment;
+import com.radiohyrule.android.app.NavigationManager;
 
 public class LibraryFragment extends BaseFragment implements OnTabChangeListener {
 	protected static final String tagLibraryFragment = "com.radiohyrule.android.library.LibraryFragment";
 	
+	protected NavigationManager navigationManager;
 	protected List<TabSpec> tabSpecs;
 	protected TabHost tabHost;
 	protected ViewId currentTabViewId = ViewId._NotSet;
 	
 	protected boolean viewCreated = false;
+
+	public LibraryFragment setNavigationManager(NavigationManager navigationManager) {
+		this.navigationManager = navigationManager;
+		return this;
+	}
 	
 	public synchronized View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, Bundle savedInstanceState) {
 		// setup tabs
@@ -81,15 +88,21 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
 
 	@Override
 	public void onTabChanged(String tabTag) {
-		// load tab content
-		if(getFragmentManager().findFragmentByTag(tabTag) == null) {
-			TabSpec tabSpec = getTabSpecByTag(tabTag);
-			if(tabSpec != null) {
-				getFragmentManager()
-					.beginTransaction()
-					.replace(tabSpec.contentViewId, new LibraryTabFragment(), tabTag)
-					.commit();
-				currentTabViewId = tabSpec.viewId;
+		TabSpec tabSpec = getTabSpecByTag(tabTag);
+		if(tabSpec != null) {
+			
+			// load tab content
+			if(getFragmentManager().findFragmentByTag(tabTag) == null) {
+					getFragmentManager()
+						.beginTransaction()
+						.replace(tabSpec.contentViewId, new LibraryTabFragment(), tabTag)
+						.commit();
+			}
+			currentTabViewId = tabSpec.viewId;
+			
+			// inform navigation manager
+			if(this.navigationManager != null) {
+				this.navigationManager.OnSelectedLibraryChildChanged(this, currentTabViewId);
 			}
 		}
 	}

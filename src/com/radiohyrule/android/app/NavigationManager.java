@@ -23,6 +23,7 @@ public class NavigationManager {
 	protected static final String tagNavigationManager = "com.radiohyrule.android.app.NavigationManager";
 	
 	protected Context context;
+	protected NavigationItemChangedListener navigationItemChangedListener;
 	
 	protected List<NavigationItem> navigationItems;
 	protected int defaultNavigationItemPosition = 0;
@@ -35,7 +36,11 @@ public class NavigationManager {
 			@Override public ListenFragment createFragment() { return new ListenFragment(); }
 		});
 		ParentNavigationItem<LibraryFragment> libraryItem = new ParentNavigationItem<LibraryFragment>(R.drawable.navigation_item_library_icon) {
-			@Override public LibraryFragment createFragment() { return new LibraryFragment(); }
+			@Override public LibraryFragment createFragment() {
+				LibraryFragment result = new LibraryFragment();
+				result.setNavigationManager(NavigationManager.this);
+				return result;
+			}
 		};
 		navigationItems.add(libraryItem);
 		navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_albums_icon, "Albums", LibraryFragment.ViewId.Albums));
@@ -44,6 +49,10 @@ public class NavigationManager {
 		navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.navigation_item_about_icon) {
 			@Override public AboutFragment createFragment() { return new AboutFragment(); }
 		});
+	}
+	
+	public void setNavigationItemChangedListener(NavigationItemChangedListener listener) {
+		navigationItemChangedListener = listener;
 	}
 	
 	public BaseFragment prepareFragmentForDisplay(int position) {
@@ -57,14 +66,36 @@ public class NavigationManager {
 		return 0;
 	}
 	
+	// XXX this is really really ugly. will need to refactor the navigation items, base fragment and navigation manager
+	public void OnSelectedLibraryChildChanged(LibraryFragment fragment, LibraryFragment.ViewId viewId) {
+		if(this.navigationItemChangedListener != null) {
+			boolean found = false;
+			int position = 0;
+			for (NavigationItem item : navigationItems) {
+				if(item instanceof LibraryChildNavigationItem) {
+					LibraryChildNavigationItem child = (LibraryChildNavigationItem)item;
+					if(child.getViewId() == viewId) {
+						found = true;
+						break;
+					}
+				}
+				++position;
+			}
+			if(found) {
+				this.navigationItemChangedListener.OnSelectedNavigationItemChanged(position, fragment);
+			}
+		}
+	}
+	
 	protected interface NavigationItem {
 		public String getTitle();
 		public int getIconResource();
 		public boolean isIndented();
 		
+		public BaseFragment getFragment();
 		public BaseFragment prepareFragmentForDisplay();
 	}
-	protected abstract class ParentNavigationItem<F extends BaseFragment> implements NavigationItem {
+	protected static abstract class ParentNavigationItem<F extends BaseFragment> implements NavigationItem {
 		protected F fragment;
 		protected int iconResource;
 		public ParentNavigationItem(int iconResource) {
@@ -94,7 +125,7 @@ public class NavigationManager {
 			return getFragment();
 		}
 	}
-	protected class ChildNavigationItem<F extends BaseFragment> implements NavigationItem {
+	protected static class ChildNavigationItem<F extends BaseFragment> implements NavigationItem {
 		protected ParentNavigationItem<F> parent;
 		protected int iconResource;
 		protected String title;
@@ -123,8 +154,9 @@ public class NavigationManager {
 			return getFragment();
 		}
 	}
-	protected class LibraryChildNavigationItem extends ChildNavigationItem<LibraryFragment> {
+	protected static class LibraryChildNavigationItem extends ChildNavigationItem<LibraryFragment> {
 		protected LibraryFragment.ViewId viewId;
+		public LibraryFragment.ViewId getViewId() { return viewId; }
 		public LibraryChildNavigationItem(ParentNavigationItem<LibraryFragment> parent, int iconResource, String navigationListTitle, LibraryFragment.ViewId viewId) {
 			super(parent, iconResource, navigationListTitle);
 			this.viewId = viewId;
@@ -216,5 +248,9 @@ public class NavigationManager {
 
 			return layout;
 		}
+	}
+
+	public static interface NavigationItemChangedListener {
+		public void OnSelectedNavigationItemChanged(int position, BaseFragment fragment);
 	}
 }
