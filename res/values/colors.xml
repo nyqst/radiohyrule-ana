@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="radioHyrule_darkGray">#d333</color>
-    <color name="radioHyrule_blue">#00c8e0</color>
-    <color name="radioHyrule_blueDarker">#2c5560</color>
+    <color name="radioHyrule_lighterDarkBackground">#d333</color>
+
+    <color name="radioHyrule_primaryVeryDark">#2c5560</color>
+    <color name="radioHyrule_primary">#00c8e0</color>
+    <color name="radioHyrule_primaryLight">#71e1ff</color>
+    <color name="radioHyrule_primaryVeryLight">#e9faff</color>
+
+    <color name="radioHyrule_contrastVeryDark">#a06d00</color>
+    <color name="radioHyrule_contrastDark">#f8bc2c</color>
+    <color name="radioHyrule_contrast">#fccb4f</color>
+    <color name="radioHyrule_contrastVeryLight">#fff5d9</color>
 </resources>
