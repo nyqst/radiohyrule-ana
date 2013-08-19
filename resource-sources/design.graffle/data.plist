@@ -51,8 +51,6 @@
 		<dict/>
 		<dict/>
 		<dict/>
-		<dict/>
-		<dict/>
 	</array>
 	<key>ImageList</key>
 	<array>
@@ -60,7 +58,6 @@
 		<string>image63.png</string>
 		<string>image62.png</string>
 		<string>image61.tiff</string>
-		<string>image60.tiff</string>
 		<string>image60.tiff</string>
 		<string>image59.tiff</string>
 		<string>image58.pdf</string>
@@ -74,7 +71,6 @@
 		<string>image49.psd</string>
 		<string>image48.psd</string>
 		<string>image47.png</string>
-		<string>image46.png</string>
 		<string>image46.png</string>
 		<string>image45.tiff</string>
 		<string>image39.png</string>
@@ -130,7 +126,7 @@
 		<key>NSPaperSize</key>
 		<array>
 			<string>size</string>
-			<string>{841.8900146484375, 595.28001499176025}</string>
+			<string>{842, 595.00001049041748}</string>
 		</array>
 		<key>NSPrintReverseOrientation</key>
 		<array>
@@ -160,7 +156,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {805.8900146484375, 1072.5600299835205}}</string>
+				<string>{{0, 0}, {806, 1072.000020980835}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -3378,7 +3374,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {805.8900146484375, 1072.5600299835205}}</string>
+				<string>{{0, 0}, {806, 1072.000020980835}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -6598,7 +6594,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {805.8900146484375, 1608.8400449752808}}</string>
+				<string>{{0, 0}, {806, 1608.0000314712524}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -9795,7 +9791,7 @@ Overture}</string>
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {1611.780029296875, 1072.5600299835205}}</string>
+				<string>{{0, 0}, {1612, 1072.000020980835}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -14098,7 +14094,7 @@ Overture}</string>
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {1611.780029296875, 1608.8400449752808}}</string>
+				<string>{{0, 0}, {1612, 1608.0000314712524}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -20153,7 +20149,7 @@ Overture}</string>
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {1611.780029296875, 1608.8400449752808}}</string>
+				<string>{{0, 0}, {1612, 1608.0000314712524}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -24507,7 +24503,7 @@ Overture}</string>
 		<key>ExpandedCanvases</key>
 		<array/>
 		<key>Frame</key>
-		<string>{{2, 0}, {1638, 1178}}</string>
+		<string>{{4, 0}, {1436, 878}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -24521,7 +24517,7 @@ Overture}</string>
 		<key>SidebarWidth</key>
 		<integer>131</integer>
 		<key>VisibleRegion</key>
-		<string>{{-104, 140.45802140234539}, {1014.5038611071577, 793.12980563606982}}</string>
+		<string>{{-27, 140.45802140234539}, {860.30538108936548, 564.12216204528931}}</string>
 		<key>Zoom</key>
 		<real>1.309999942779541</real>
 		<key>ZoomValues</key>
