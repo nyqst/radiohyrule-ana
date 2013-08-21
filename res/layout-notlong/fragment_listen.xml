@@ -1,22 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    >
+
+    <com.radiohyrule.android.util.FittingSquareLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/sample_cover"
+            />
+    </com.radiohyrule.android.util.FittingSquareLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:background="@color/radioHyrule_translucentBlackOverlay"
         >
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="10dp"
             >
 
             <TextView
@@ -75,34 +89,21 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.radiohyrule.android.util.SquareLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/sample_cover"
-            />
-    </com.radiohyrule.android.util.SquareLayout>
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/sample_cover_reflection"
-            android:scaleType="fitXY"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/radioHyrule_translucentBlackOverlay"
+        >
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/play"
+            android:layout_margin="5dp"
             android:layout_centerInParent="true"
+            android:src="@drawable/play"
             android:background="@android:color/transparent"
             />
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

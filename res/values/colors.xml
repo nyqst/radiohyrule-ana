@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="radioHyrule_lighterDarkBackground">#d333</color>
+    <color name="radioHyrule_translucentBlackOverlay">#b000</color>
 
     <color name="radioHyrule_primaryVeryDark">#2c5560</color>
     <color name="radioHyrule_primary">#00c8e0</color>
