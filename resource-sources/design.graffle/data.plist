@@ -92,7 +92,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-08-16 21:50:29 +0000</string>
+	<string>2013-08-22 21:56:08 +0000</string>
 	<key>Modifier</key>
 	<string>Lysann Schlegel</string>
 	<key>NotesVisible</key>
@@ -126,7 +126,7 @@
 		<key>NSPaperSize</key>
 		<array>
 			<string>size</string>
-			<string>{842, 595.00001049041748}</string>
+			<string>{841.8900146484375, 595.28001499176025}</string>
 		</array>
 		<key>NSPrintReverseOrientation</key>
 		<array>
@@ -156,7 +156,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {806, 1072.000020980835}}</string>
+				<string>{{0, 0}, {805.8900146484375, 1072.5600299835205}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -3374,7 +3374,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {806, 1072.000020980835}}</string>
+				<string>{{0, 0}, {805.8900146484375, 1072.5600299835205}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -6594,7 +6594,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {806, 1608.0000314712524}}</string>
+				<string>{{0, 0}, {805.8900146484375, 1608.8400449752808}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -9791,7 +9791,7 @@ Overture}</string>
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {1612, 1072.000020980835}}</string>
+				<string>{{0, 0}, {1611.780029296875, 1072.5600299835205}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -13176,7 +13176,7 @@ Recently Played:}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>ID</key>
-									<integer>3204</integer>
+									<integer>3344</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13211,7 +13211,7 @@ Recently Played:}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>ID</key>
-									<integer>3205</integer>
+									<integer>3345</integer>
 									<key>Shape</key>
 									<string>Circle</string>
 									<key>Style</key>
@@ -13244,7 +13244,7 @@ Recently Played:}</string>
 								</dict>
 							</array>
 							<key>ID</key>
-							<integer>3203</integer>
+							<integer>3343</integer>
 						</dict>
 						<dict>
 							<key>Class</key>
@@ -13257,7 +13257,7 @@ Recently Played:}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>ID</key>
-									<integer>3207</integer>
+									<integer>3341</integer>
 									<key>ImageID</key>
 									<integer>50</integer>
 									<key>Shape</key>
@@ -13305,7 +13305,7 @@ Recently Played:}</string>
 										<real>20</real>
 									</dict>
 									<key>ID</key>
-									<integer>3208</integer>
+									<integer>3342</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13348,7 +13348,7 @@ Overture}</string>
 								</dict>
 							</array>
 							<key>ID</key>
-							<integer>3206</integer>
+							<integer>3340</integer>
 						</dict>
 						<dict>
 							<key>Class</key>
@@ -13361,7 +13361,7 @@ Overture}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>ID</key>
-									<integer>3210</integer>
+									<integer>3338</integer>
 									<key>ImageID</key>
 									<integer>49</integer>
 									<key>Shape</key>
@@ -13407,7 +13407,7 @@ Overture}</string>
 										<real>20</real>
 									</dict>
 									<key>ID</key>
-									<integer>3211</integer>
+									<integer>3339</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13449,7 +13449,7 @@ Overture}</string>
 								</dict>
 							</array>
 							<key>ID</key>
-							<integer>3209</integer>
+							<integer>3337</integer>
 						</dict>
 						<dict>
 							<key>Class</key>
@@ -13462,7 +13462,7 @@ Overture}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>ID</key>
-									<integer>3213</integer>
+									<integer>3335</integer>
 									<key>ImageID</key>
 									<integer>48</integer>
 									<key>Shape</key>
@@ -13508,7 +13508,7 @@ Overture}</string>
 										<real>20</real>
 									</dict>
 									<key>ID</key>
-									<integer>3214</integer>
+									<integer>3336</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13550,7 +13550,7 @@ Overture}</string>
 								</dict>
 							</array>
 							<key>ID</key>
-							<integer>3212</integer>
+							<integer>3334</integer>
 						</dict>
 						<dict>
 							<key>Class</key>
@@ -13579,7 +13579,7 @@ Overture}</string>
 										<real>16</real>
 									</dict>
 									<key>ID</key>
-									<integer>3216</integer>
+									<integer>3332</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13625,7 +13625,7 @@ Overture}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>ID</key>
-									<integer>3217</integer>
+									<integer>3333</integer>
 									<key>ImageID</key>
 									<integer>47</integer>
 									<key>Shape</key>
@@ -13651,7 +13651,7 @@ Overture}</string>
 								</dict>
 							</array>
 							<key>ID</key>
-							<integer>3215</integer>
+							<integer>3331</integer>
 						</dict>
 						<dict>
 							<key>Class</key>
@@ -13680,7 +13680,7 @@ Overture}</string>
 										<real>16</real>
 									</dict>
 									<key>ID</key>
-									<integer>3219</integer>
+									<integer>3326</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13742,7 +13742,7 @@ Overture}</string>
 										<real>16</real>
 									</dict>
 									<key>ID</key>
-									<integer>3220</integer>
+									<integer>3327</integer>
 									<key>Shape</key>
 									<string>Rectangle</string>
 									<key>Style</key>
@@ -13795,7 +13795,7 @@ Overture}</string>
 											<key>Class</key>
 											<string>LineGraphic</string>
 											<key>ID</key>
-											<integer>3222</integer>
+											<integer>3329</integer>
 											<key>Points</key>
 											<array>
 												<string>{468.68538158357489, 628.54632327551803}</string>
@@ -13833,7 +13833,7 @@ Overture}</string>
 											<key>Class</key>
 											<string>LineGraphic</string>
 											<key>ID</key>
-											<integer>3223</integer>
+											<integer>3330</integer>
 											<key>Points</key>
 											<array>
 												<string>{558.53162920389104, 628.54632327551803}</string>
@@ -13865,11 +13865,11 @@ Overture}</string>
 										</dict>
 									</array>
 									<key>ID</key>
-									<integer>3221</integer>
+									<integer>3328</integer>
 								</dict>
 							</array>
 							<key>ID</key>
-							<integer>3218</integer>
+							<integer>3325</integer>
 						</dict>
 						<dict>
 							<key>Bounds</key>
@@ -13877,7 +13877,7 @@ Overture}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>ID</key>
-							<integer>3224</integer>
+							<integer>3324</integer>
 							<key>Shape</key>
 							<string>Rectangle</string>
 							<key>Style</key>
@@ -13925,7 +13925,7 @@ Overture}</string>
 						</dict>
 					</array>
 					<key>ID</key>
-					<integer>3202</integer>
+					<integer>3323</integer>
 					<key>Layer</key>
 					<integer>2</integer>
 				</dict>
@@ -14094,7 +14094,7 @@ Overture}</string>
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {1612, 1608.0000314712524}}</string>
+				<string>{{0, 0}, {1611.780029296875, 1608.8400449752808}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -20149,7 +20149,7 @@ Overture}</string>
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{0, 0}, {1612, 1608.0000314712524}}</string>
+				<string>{{0, 0}, {1611.780029296875, 1608.8400449752808}}</string>
 				<key>Class</key>
 				<string>SolidGraphic</string>
 				<key>FontInfo</key>
@@ -24499,11 +24499,11 @@ Overture}</string>
 	<key>WindowInfo</key>
 	<dict>
 		<key>CurrentSheet</key>
-		<integer>0</integer>
+		<integer>3</integer>
 		<key>ExpandedCanvases</key>
 		<array/>
 		<key>Frame</key>
-		<string>{{4, 0}, {1436, 878}}</string>
+		<string>{{-0, -0}, {1920, 1178}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -24517,9 +24517,9 @@ Overture}</string>
 		<key>SidebarWidth</key>
 		<integer>131</integer>
 		<key>VisibleRegion</key>
-		<string>{{-27, 140.45802140234539}, {860.30538108936548, 564.12216204528931}}</string>
+		<string>{{0, 55.140184212880598}, {1505.6074028296719, 957.00929888118185}}</string>
 		<key>Zoom</key>
-		<real>1.309999942779541</real>
+		<real>1.0700000524520874</real>
 		<key>ZoomValues</key>
 		<array>
 			<array>
@@ -24544,8 +24544,8 @@ Overture}</string>
 			</array>
 			<array>
 				<string>Listen Large Landscape 2</string>
-				<real>1.0399999618530273</real>
-				<real>1.0199999809265137</real>
+				<real>1.0700000524520874</real>
+				<real>1.309999942779541</real>
 			</array>
 			<array>
 				<string>Listen XLarge Portrait</string>
