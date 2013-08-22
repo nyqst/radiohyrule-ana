@@ -11,7 +11,7 @@
         android:src="@drawable/sample_cover_blurred"
         android:scaleType="centerCrop"/>
 
-    <LinearLayout
+    <com.radiohyrule.android.util.LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,13 +21,15 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             >
 
             <com.radiohyrule.android.util.FittingSquareLayout
+                android:padding="50dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:padding="50dp">
+                >
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -221,6 +223,6 @@
             </RelativeLayout>
         </LinearLayout>
 
-    </LinearLayout>
+    </com.radiohyrule.android.util.LinearLayout>
 
 </RelativeLayout>

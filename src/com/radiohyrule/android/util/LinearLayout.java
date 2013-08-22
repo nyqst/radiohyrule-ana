@@ -22,15 +22,64 @@ public class LinearLayout extends android.widget.LinearLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        final int height = b - t;
-        int childLeft = getPaddingLeft();
-        int remainingHeight = height - getPaddingTop() - getPaddingBottom();
-        int remainingWidth = r - l - childLeft;
+        if(getOrientation() == VERTICAL) {
+            layoutVertical(l, t, r, b);
+        } else {
+            layoutHorizontal(l, t, r, b);
+        }
+    }
 
+    private void layoutVertical(int l, int t, int r, int b) {
         final int childCount = getChildCount();
+        int remainingHeight = b - t - getPaddingTop() - getPaddingBottom();
+        final int remainingWidth = r - l - getPaddingLeft() - getPaddingRight();
+
+        // find out how much vertical space is left for weighted children
         float weightSum = 0;
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+            final View child = getChildAt(childIndex);
+            if (child != null && child.getVisibility() != GONE) {
+                final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
+                remainingHeight -= lp.topMargin + lp.bottomMargin;
+                if(lp.weight == 0) {
+                    remainingHeight -= child.getMeasuredHeight();
+                } else {
+                    weightSum += lp.weight;
+                }
+            }
+        }
+        if(remainingHeight < 0)
+            remainingHeight = 0;
+        float heightPerWeight = remainingHeight / weightSum;
+
+        // remeasure and lay out all children
+        int childTop = getPaddingTop();
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+            final View child = getChildAt(childIndex);
+            if (child != null && child.getVisibility() != GONE) {
+                final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
+                if(lp.weight > 0) {
+                    child.measure(MeasureSpec.makeMeasureSpec(remainingWidth, MeasureSpec.EXACTLY),
+                                  MeasureSpec.makeMeasureSpec((int)(lp.weight * heightPerWeight), MeasureSpec.EXACTLY));
+                }
+                final int childWidth = child.getMeasuredWidth();
+                final int childHeight = child.getMeasuredHeight();
+                final int childLeft = getPaddingLeft() + ((remainingWidth - childWidth) / 2) + lp.leftMargin - lp.rightMargin;
+
+                childTop += lp.topMargin;
+                child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
+                childTop += childHeight + lp.bottomMargin;
+            }
+        }
+    }
+
+    private void layoutHorizontal(int l, int t, int r, int b) {
+        final int childCount = getChildCount();
+        final int remainingHeight = b - t - getPaddingTop() - getPaddingBottom();
+        int remainingWidth = r - l - getPaddingLeft() - getPaddingRight();
 
         // find out how much horizontal space is left for weighted children
+        float weightSum = 0;
         for (int childIndex = 0; childIndex < childCount; childIndex++) {
             final View child = getChildAt(childIndex);
             if (child != null && child.getVisibility() != GONE) {
@@ -48,13 +97,14 @@ public class LinearLayout extends android.widget.LinearLayout {
         float widthPerWeight = remainingWidth / weightSum;
 
         // remeasure and lay out all children
+        int childLeft = getPaddingLeft();
         for (int childIndex = 0; childIndex < childCount; childIndex++) {
             final View child = getChildAt(childIndex);
             if (child != null && child.getVisibility() != GONE) {
                 final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
                 if(lp.weight > 0) {
                     child.measure(MeasureSpec.makeMeasureSpec((int)(lp.weight * widthPerWeight), MeasureSpec.EXACTLY),
-                                  MeasureSpec.makeMeasureSpec(remainingHeight, MeasureSpec.EXACTLY));
+                            MeasureSpec.makeMeasureSpec(remainingHeight, MeasureSpec.EXACTLY));
                 }
                 final int childWidth = child.getMeasuredWidth();
                 final int childHeight = child.getMeasuredHeight();
