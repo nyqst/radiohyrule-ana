@@ -29,14 +29,11 @@
                 android:layout_centerInParent="true"
                 android:padding="50dp">
 
-                <com.makeramen.RoundedImageView
-                    xmlns:makeramen="http://schemas.android.com/apk/res/com.radiohyrule.android"
+                <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:src="@drawable/sample_cover"
-                    makeramen:corner_radius="7dp"
-                    makeramen:border_width="2dp"
-                    makeramen:border_color="#80000000"
+                    android:background="@drawable/rounded_border"
                     />
             </com.radiohyrule.android.util.FittingSquareLayout>
 

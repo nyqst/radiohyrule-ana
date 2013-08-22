@@ -15,8 +15,6 @@ public class HeightFittingSquareLayout extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int height = getMeasuredHeight();
-        setMeasuredDimension(height, height);
+        super.onMeasure(heightMeasureSpec, heightMeasureSpec);
     }
 }

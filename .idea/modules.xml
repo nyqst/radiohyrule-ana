@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RadioHyrule.iml" filepath="$PROJECT_DIR$/RadioHyrule.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/actionbarsherlock/actionbarsherlock.iml" filepath="$PROJECT_DIR$/libs/actionbarsherlock/actionbarsherlock.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/roundedimageview/roundedimageview.iml" filepath="$PROJECT_DIR$/libs/roundedimageview/roundedimageview.iml" />
     </modules>
   </component>
 </project>
