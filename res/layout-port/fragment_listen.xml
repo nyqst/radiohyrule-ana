@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/sample_cover_blurred"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        />
 
     <com.radiohyrule.android.util.LinearLayout
         android:orientation="vertical"
@@ -122,7 +123,8 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    />
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -136,8 +138,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:src="@drawable/stop"
-                    android:background="@android:color/transparent"
+                    android:src="@drawable/button_play_stop"
+                    android:background="@drawable/button_round_background"
                     />
 
                 <ImageButton
