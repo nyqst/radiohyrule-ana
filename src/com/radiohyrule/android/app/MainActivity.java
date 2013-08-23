@@ -113,8 +113,7 @@ public class MainActivity
 			.replace(R.id.content_frame, fragment)
 			.commit();
 
-		// highlight the selected navigation list item
-		navigationListView.setItemChecked(position, true);
+		// set activity title
 		setTitle(fragment.getTitle());
 
 		// close drawer
@@ -149,8 +148,7 @@ public class MainActivity
 
 	@Override
 	public void OnSelectedNavigationItemChanged(int position, BaseFragment fragment) {
-		// highlight the selected navigation list item
-		navigationListView.setItemChecked(position, true);
+		// set activity title
 		setTitle(fragment.getTitle());
 	}
 }
