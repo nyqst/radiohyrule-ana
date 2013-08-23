@@ -36,9 +36,9 @@ public class LinearLayout extends android.widget.LinearLayout {
 
         // find out how much vertical space is left for weighted children
         float weightSum = 0;
-        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
             final View child = getChildAt(childIndex);
-            if (child != null && child.getVisibility() != GONE) {
+            if(child != null && child.getVisibility() != GONE) {
                 final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
                 remainingHeight -= lp.topMargin + lp.bottomMargin;
                 if(lp.weight == 0) {
@@ -54,13 +54,13 @@ public class LinearLayout extends android.widget.LinearLayout {
 
         // remeasure and lay out all children
         int childTop = getPaddingTop();
-        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
             final View child = getChildAt(childIndex);
-            if (child != null && child.getVisibility() != GONE) {
+            if(child != null && child.getVisibility() != GONE) {
                 final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
                 if(lp.weight > 0) {
                     child.measure(MeasureSpec.makeMeasureSpec(remainingWidth, MeasureSpec.EXACTLY),
-                                  MeasureSpec.makeMeasureSpec((int)(lp.weight * heightPerWeight), MeasureSpec.EXACTLY));
+                            MeasureSpec.makeMeasureSpec((int) (lp.weight * heightPerWeight), MeasureSpec.EXACTLY));
                 }
                 final int childWidth = child.getMeasuredWidth();
                 final int childHeight = child.getMeasuredHeight();
@@ -80,9 +80,9 @@ public class LinearLayout extends android.widget.LinearLayout {
 
         // find out how much horizontal space is left for weighted children
         float weightSum = 0;
-        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
             final View child = getChildAt(childIndex);
-            if (child != null && child.getVisibility() != GONE) {
+            if(child != null && child.getVisibility() != GONE) {
                 final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
                 remainingWidth -= lp.leftMargin + lp.rightMargin;
                 if(lp.weight == 0) {
@@ -98,12 +98,12 @@ public class LinearLayout extends android.widget.LinearLayout {
 
         // remeasure and lay out all children
         int childLeft = getPaddingLeft();
-        for (int childIndex = 0; childIndex < childCount; childIndex++) {
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
             final View child = getChildAt(childIndex);
-            if (child != null && child.getVisibility() != GONE) {
+            if(child != null && child.getVisibility() != GONE) {
                 final LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
                 if(lp.weight > 0) {
-                    child.measure(MeasureSpec.makeMeasureSpec((int)(lp.weight * widthPerWeight), MeasureSpec.EXACTLY),
+                    child.measure(MeasureSpec.makeMeasureSpec((int) (lp.weight * widthPerWeight), MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(remainingHeight, MeasureSpec.EXACTLY));
                 }
                 final int childWidth = child.getMeasuredWidth();

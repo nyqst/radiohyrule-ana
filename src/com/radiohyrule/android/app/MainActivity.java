@@ -17,138 +17,139 @@ import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.R;
 
 public class MainActivity
-	extends SherlockFragmentActivity
-	implements NavigationManager.NavigationItemChangedListener {
-	
-	protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";
-	
-	protected DrawerLayout navigationDrawerLayout;
-	protected ListView navigationListView;
-	protected ActionBarDrawerToggle navigationDrawerToggle;
-	
-	protected NavigationManager navigationManager;
+        extends SherlockFragmentActivity
+        implements NavigationManager.NavigationItemChangedListener {
 
-	protected CharSequence title;
-	protected CharSequence navigationDrawerTitle;
+    protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock); // http://stackoverflow.com/questions/12864298/java-lang-runtimeexception-theme-sherlock
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
-		navigationManager = new NavigationManager(this);
-		navigationManager.setNavigationItemChangedListener(this);
+    protected DrawerLayout navigationDrawerLayout;
+    protected ListView navigationListView;
+    protected ActionBarDrawerToggle navigationDrawerToggle;
 
-		title = navigationDrawerTitle = getTitle();
-		navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		navigationListView = (ListView) findViewById(R.id.navigation_drawer);
+    protected NavigationManager navigationManager;
 
-		// set a custom shadow that overlays the main content when the drawer
-		// opens
-		navigationDrawerLayout.setDrawerShadow(R.drawable.navigation_drawer_shadow, GravityCompat.START);
-		// set up the drawer's list view with items and click listener
-		navigationListView.setAdapter(navigationManager.getListAdapter());
-		navigationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectItem(position);
-			}
-		});
+    protected CharSequence title;
+    protected CharSequence navigationDrawerTitle;
 
-		// enable ActionBar app icon to behave as action to toggle navigation drawer
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.Theme_Sherlock); // http://stackoverflow.com/questions/12864298/java-lang-runtimeexception-theme-sherlock
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-		// ActionBarDrawerToggle ties together the the proper interactions
-		// between the sliding drawer and the action bar app icon
-		navigationDrawerToggle = new ActionBarDrawerToggle(this, navigationDrawerLayout,
-				R.drawable.ic_navigation_drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-			public void onDrawerClosed(View view) {
-				setActionBarTitle(title);
-			}
-			public void onDrawerOpened(View drawerView) {
-				setActionBarTitle(navigationDrawerTitle);
-			}
-		};
-		navigationDrawerLayout.setDrawerListener(navigationDrawerToggle);
+        navigationManager = new NavigationManager(this);
+        navigationManager.setNavigationItemChangedListener(this);
 
-		// initially activate Listen fragment
-		if (savedInstanceState == null) {
-			selectItem(navigationManager.getDefaultNavigationItemPosition());
-		}
-	}
+        title = navigationDrawerTitle = getTitle();
+        navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationListView = (ListView) findViewById(R.id.navigation_drawer);
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		navigationDrawerToggle.syncState();
-	}
+        // set a custom shadow that overlays the main content when the drawer
+        // opens
+        navigationDrawerLayout.setDrawerShadow(R.drawable.navigation_drawer_shadow, GravityCompat.START);
+        // set up the drawer's list view with items and click listener
+        navigationListView.setAdapter(navigationManager.getListAdapter());
+        navigationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position);
+            }
+        });
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggles
-		navigationDrawerToggle.onConfigurationChanged(newConfig);
-	}
+        // enable ActionBar app icon to behave as action to toggle navigation drawer
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-	protected void selectItem(int position) {
-		// get fragment for selected position
-		BaseFragment fragment = navigationManager.prepareFragmentForDisplay(position);
-		if (fragment == null) {
-			Log.e(tagMainActivity, "no fragment for position " + String.valueOf(position));
-			position = navigationManager.getDefaultNavigationItemPosition();
-			fragment = navigationManager.prepareFragmentForDisplay(position);
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        navigationDrawerToggle = new ActionBarDrawerToggle(this, navigationDrawerLayout,
+                R.drawable.ic_navigation_drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            public void onDrawerClosed(View view) {
+                setActionBarTitle(title);
+            }
 
-			if(fragment == null) {
-				Log.e(tagMainActivity, "no fragment for fallback position " + String.valueOf(position));
-				return;
-			}
-		}
-		
-		// set new fragment
-		getSupportFragmentManager()
-			.beginTransaction()
-			.replace(R.id.content_frame, fragment)
-			.commit();
+            public void onDrawerOpened(View drawerView) {
+                setActionBarTitle(navigationDrawerTitle);
+            }
+        };
+        navigationDrawerLayout.setDrawerListener(navigationDrawerToggle);
 
-		// set activity title
-		setTitle(fragment.getTitle());
+        // initially activate Listen fragment
+        if(savedInstanceState == null) {
+            selectItem(navigationManager.getDefaultNavigationItemPosition());
+        }
+    }
 
-		// close drawer
-		navigationDrawerLayout.closeDrawer(navigationListView);
-	}
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        navigationDrawerToggle.syncState();
+    }
 
-	@Override
-	public void setTitle(CharSequence title) {
-		this.title = title;
-		setActionBarTitle(title);
-	}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        navigationDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	void setActionBarTitle(CharSequence title) {
-		getSupportActionBar().setTitle(title);
-	}
+    protected void selectItem(int position) {
+        // get fragment for selected position
+        BaseFragment fragment = navigationManager.prepareFragmentForDisplay(position);
+        if(fragment == null) {
+            Log.e(tagMainActivity, "no fragment for position " + String.valueOf(position));
+            position = navigationManager.getDefaultNavigationItemPosition();
+            fragment = navigationManager.prepareFragmentForDisplay(position);
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// The action bar home/up action should open or close the drawer.
-		if (item.getItemId() == android.R.id.home) {
-			if (navigationDrawerLayout.isDrawerOpen(navigationListView)) {
-				navigationDrawerLayout.closeDrawer(navigationListView);
-			} else {
-				navigationDrawerLayout.openDrawer(navigationListView);
-			}
-		}
+            if(fragment == null) {
+                Log.e(tagMainActivity, "no fragment for fallback position " + String.valueOf(position));
+                return;
+            }
+        }
 
-		// handle action buttons
-		return super.onOptionsItemSelected(item);
-	}
+        // set new fragment
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
 
-	@Override
-	public void OnSelectedNavigationItemChanged(int position, BaseFragment fragment) {
-		// set activity title
-		setTitle(fragment.getTitle());
-	}
+        // set activity title
+        setTitle(fragment.getTitle());
+
+        // close drawer
+        navigationDrawerLayout.closeDrawer(navigationListView);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        this.title = title;
+        setActionBarTitle(title);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    void setActionBarTitle(CharSequence title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        if(item.getItemId() == android.R.id.home) {
+            if(navigationDrawerLayout.isDrawerOpen(navigationListView)) {
+                navigationDrawerLayout.closeDrawer(navigationListView);
+            } else {
+                navigationDrawerLayout.openDrawer(navigationListView);
+            }
+        }
+
+        // handle action buttons
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void OnSelectedNavigationItemChanged(int position, BaseFragment fragment) {
+        // set activity title
+        setTitle(fragment.getTitle());
+    }
 }
