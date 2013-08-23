@@ -146,6 +146,7 @@
                     android:layout_marginRight="10dp"
                     android:src="@drawable/button_play_stop"
                     android:background="@drawable/button_round_background"
+                    android:id="@+id/listen_button_play_stop"
                     />
 
                 <ImageButton
@@ -153,6 +154,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/button_favourite"
                     android:background="@drawable/button_round_background"
+                    android:id="@+id/listen_button_favourite_current"
                     />
 
                 <LinearLayout
