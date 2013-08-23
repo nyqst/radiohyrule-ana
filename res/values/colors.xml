@@ -2,6 +2,7 @@
 <resources>
     <color name="radioHyrule_lighterDarkBackground">#656565</color>
     <color name="radioHyrule_translucentBlackOverlay">#b000</color>
+    <color name="radioHyrule_veryTranslucentBlackOverlay">#7000</color>
     <color name="radioHyrule_translucentBlackImageBorder">#80000000</color>
 
     <color name="radioHyrule_primaryVeryDark">#2c5560</color>
