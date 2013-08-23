@@ -176,12 +176,12 @@ public class NavigationManager {
 	}
 
 	protected class NavigationListAdapter extends BaseAdapter implements ListAdapter {
-		protected static final int itemHeight = 64;
-		protected static final int itemLeftPaddingLevel0 = 32;
-		protected static final int itemLeftPaddingLevel1 = 64;
-		protected static final int itemRightPadding = 56;
-		protected static final int iconRightPadding = 16;
-		protected static final int iconSize = 64;
+		protected final int itemHeight = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_height);
+		protected final int itemLeftPaddingLevel0 = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_left_padding_level_0);
+		protected final int itemLeftPaddingLevel1 = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_left_padding_level_1);
+		protected final int itemRightPadding = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_right_padding);
+		protected final int iconRightMargin = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_icon_right_margin);
+		protected final int iconSize = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_icon_size);
 
 		protected List<NavigationItem> getNavigationItems() {
 			return NavigationManager.this.navigationItems;
@@ -237,11 +237,12 @@ public class NavigationManager {
 			// icon
 			ImageView imageView = new ImageView(NavigationManager.this.context);
 			imageView.setImageResource(getItemIconResource(position));
-			imageView.setPadding(0, (itemHeight-iconSize)/2, iconRightPadding, (itemHeight-iconSize)/2);
-			layout.addView(imageView, new LinearLayout.LayoutParams(iconSize, iconSize));
+			LinearLayout.LayoutParams imageViewLp = new LinearLayout.LayoutParams(iconSize, iconSize);
+			imageViewLp.setMargins(0, (itemHeight-iconSize)/2, iconRightMargin, (itemHeight-iconSize)/2);
+			layout.addView(imageView, imageViewLp);
 
 			// label
-			TextView textView = new TextView(NavigationManager.this.context);
+			TextView textView = new TextView(NavigationManager.this.context, null, android.R.attr.textAppearanceMedium);
 			textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
 			textView.setText(getItemTitle(position));
 			layout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
