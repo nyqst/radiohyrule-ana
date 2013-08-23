@@ -32,13 +32,13 @@ public class NavigationManager {
         this.context = context;
 
         navigationItems = new ArrayList<NavigationItem>();
-        navigationItems.add(new ParentNavigationItem<ListenFragment>(R.drawable.navigation_item_listen_icon) {
+        navigationItems.add(new ParentNavigationItem<ListenFragment>(R.drawable.ic_navigation_item_listen) {
             @Override
             public ListenFragment createFragment() {
                 return new ListenFragment();
             }
         });
-        ParentNavigationItem<LibraryFragment> libraryItem = new ParentNavigationItem<LibraryFragment>(R.drawable.navigation_item_library_icon) {
+        ParentNavigationItem<LibraryFragment> libraryItem = new ParentNavigationItem<LibraryFragment>(R.drawable.ic_navigation_item_library) {
             @Override
             public LibraryFragment createFragment() {
                 LibraryFragment result = new LibraryFragment();
@@ -47,10 +47,10 @@ public class NavigationManager {
             }
         };
         navigationItems.add(libraryItem);
-        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_albums_icon, "Albums", LibraryFragment.ViewId.Albums));
-        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_artists_icon, "Artists", LibraryFragment.ViewId.Artists));
-        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.navigation_item_library_songs_icon, "Songs", LibraryFragment.ViewId.Songs));
-        navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.navigation_item_about_icon) {
+        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_albums, "Albums", LibraryFragment.ViewId.Albums));
+        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_artists, "Artists", LibraryFragment.ViewId.Artists));
+        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_songs, "Songs", LibraryFragment.ViewId.Songs));
+        navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.ic_navigation_item_about) {
             @Override
             public AboutFragment createFragment() {
                 return new AboutFragment();

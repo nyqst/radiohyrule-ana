@@ -66,7 +66,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/navigation_item_library_artists_icon"
+                        android:src="@drawable/ic_navigation_item_library_artists"
                         android:scaleType="fitStart"
                         />
                 </com.radiohyrule.android.util.HeightFittingSquareLayout>
@@ -97,7 +97,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/navigation_item_library_songs_icon"
+                        android:src="@drawable/ic_navigation_item_library_songs"
                         android:scaleType="fitStart"
                         />
                 </com.radiohyrule.android.util.HeightFittingSquareLayout>
@@ -128,7 +128,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/navigation_item_library_albums_icon"
+                        android:src="@drawable/ic_navigation_item_library_albums"
                         android:scaleType="fitStart"
                         />
                 </com.radiohyrule.android.util.HeightFittingSquareLayout>
@@ -192,7 +192,7 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/num_listeners"
+                    android:src="@drawable/ic_num_listeners"
                     android:scaleType="fitEnd"
                     android:layout_marginRight="10dp"
                     />
@@ -221,7 +221,7 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/info"
+                    android:src="@drawable/ic_info"
                     android:background="@android:color/transparent"
                     />
 
@@ -237,8 +237,8 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/favourite_on"
-                    android:background="@android:color/transparent"
+                    android:src="@drawable/button_favourite"
+                    android:background="@drawable/button_round_background"
                     />
 
                 <LinearLayout
