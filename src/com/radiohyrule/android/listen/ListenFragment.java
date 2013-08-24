@@ -28,7 +28,8 @@ public class ListenFragment extends BaseFragment {
                     view.setSelected(!view.isSelected());
                 }
             });
-            if(savedInstanceState != null) buttonPlayStop.setSelected(savedInstanceState.getBoolean(saveKey_buttonPlayStop_isSelected));
+            if(savedInstanceState != null)
+                buttonPlayStop.setSelected(savedInstanceState.getBoolean(saveKey_buttonPlayStop_isSelected));
         }
 
         buttonFavouriteCurrent = (ImageButton) rootView.findViewById(R.id.listen_button_favourite_current);
@@ -39,7 +40,8 @@ public class ListenFragment extends BaseFragment {
                     view.setSelected(!view.isSelected());
                 }
             });
-            if(savedInstanceState != null) buttonFavouriteCurrent.setSelected(savedInstanceState.getBoolean(saveKey_buttonFavouriteCurrent_isSelected));
+            if(savedInstanceState != null)
+                buttonFavouriteCurrent.setSelected(savedInstanceState.getBoolean(saveKey_buttonFavouriteCurrent_isSelected));
         }
 
         return rootView;
