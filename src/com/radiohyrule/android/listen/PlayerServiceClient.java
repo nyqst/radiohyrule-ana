@@ -6,16 +6,35 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-public class PlayerServiceClient implements IPlayer {
+public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     protected final Context context;
+
+    protected IPlayerObserver observer;
 
     protected Intent playerServiceIntent;
     protected PlayerService playerService;
     protected boolean playOnConnection = false;
     protected boolean isStarting = false;
 
+
     public PlayerServiceClient(Context context) {
         this.context = context;
+    }
+
+    @Override
+    public void setPlayerObserver(IPlayerObserver observer) {
+        this.observer = observer;
+    }
+    @Override
+    public void removePlayerObserver(IPlayerObserver observer) {
+        if(this.observer == observer)
+            this.observer = null;
+    }
+
+    @Override
+    public void onPlaybackStateChanged(boolean isPlaying) {
+        if(this.observer != null)
+            this.observer.onPlaybackStateChanged(isPlaying);
     }
 
 
@@ -42,6 +61,7 @@ public class PlayerServiceClient implements IPlayer {
 
         this.playerService = playerService;
         if(playerService != null) {
+            this.playerService.setPlayerObserver(this);
             if(playOnConnection) {
                 playOnConnection = false;
                 playerService.startPlaying();

@@ -11,10 +11,22 @@ import android.support.v4.app.NotificationCompat;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.MainActivity;
 
-public class PlayerService extends Service {
+import java.io.IOException;
+
+public class PlayerService extends Service implements MediaPlayer.OnPreparedListener {
     protected Binder binder;
+
     protected MediaPlayer mediaPlayer;
+    protected MediaPlayer preparingMediaPlayer;
+    protected boolean startWhenPrepared = false;
     protected boolean isPlaying = false;
+
+    protected IPlayer.IPlayerObserver playerObserver;
+
+
+    public void setPlayerObserver(IPlayer.IPlayerObserver playerObserver) {
+        this.playerObserver = playerObserver;
+    }
 
     @Override
     public void onCreate() {
@@ -29,29 +41,54 @@ public class PlayerService extends Service {
         stopPlaying();
     }
 
-    protected synchronized MediaPlayer getMediaPlayer() {
+    protected synchronized MediaPlayer getMediaPlayer(boolean startWhenPrepared) {
         if(mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, Uri.parse("http://listen.radiohyrule.com:8000/listen"));
+            if(preparingMediaPlayer == null) {
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                try {
+                    mediaPlayer.setDataSource(this, Uri.parse("http://listen.radiohyrule.com:8000/listen"));
+                } catch(IOException e) {
+                    // TODO auto-generated catch clause
+                    e.printStackTrace();
+                }
+
+                preparingMediaPlayer = mediaPlayer;
+                this.startWhenPrepared = this.startWhenPrepared || startWhenPrepared;
+                mediaPlayer.setOnPreparedListener(this);
+                mediaPlayer.prepareAsync();
+            }
+        } else if(startWhenPrepared) {
+            mediaPlayer.start();
         }
         return mediaPlayer;
     }
 
-    protected synchronized MediaPlayer startMediaPlayer() {
-        MediaPlayer result = getMediaPlayer();
-        if(result != null) result.start();
-        return result;
-    }
-
-    protected synchronized void stopMediaPlayer() {
-        if(mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
+    protected synchronized void startMediaPlayer() {
+        getMediaPlayer(true);
     }
 
     protected synchronized void releaseMediaPlayer() {
         if(mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
+        }
+        if(preparingMediaPlayer != null) {
+            preparingMediaPlayer.release();
+            preparingMediaPlayer = null;
+        }
+        startWhenPrepared = false;
+    }
+
+
+    @Override
+    public synchronized void onPrepared(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
+        preparingMediaPlayer = null;
+        mediaPlayer.setOnPreparedListener(null);
+
+        if(startWhenPrepared) {
+            startWhenPrepared = false;
+            mediaPlayer.start();
         }
     }
 
@@ -77,18 +114,23 @@ public class PlayerService extends Service {
     public synchronized boolean isPlaying() {
         return isPlaying;
     }
+    public synchronized void setPlaying(boolean playing) {
+        this.isPlaying = playing;
+        if(this.playerObserver != null)
+            this.playerObserver.onPlaybackStateChanged(this.isPlaying);
+    }
     public synchronized void startPlaying() {
         if(!isPlaying) {
             startMediaPlayer();
             startForgroundIntent();
-            isPlaying = true;
+            setPlaying(true);
         }
     }
     public synchronized void stopPlaying() {
         if(isPlaying) {
             releaseMediaPlayer();
             stopForegroundIntent();
-            isPlaying = false;
+            setPlaying(false);
         }
     }
     public synchronized boolean togglePlaying() {

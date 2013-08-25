@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.radiohyrule.android.app.MainActivity;
 
-public class ListenFragment extends BaseFragment {
+public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageButton buttonPlayStop;
     protected static final String saveKey_buttonPlayStop_isSelected = "buttonPlayStop_isSelected";
     protected ImageButton buttonFavouriteCurrent;
@@ -24,6 +24,20 @@ public class ListenFragment extends BaseFragment {
     protected IPlayer getPlayer() {
         MainActivity mainActivity = (MainActivity) getActivity();
         return mainActivity.getPlayer();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getPlayer().setPlayerObserver(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getPlayer().removePlayerObserver(this);
     }
 
     @Override
@@ -42,6 +56,7 @@ public class ListenFragment extends BaseFragment {
             if(savedInstanceState != null)
                 buttonPlayStop.setSelected(savedInstanceState.getBoolean(saveKey_buttonPlayStop_isSelected));
         }
+        onPlaybackStateChanged(getPlayer().isPlaying());
 
         buttonFavouriteCurrent = (ImageButton) rootView.findViewById(R.id.listen_button_favourite_current);
         if(buttonFavouriteCurrent != null) {
@@ -64,5 +79,13 @@ public class ListenFragment extends BaseFragment {
 
         outState.putBoolean(saveKey_buttonPlayStop_isSelected, buttonPlayStop.isSelected());
         outState.putBoolean(saveKey_buttonFavouriteCurrent_isSelected, buttonFavouriteCurrent.isSelected());
+    }
+
+
+    @Override
+    public void onPlaybackStateChanged(boolean isPlaying) {
+        if(this.buttonPlayStop != null) {
+            this.buttonPlayStop.setSelected(isPlaying);
+        }
     }
 }
