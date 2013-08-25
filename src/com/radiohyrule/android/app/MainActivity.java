@@ -39,11 +39,19 @@ public class MainActivity
 
     // App logic
 
-    protected IPlayer playerServiceClient = new PlayerServiceClient(this);
+    protected PlayerServiceClient playerServiceClient = new PlayerServiceClient(this);
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // create service connection (see onRetainCustomNonConfigurationInstance())
+        playerServiceClient = (PlayerServiceClient) getLastCustomNonConfigurationInstance();
+        if(playerServiceClient != null) {
+            playerServiceClient.setContext(this);
+        } else {
+            playerServiceClient = new PlayerServiceClient(this);
+        }
+
         // setup UI
 
         setTheme(R.style.Theme_Sherlock); // http://stackoverflow.com/questions/12864298/java-lang-runtimeexception-theme-sherlock
@@ -105,6 +113,18 @@ public class MainActivity
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         navigationDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return playerServiceClient; // save the service connection instance (see onCreate())
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        playerServiceClient.setContext(null);
     }
 
     @Override

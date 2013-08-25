@@ -7,7 +7,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
-    protected final Context context;
+    protected Context context;
 
     protected IPlayerObserver observer;
 
@@ -20,6 +20,23 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     public PlayerServiceClient(Context context) {
         this.context = context;
     }
+    public synchronized void setContext(Context context) {
+        if(context != this.context) {
+            // unbind old context
+            if(this.context != null && playerServiceConnectionBound) {
+                this.context.unbindService(playerServiceConnection);
+                playerServiceConnectionBound = false;
+            }
+
+            // bind new context
+            this.context = context;
+            if(context != null && playerServiceIntent != null) {
+                Intent intent = new Intent(context, PlayerService.class);
+                this.context.bindService(intent, playerServiceConnection, Context.BIND_AUTO_CREATE);
+            }
+        }
+    }
+
 
     @Override
     public void setPlayerObserver(IPlayerObserver observer) {
@@ -56,18 +73,6 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
             playerService.startPlaying();
         }
     }
-    protected synchronized void onConnected(PlayerService playerService) {
-        isStarting = false;
-
-        this.playerService = playerService;
-        if(playerService != null) {
-            this.playerService.setPlayerObserver(this);
-            if(playOnConnection) {
-                playOnConnection = false;
-                playerService.startPlaying();
-            }
-        }
-    }
 
     @Override
     public synchronized void stop() {
@@ -90,11 +95,34 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     }
 
 
+    protected synchronized void onConnected(PlayerService playerService) {
+        isStarting = false;
+        playerServiceConnectionBound = true;
+
+        this.playerService = playerService;
+        if(playerService != null) {
+            onPlaybackStateChanged(this.playerService.isPlaying());
+            this.playerService.setPlayerObserver(this);
+
+            if(playOnConnection) {
+                playOnConnection = false;
+                playerService.startPlaying();
+            }
+        }
+    }
+
+    protected synchronized void onDisconnected() {
+        stopService();
+
+        playerServiceConnectionBound = false;
+    }
+
+
     protected synchronized void startService() {
         if(playerService == null && !isStarting) {
             playerServiceIntent = new Intent(context, PlayerService.class);
-            context.bindService(playerServiceIntent, playerServiceConnection, Context.BIND_AUTO_CREATE);
             context.startService(playerServiceIntent);
+            context.bindService(playerServiceIntent, playerServiceConnection, Context.BIND_AUTO_CREATE);
             isStarting = true;
         }
     }
@@ -102,13 +130,16 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     protected synchronized void stopService() {
         if(playerService != null || isStarting) {
             context.unbindService(playerServiceConnection);
+            playerServiceConnectionBound = false;
             playerService = null;
+
             context.stopService(playerServiceIntent);
             playerServiceIntent = null;
         }
     }
 
-    private ServiceConnection playerServiceConnection = new ServiceConnection() {
+    protected boolean playerServiceConnectionBound = false;
+    protected ServiceConnection playerServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             PlayerService.Binder binder = (PlayerService.Binder) service;
@@ -118,7 +149,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            PlayerServiceClient.this.stopService();
+            PlayerServiceClient.this.onDisconnected();
         }
     };
 }

@@ -12,7 +12,6 @@ import com.radiohyrule.android.app.MainActivity;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageButton buttonPlayStop;
-    protected static final String saveKey_buttonPlayStop_isSelected = "buttonPlayStop_isSelected";
     protected ImageButton buttonFavouriteCurrent;
     protected static final String saveKey_buttonFavouriteCurrent_isSelected = "buttonFavouriteCurrent_isSelected";
 
@@ -53,8 +52,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                     getPlayer().togglePlaying();
                 }
             });
-            if(savedInstanceState != null)
-                buttonPlayStop.setSelected(savedInstanceState.getBoolean(saveKey_buttonPlayStop_isSelected));
         }
         onPlaybackStateChanged(getPlayer().isPlaying());
 
@@ -77,7 +74,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(saveKey_buttonPlayStop_isSelected, buttonPlayStop.isSelected());
         outState.putBoolean(saveKey_buttonFavouriteCurrent_isSelected, buttonFavouriteCurrent.isSelected());
     }
 
