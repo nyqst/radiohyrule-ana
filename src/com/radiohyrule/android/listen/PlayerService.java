@@ -99,7 +99,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, openListenViewIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_player_service_notification)
                 .setContentTitle(getResources().getString(R.string.app_name))
                 .setContentText("Now Playing: \"Overture\"")
                 .setContentIntent(pendingIntent)
