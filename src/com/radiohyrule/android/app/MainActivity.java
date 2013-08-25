@@ -1,6 +1,7 @@
 package com.radiohyrule.android.app;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,12 +16,17 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.R;
+import com.radiohyrule.android.listen.IPlayer;
+import com.radiohyrule.android.listen.PlayerServiceClient;
 
 public class MainActivity
         extends SherlockFragmentActivity
         implements NavigationManager.NavigationItemChangedListener {
 
     protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";
+    public static final String EXTRA_SELECT_NAVIGATION_ITEM_LISTEN = "com.radiohyrule.android.radiohyrule.MainActivity.EXTRA_SELECT_NAVIGATION_ITEM_LISTEN";
+
+    // UI
 
     protected DrawerLayout navigationDrawerLayout;
     protected ListView navigationListView;
@@ -31,8 +37,15 @@ public class MainActivity
     protected CharSequence title;
     protected CharSequence navigationDrawerTitle;
 
+    // App logic
+
+    protected IPlayer playerServiceClient = new PlayerServiceClient(this);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // setup UI
+
         setTheme(R.style.Theme_Sherlock); // http://stackoverflow.com/questions/12864298/java-lang-runtimeexception-theme-sherlock
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -94,6 +107,17 @@ public class MainActivity
         navigationDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Bundle extras = intent.getExtras();
+
+        if(extras.getBoolean(EXTRA_SELECT_NAVIGATION_ITEM_LISTEN, false)) {
+            selectItem(navigationManager.getListenNavigationItemPosition());
+        }
+    }
+
     protected void selectItem(int position) {
         // get fragment for selected position
         BaseFragment fragment = navigationManager.prepareFragmentForDisplay(position);
@@ -152,4 +176,6 @@ public class MainActivity
         // set activity title
         setTitle(fragment.getTitle());
     }
+
+    public IPlayer getPlayer() { return playerServiceClient; }
 }

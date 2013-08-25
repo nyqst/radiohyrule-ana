@@ -1,7 +1,5 @@
 package com.radiohyrule.android.listen;
 
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.widget.ImageButton;
 import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.R;
@@ -10,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.radiohyrule.android.app.MainActivity;
 
 public class ListenFragment extends BaseFragment {
     protected ImageButton buttonPlayStop;
@@ -17,34 +16,14 @@ public class ListenFragment extends BaseFragment {
     protected ImageButton buttonFavouriteCurrent;
     protected static final String saveKey_buttonFavouriteCurrent_isSelected = "buttonFavouriteCurrent_isSelected";
 
-    protected MediaPlayer mediaPlayer;
-
     @Override
     public String getTitle() {
         return "Listen";
     }
 
-    protected synchronized MediaPlayer getMediaPlayer() {
-        if(mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(getActivity(), Uri.parse("http://listen.radiohyrule.com:8000/listen"));
-        }
-        return mediaPlayer;
-    }
-    protected synchronized MediaPlayer startMediaPlayer() {
-        MediaPlayer result = getMediaPlayer();
-        if(result != null) result.start();
-        return result;
-    }
-    protected synchronized void stopMediaPlayer() {
-        if(mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-    }
-    protected synchronized void releaseMediaPlayer() {
-        if(mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+    protected IPlayer getPlayer() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        return mainActivity.getPlayer();
     }
 
     @Override
@@ -57,10 +36,7 @@ public class ListenFragment extends BaseFragment {
             buttonPlayStop.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    boolean isPlaying = view.isSelected();
-                    if(isPlaying) releaseMediaPlayer();
-                    else startMediaPlayer();
-                    view.setSelected(!isPlaying);
+                    getPlayer().togglePlaying();
                 }
             });
             if(savedInstanceState != null)
@@ -80,12 +56,6 @@ public class ListenFragment extends BaseFragment {
         }
 
         return rootView;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releaseMediaPlayer();
     }
 
     @Override

@@ -26,7 +26,6 @@ public class NavigationManager {
     protected NavigationItemChangedListener navigationItemChangedListener;
 
     protected List<NavigationItem> navigationItems;
-    protected int defaultNavigationItemPosition = 0;
 
     public NavigationManager(Context context) {
         this.context = context;
@@ -72,6 +71,14 @@ public class NavigationManager {
 
     public int getDefaultNavigationItemPosition() {
         return 0;
+    }
+    public int getListenNavigationItemPosition() {
+        for(int position = 0; position < navigationItems.size(); ++position) {
+            NavigationItem navItem = navigationItems.get(position);
+            if(navItem.getIconResource() == R.drawable.ic_navigation_item_listen) // XXX
+                return position;
+        }
+        return -1;
     }
 
     // XXX this is really really ugly. will need to refactor the navigation items, base fragment and navigation manager
