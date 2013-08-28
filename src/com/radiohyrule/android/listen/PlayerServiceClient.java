@@ -144,12 +144,12 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
         if(context != null) {
             Log.d(LOG_TAG, "unbindService()");
             playerServiceConnection.unbindService(context, playerService);
+            playerService = null;
         }
     }
     protected synchronized void onServiceUnbound() {
+        // connection lost // TODO restart?
         Log.d(LOG_TAG, "onServiceUnbound()");
-        // reset instance state
-        unbindService();
         playerService = null;
     }
 
@@ -163,7 +163,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
             }
         }
         public synchronized void unbindService(Context context, PlayerService playerService) {
-            if(context != null && (playerService != null || isPending)) {
+            if(playerService != null || isPending) {
                 context.unbindService(this);
                 isPending = false;
             }
@@ -181,7 +181,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             PlayerServiceClient.this.onServiceUnbound();
-            isPending = false;
+            isPending = true;
         }
     }
     protected ServiceConnection playerServiceConnection = new ServiceConnection();
