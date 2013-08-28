@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -288,6 +289,8 @@ public class NavigationManager {
             // label
             TextView textView = new TextView(NavigationManager.this.context, null, android.R.attr.textAppearanceMedium);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            textView.setTextColor(NavigationManager.this.context.getResources().getColorStateList(android.R.color.secondary_text_dark));
+            textView.setShadowLayer(2, 0, 2, Color.BLACK);
             textView.setText(getItemTitle(position));
             layout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
