@@ -3,36 +3,48 @@ package com.radiohyrule.android.listen;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
+    private static final String LOG_TAG = "com.radiohyrule.android.listen.PlayerServiceClient";
+
     protected Context context;
 
     protected IPlayerObserver observer;
 
-    protected Intent playerServiceIntent;
     protected PlayerService playerService;
-    protected boolean playOnConnection = false;
-    protected boolean isStarting = false;
+    protected boolean playOnServiceBound = false;
 
 
     public PlayerServiceClient(Context context) {
-        this.context = context;
+        setContext(context);
     }
     public synchronized void setContext(Context context) {
         if(context != this.context) {
-            // unbind old context
-            if(this.context != null && playerServiceConnectionBound) {
-                this.context.unbindService(playerServiceConnection);
-                playerServiceConnectionBound = false;
-            }
+            Log.d(LOG_TAG, "setContext(" + String.valueOf(context) + ")");
+            if(context == null) {
+                // no new context
+                // stop the service if the playback is stopped
+                if(playerService != null && !isPlaying()) {
+                    stopService();
+                } else {
+                    // player is currently active or there is no current connection to the service
+                    // (so we can't be sure whether it's playing or not).
+                    // keep the service running, unbind only
+                    unbindService();
+                }
+                // remove old context
+                this.context = null;
 
-            // bind new context
-            this.context = context;
-            if(context != null && playerServiceIntent != null) {
-                Intent intent = new Intent(context, PlayerService.class);
-                this.context.bindService(intent, playerServiceConnection, Context.BIND_AUTO_CREATE);
+            } else {
+                // setting a new context
+                // unbind old context, but keep the service running
+                unbindService();
+                // use new context
+                this.context = context;
+                // start service and bind the new context to it
+                startAndBindService();
             }
         }
     }
@@ -50,6 +62,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
 
     @Override
     public void onPlaybackStateChanged(boolean isPlaying) {
+        Log.v(LOG_TAG, "onPlaybackStateChanged(" + String.valueOf(isPlaying) + ")");
         if(this.observer != null)
             this.observer.onPlaybackStateChanged(isPlaying);
     }
@@ -67,8 +80,8 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     @Override
     public synchronized void play() {
         if(playerService == null) {
-            playOnConnection = true;
-            startService();
+            playOnServiceBound = true;
+            startAndBindService();
         } else {
             playerService.startPlaying();
         }
@@ -78,8 +91,8 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     public synchronized void stop() {
         if(playerService != null) {
             playerService.stopPlaying();
-            stopService();
         }
+        playOnServiceBound = false;
     }
 
     @Override
@@ -95,61 +108,81 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     }
 
 
-    protected synchronized void onConnected(PlayerService playerService) {
-        isStarting = false;
-        playerServiceConnectionBound = true;
+    protected synchronized void startAndBindService() {
+        if(context != null) {
+            Log.d(LOG_TAG, "startAndBindService()");
+            Intent playerServiceIntent = new Intent(context, PlayerService.class);
+            context.startService(playerServiceIntent);
 
+            playerServiceConnection.bindService(context, playerService, playerServiceIntent);
+        }
+    }
+    protected synchronized void onServiceBound(PlayerService playerService) {
         this.playerService = playerService;
         if(playerService != null) {
+            Log.d(LOG_TAG, "onServiceBound(); isPlaying ==" + String.valueOf(this.playerService.isPlaying()));
             onPlaybackStateChanged(this.playerService.isPlaying());
             this.playerService.setPlayerObserver(this);
 
-            if(playOnConnection) {
-                playOnConnection = false;
+            if(playOnServiceBound) {
+                playOnServiceBound = false;
                 playerService.startPlaying();
             }
         }
     }
 
-    protected synchronized void onDisconnected() {
-        stopService();
-
-        playerServiceConnectionBound = false;
-    }
-
-
-    protected synchronized void startService() {
-        if(playerService == null && !isStarting) {
-            playerServiceIntent = new Intent(context, PlayerService.class);
-            context.startService(playerServiceIntent);
-            context.bindService(playerServiceIntent, playerServiceConnection, Context.BIND_AUTO_CREATE);
-            isStarting = true;
-        }
-    }
-
     protected synchronized void stopService() {
-        if(playerService != null || isStarting) {
-            context.unbindService(playerServiceConnection);
-            playerServiceConnectionBound = false;
-            playerService = null;
+        if(context != null) {
+            Log.d(LOG_TAG, "stopService()");
+            unbindService();
 
+            Intent playerServiceIntent = new Intent(context, PlayerService.class);
             context.stopService(playerServiceIntent);
-            playerServiceIntent = null;
         }
     }
+    protected synchronized void unbindService() {
+        if(context != null) {
+            Log.d(LOG_TAG, "unbindService()");
+            playerServiceConnection.unbindService(context, playerService);
+        }
+    }
+    protected synchronized void onServiceUnbound() {
+        Log.d(LOG_TAG, "onServiceUnbound()");
+        // reset instance state
+        unbindService();
+        playerService = null;
+    }
 
-    protected boolean playerServiceConnectionBound = false;
-    protected ServiceConnection playerServiceConnection = new ServiceConnection() {
+    protected class ServiceConnection implements android.content.ServiceConnection {
+        protected boolean isPending = false;
+
+        public synchronized void bindService(Context context, PlayerService playerService, Intent playerServiceIntent) {
+            if(playerService == null && !isPending) {
+                context.bindService(playerServiceIntent, this, Context.BIND_AUTO_CREATE);
+                isPending = true;
+            }
+        }
+        public synchronized void unbindService(Context context, PlayerService playerService) {
+            if(context != null && (playerService != null || isPending)) {
+                context.unbindService(this);
+                isPending = false;
+            }
+        }
+
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             PlayerService.Binder binder = (PlayerService.Binder) service;
             PlayerService playerService = binder.getPlayer();
-            PlayerServiceClient.this.onConnected(playerService);
+
+            isPending = false;
+            PlayerServiceClient.this.onServiceBound(playerService);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            PlayerServiceClient.this.onDisconnected();
+            PlayerServiceClient.this.onServiceUnbound();
+            isPending = false;
         }
-    };
+    }
+    protected ServiceConnection playerServiceConnection = new ServiceConnection();
 }

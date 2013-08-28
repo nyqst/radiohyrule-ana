@@ -39,7 +39,7 @@ public class MainActivity
 
     // App logic
 
-    protected PlayerServiceClient playerServiceClient = new PlayerServiceClient(this);
+    protected PlayerServiceClient playerServiceClient;
 
 
     @Override
