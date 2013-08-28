@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/sample_cover_blurred"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <com.radiohyrule.android.util.LinearLayout
         android:orientation="vertical"
@@ -46,7 +46,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/radioHyrule_translucentBlackOverlay"
-            android:padding="20dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             >
 
             <LinearLayout
@@ -54,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 >
 
                 <com.radiohyrule.android.util.HeightFittingSquareLayout
@@ -72,10 +75,11 @@
                 </com.radiohyrule.android.util.HeightFittingSquareLayout>
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/secondary_text_dark"
                     android:text="Zelda Reorchestrated"
                     />
             </LinearLayout>
@@ -85,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 >
 
                 <com.radiohyrule.android.util.HeightFittingSquareLayout
@@ -103,10 +107,10 @@
                 </com.radiohyrule.android.util.HeightFittingSquareLayout>
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Overture"
                     />
             </LinearLayout>
@@ -116,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 >
 
                 <com.radiohyrule.android.util.HeightFittingSquareLayout
@@ -134,29 +138,48 @@
                 </com.radiohyrule.android.util.HeightFittingSquareLayout>
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/secondary_text_dark"
                     android:text="Twilight Symphony"
                     />
             </LinearLayout>
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/radioHyrule_lighterDarkBackground"
+                />
+
+            <TextView
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/secondary_text_dark"
+                android:text="Requested by lykchen"
+                />
+
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 >
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/secondary_text_dark"
                     android:text="2:59"
                     />
 
@@ -172,9 +195,10 @@
                     />
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/secondary_text_dark"
                     android:gravity="center"
                     android:text="-3:38"
                     />
@@ -198,11 +222,12 @@
                     />
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/secondary_text_dark"
                     android:text="43"
                     />
             </LinearLayout>
@@ -210,13 +235,13 @@
             <com.radiohyrule.android.util.LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 >
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -246,7 +271,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </com.radiohyrule.android.util.LinearLayout>
         </LinearLayout>
 

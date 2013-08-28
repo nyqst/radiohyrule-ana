@@ -55,6 +55,17 @@
                 android:layout_centerHorizontal="true"
                 >
 
+                <TextView
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="20dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@android:color/secondary_text_dark"
+                    android:text="Requested by lykchen"
+                    />
+
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
