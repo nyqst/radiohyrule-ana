@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.radiohyrule.android.app.MainActivity;
+import com.radiohyrule.android.listen.player.IPlayer;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageButton buttonPlayStop;

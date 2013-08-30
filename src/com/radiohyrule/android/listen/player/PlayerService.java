@@ -1,4 +1,4 @@
-package com.radiohyrule.android.listen;
+package com.radiohyrule.android.listen.player;
 
 import android.app.Notification;
 import android.app.PendingIntent;

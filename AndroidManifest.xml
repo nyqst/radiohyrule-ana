@@ -31,7 +31,7 @@
         </activity>
 
         <service
-            android:name=".listen.PlayerService"
+            android:name=".listen.player.PlayerService"
             android:exported="false"
             />
 

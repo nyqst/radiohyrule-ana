@@ -16,8 +16,8 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.listen.IPlayer;
-import com.radiohyrule.android.listen.PlayerServiceClient;
+import com.radiohyrule.android.listen.player.IPlayer;
+import com.radiohyrule.android.listen.player.PlayerServiceClient;
 
 public class MainActivity
         extends SherlockFragmentActivity

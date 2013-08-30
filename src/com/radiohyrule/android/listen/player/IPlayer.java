@@ -1,4 +1,4 @@
-package com.radiohyrule.android.listen;
+package com.radiohyrule.android.listen.player;
 
 public interface IPlayer {
     public boolean isPlaying();
