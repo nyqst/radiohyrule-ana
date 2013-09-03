@@ -10,6 +10,7 @@ import android.os.*;
 import android.support.v4.app.NotificationCompat;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.MainActivity;
+import com.radiohyrule.android.listen.Queue;
 
 import java.io.IOException;
 
@@ -22,6 +23,8 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     protected boolean isPlaying = false;
 
     protected IPlayer.IPlayerObserver playerObserver;
+
+    protected Queue songQueue = new Queue();
 
 
     public void setPlayerObserver(IPlayer.IPlayerObserver playerObserver) {
@@ -56,6 +59,8 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                 this.startWhenPrepared = this.startWhenPrepared || startWhenPrepared;
                 mediaPlayer.setOnPreparedListener(this);
                 mediaPlayer.prepareAsync();
+
+                songQueue.onPlayerConnectingToStream(true);
             }
         } else if(startWhenPrepared) {
             mediaPlayer.start();
@@ -76,6 +81,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
             preparingMediaPlayer.release();
             preparingMediaPlayer = null;
         }
+        songQueue.onPlayerStopRequested();
         startWhenPrepared = false;
     }
 
