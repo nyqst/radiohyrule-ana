@@ -58,6 +58,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
                 preparingMediaPlayer = mediaPlayer;
                 this.startWhenPrepared = this.startWhenPrepared || startWhenPrepared;
                 mediaPlayer.setOnPreparedListener(this);
+                mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
                 mediaPlayer.prepareAsync();
 
                 songQueue.onPlayerConnectingToStream(true);
