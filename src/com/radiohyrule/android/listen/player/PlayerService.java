@@ -8,13 +8,16 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.*;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.MainActivity;
+import com.radiohyrule.android.listen.NowPlaying;
 import com.radiohyrule.android.listen.Queue;
 
 import java.io.IOException;
 
-public class PlayerService extends Service implements MediaPlayer.OnPreparedListener {
+public class PlayerService extends Service implements MediaPlayer.OnPreparedListener, Queue.QueueObserver {
+    protected static final String LOG_TAG = "com.radiohyrule.android.listen.player.PlayerService";
     protected Binder binder;
 
     protected MediaPlayer mediaPlayer;
@@ -35,6 +38,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     public void onCreate() {
         super.onCreate();
         binder = new Binder();
+        songQueue.setObserver(this);
     }
 
     @Override
@@ -100,6 +104,13 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     protected synchronized void startForgroundIntent() {
+        String notificationText = "Now Playing";
+        NowPlaying.SongInfo song = songQueue.getCurrentSong();
+        if(song != null && song.getTitle() != null) {
+            notificationText += " \"" + song.getTitle() + "\"";
+        }
+        Log.d(LOG_TAG, "notificationText = " + notificationText);
+
         Intent openListenViewIntent = new Intent(this, MainActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 .putExtra(MainActivity.EXTRA_SELECT_NAVIGATION_ITEM_LISTEN, true);
@@ -108,10 +119,9 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_player_service_notification)
                 .setContentTitle(getResources().getString(R.string.app_name))
-                .setContentText("Now Playing: \"Overture\"")
+                .setContentText(notificationText)
                 .setContentIntent(pendingIntent)
                 .build();
-
         startForeground(R.id.player_service, notification);
     }
     protected synchronized void stopForegroundIntent() {
@@ -148,6 +158,20 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         }
         return isPlaying;
     }
+
+
+    @Override
+    public void onNewPendingSong(NowPlaying.SongInfo song) {
+        Log.i(LOG_TAG, "onNewPendingSong(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
+    }
+
+    @Override
+    public void onCurrentSongChanged(NowPlaying.SongInfo song) {
+        Log.i(LOG_TAG, "onCurrentSongChanged(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
+        // update song information in service notification
+        startForgroundIntent();
+    }
+
 
     @Override
     public IBinder onBind(Intent intent) {

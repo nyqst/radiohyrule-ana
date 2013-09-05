@@ -25,6 +25,8 @@ public class Queue {
     protected static final int longRetryDelay = 10000; // milliseconds
 
 
+    protected QueueObserver observer;
+
     protected ScheduledExecutorService queryService;
     protected Future<?> queryServiceTask, scheduledQueryServiceTask;
     protected int queryRetryCount;
@@ -36,6 +38,15 @@ public class Queue {
         queryService = Executors.newSingleThreadScheduledExecutor();
         reset();
     }
+
+    public void setObserver(QueueObserver observer) {
+        this.observer = observer;
+    }
+
+    public synchronized NowPlaying.SongInfo getCurrentSong() {
+        return songInfoQueue.peek();
+    }
+
 
     public void onPlayerConnectingToStream(boolean resetConnection) {
         // reset, but only if this is a new connection attempt (not a reconnection attempt due to network issues)
@@ -72,21 +83,22 @@ public class Queue {
         }
     }
 
-    protected synchronized void queryNextSongInfo() {
+    protected void queryNextSongInfo() { queryNextSongInfo(false); }
+    protected synchronized void queryNextSongInfo(boolean sporadic) {
         if(queryServiceTask != null) return; // only one fetch operation at all times
         Log.d(LOG_TAG, "queryNextSongInfo");
 
-        queryServiceTask = queryService.submit(new QueryRunnable());
+        queryServiceTask = queryService.submit(new QueryRunnable(sporadic));
     }
 
-    protected synchronized void retryQuery() {
+    protected synchronized void retryQuery(final boolean sporadic) {
         Log.v(LOG_TAG, "retryQuery");
 
         // did we already retry many times with a short interval (and use the long interval instead now?)
         // (if we had metadatachanged in our player, we would not do retries with long delays and wait for
         // metadatachanged instead)
         long delay = longRetryDelay;
-        if(queryRetryCount < maxShortDelayRetries) {
+        if(!sporadic && queryRetryCount < maxShortDelayRetries) {
             delay = shortRetryDelay;
             queryRetryCount++;
         }
@@ -97,18 +109,16 @@ public class Queue {
         // schedule next query
         scheduledQueryServiceTask = queryService.schedule(new Runnable() {
             @Override
-            public void run() {
-                queryNextSongInfo();
-            }
+            public void run() { queryNextSongInfo(sporadic); }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized void onQueryFinished(NowPlaying nowPlayingOrNull, Calendar queryStartTime) {
+    protected synchronized void onQueryFinished(NowPlaying nowPlayingOrNull, Calendar queryStartTime, boolean sporadic) {
         queryServiceTask = null;
         Log.v(LOG_TAG, "onQueryFinished");
 
         if(nowPlayingOrNull == null) {
-            retryQuery();
+            retryQuery(sporadic);
             return;
         }
         NowPlaying.SongInfo newSong = nowPlayingOrNull.getSong();
@@ -129,7 +139,7 @@ public class Queue {
         }
         if(songExists) {
             // this is still an old song, we are waiting for the new one
-            retryQuery();
+            retryQuery(sporadic);
             return;
         }
 
@@ -157,25 +167,26 @@ public class Queue {
             long delay = expectedPlaybackEndOnServer.getTimeInMillis() - Calendar.getInstance(expectedPlaybackEndOnServer.getTimeZone()).getTimeInMillis();
             scheduledQueryServiceTask = queryService.schedule(new Runnable() {
                 @Override
-                public void run() {
-                    queryNextSongInfo();
-                }
+                public void run() { queryNextSongInfo(); }
             }, delay, TimeUnit.MILLISECONDS);
 
         } else {
             // unknown duration --> we query periodically (but sporadically) until we get a song with duration
             // if we had metadatachanged with our player we would use it instead
-            // TODO
+            retryQuery(true);
         }
 
         // append to songInfoQueue
         songInfoQueue.add(newSong);
 
         // notify about pending song info
-        Log.i(LOG_TAG, "new song: " + String.valueOf(newSong.getTitle()));
-        // TODO
+        if(observer != null) observer.onNewPendingSong(newSong);
 
-//        if (self.songInfoQueue.count == 1) {
+        if (songInfoQueue.size() == 1) {
+            // if this is the first song in the songInfoQueue
+            // inform the observer that this is the current song item
+
+            // TODO
 //            // if this is the first song in the songInfoQueue and the
 //            // metadataChangedEvents queue is not empty, this is the current item
 //            // and we are late delivering the it.
@@ -198,12 +209,25 @@ public class Queue {
 //                newSong.duplicateCount++;
 //                NSLogD(@"%@ will be a duplicate", newSong.title);
 //            }
-//
-//            [self notifyAboutCurrentSongChange];
-//        }
+
+            notifyAboutCurrentSongChange();
+        }
     }
 
+    protected void notifyAboutCurrentSongChange() {
+        if(observer != null) {
+            observer.onCurrentSongChanged(getCurrentSong());
+        }
+    }
+
+
     class QueryRunnable implements Runnable {
+        protected boolean sporadic;
+
+        public QueryRunnable(boolean sporadic) {
+            this.sporadic = sporadic;
+        }
+
         @Override
         public void run() {
             Calendar startTime = Calendar.getInstance();
@@ -214,7 +238,7 @@ public class Queue {
                 // TODO: better error handling
                 Log.e(LOG_TAG, "Querying new song info failed with error: " + e.getMessage());
             } finally {
-                onQueryFinished(nowPlaying, startTime);
+                onQueryFinished(nowPlaying, startTime, sporadic);
             }
         }
 
@@ -300,5 +324,10 @@ public class Queue {
             }
             return sb.toString();
         }
+    }
+
+    public static interface QueueObserver {
+        public void onNewPendingSong(NowPlaying.SongInfo song);
+        public void onCurrentSongChanged(NowPlaying.SongInfo song);
     }
 }
