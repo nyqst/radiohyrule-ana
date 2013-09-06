@@ -16,7 +16,7 @@ import com.radiohyrule.android.listen.Queue;
 
 import java.io.IOException;
 
-public class PlayerService extends Service implements MediaPlayer.OnPreparedListener, Queue.QueueObserver {
+public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPreparedListener, Queue.QueueObserver {
     protected static final String LOG_TAG = "com.radiohyrule.android.listen.player.PlayerService";
     protected Binder binder;
 
@@ -35,6 +35,11 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     }
 
     @Override
+    public void removePlayerObserver(IPlayerObserver observer) {
+
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
         binder = new Binder();
@@ -45,7 +50,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     public void onDestroy() {
         super.onDestroy();
 
-        stopPlaying();
+        stop();
     }
 
     protected synchronized MediaPlayer getMediaPlayer(boolean startWhenPrepared) {
@@ -128,6 +133,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         stopForeground(true);
     }
 
+    @Override
     public synchronized boolean isPlaying() {
         return isPlaying;
     }
@@ -136,27 +142,35 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         if(this.playerObserver != null)
             this.playerObserver.onPlaybackStateChanged(this.isPlaying);
     }
-    public synchronized void startPlaying() {
+    @Override
+    public synchronized void play() {
         if(!isPlaying) {
             startMediaPlayer();
             startForgroundIntent();
             setPlaying(true);
         }
     }
-    public synchronized void stopPlaying() {
+    @Override
+    public synchronized void stop() {
         if(isPlaying) {
             releaseMediaPlayer();
             stopForegroundIntent();
             setPlaying(false);
         }
     }
+    @Override
     public synchronized boolean togglePlaying() {
         if(!isPlaying) {
-            startPlaying();
+            play();
         } else {
-            stopPlaying();
+            stop();
         }
         return isPlaying;
+    }
+
+    @Override
+    public synchronized NowPlaying.SongInfo getCurrentSong() {
+        return songQueue.getCurrentSong();
     }
 
 
@@ -170,6 +184,9 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         Log.i(LOG_TAG, "onCurrentSongChanged(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
         // update song information in service notification
         startForgroundIntent();
+
+        // inform observer
+        if(playerObserver != null) playerObserver.onCurrentSongChanged(song);
     }
 
 

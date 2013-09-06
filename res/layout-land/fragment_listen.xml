@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/sample_cover_blurred"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:id="@+id/listen_image_background" />
 
     <com.radiohyrule.android.util.LinearLayout
         android:orientation="horizontal"
@@ -36,7 +37,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/sample_cover"
                     android:background="@drawable/rounded_border"
-                    />
+                    android:id="@+id/listen_image_cover" />
             </com.radiohyrule.android.util.FittingSquareLayout>
 
         </RelativeLayout>
@@ -68,7 +69,7 @@
                 android:textColor="@android:color/secondary_text_dark"
                 android:gravity="center"
                 android:text="Requested by lykchen"
-                />
+                android:id="@+id/listen_text_requested_by" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -83,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="2:59"
-                    />
+                    android:id="@+id/listen_text_time_elapsed" />
 
                 <ProgressBar
                     style="?android:attr/progressBarStyleHorizontal"
@@ -94,7 +95,7 @@
                     android:layout_marginRight="5dp"
                     android:progress="45"
                     android:progressDrawable="@drawable/progressbar"
-                    />
+                    android:id="@+id/listen_progress_time" />
 
                 <TextView
                     android:textAppearance="?android:attr/textAppearanceSmall"
@@ -102,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="-3:38"
-                    />
+                    android:id="@+id/listen_text_time_remaining" />
             </LinearLayout>
 
             <LinearLayout
@@ -129,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="43"
-                    />
+                    android:id="@+id/listen_text_num_listeners" />
             </LinearLayout>
 
             <com.radiohyrule.android.util.LinearLayout
@@ -148,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_info"
                     android:background="@drawable/button_round_background"
-                    />
+                    android:id="@+id/listen_button_show_in_library" />
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -165,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/button_favourite"
                     android:background="@drawable/button_round_background"
-                    android:id="@+id/listen_button_favourite_current"
+                    android:id="@+id/listen_button_favourite"
                     />
 
                 <LinearLayout

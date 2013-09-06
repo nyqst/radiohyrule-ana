@@ -9,7 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/sample_cover_blurred"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:id="@+id/listen_image_background"
+        />
 
     <com.radiohyrule.android.util.LinearLayout
         android:orientation="vertical"
@@ -36,6 +38,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/sample_cover"
                     android:background="@drawable/rounded_border"
+                    android:id="@+id/listen_image_cover"
                     />
             </com.radiohyrule.android.util.FittingSquareLayout>
 
@@ -81,6 +84,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/secondary_text_dark"
                     android:text="Zelda Reorchestrated"
+                    android:id="@+id/listen_text_artist"
                     />
             </LinearLayout>
 
@@ -112,6 +116,7 @@
                     android:layout_gravity="center_vertical"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Overture"
+                    android:id="@+id/listen_text_title"
                     />
             </LinearLayout>
 
@@ -144,6 +149,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/secondary_text_dark"
                     android:text="Twilight Symphony"
+                    android:id="@+id/listen_text_album"
                     />
             </LinearLayout>
 
@@ -164,6 +170,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/secondary_text_dark"
                 android:text="Requested by lykchen"
+                android:id="@+id/listen_text_requested_by"
                 />
 
             <LinearLayout
@@ -181,6 +188,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/secondary_text_dark"
                     android:text="2:59"
+                    android:id="@+id/listen_text_time_elapsed"
                     />
 
                 <ProgressBar
@@ -192,6 +200,7 @@
                     android:layout_marginRight="10dp"
                     android:progress="45"
                     android:progressDrawable="@drawable/progressbar"
+                    android:id="@+id/listen_progress_time"
                     />
 
                 <TextView
@@ -201,6 +210,7 @@
                     android:textColor="@android:color/secondary_text_dark"
                     android:gravity="center"
                     android:text="-3:38"
+                    android:id="@+id/listen_text_time_remaining"
                     />
             </LinearLayout>
 
@@ -229,6 +239,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/secondary_text_dark"
                     android:text="43"
+                    android:id="@+id/listen_text_num_listeners"
                     />
             </LinearLayout>
 
@@ -248,6 +259,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_info"
                     android:background="@drawable/button_round_background"
+                    android:id="@+id/listen_button_show_in_library"
                     />
 
                 <ImageButton
@@ -265,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/button_favourite"
                     android:background="@drawable/button_round_background"
-                    android:id="@+id/listen_button_favourite_current"
+                    android:id="@+id/listen_button_favourite"
                     />
 
                 <LinearLayout

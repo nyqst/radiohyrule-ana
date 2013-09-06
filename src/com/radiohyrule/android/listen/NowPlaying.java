@@ -49,6 +49,9 @@ public class NowPlaying {
         public Long getNumListeners() {
             return numListeners;
         }
+        public long getNumListenersValue() {
+            return numListeners == null ? 0 : numListeners;
+        }
         public void setNumListeners(Long numListeners) {
             this.numListeners = numListeners;
         }
@@ -107,6 +110,9 @@ public class NowPlaying {
 
         public Double getDuration() {
             return duration;
+        }
+        public Double getDurationValue() {
+            return duration == null ? 0.0 : duration;
         }
         public void setDuration(Double duration) {
             this.duration = duration;

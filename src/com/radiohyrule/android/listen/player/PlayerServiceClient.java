@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import com.radiohyrule.android.listen.NowPlaying;
 
 public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     private static final String LOG_TAG = "com.radiohyrule.android.listen.player.PlayerServiceClient";
@@ -63,8 +64,17 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     @Override
     public void onPlaybackStateChanged(boolean isPlaying) {
         Log.v(LOG_TAG, "onPlaybackStateChanged(" + String.valueOf(isPlaying) + ")");
-        if(this.observer != null)
-            this.observer.onPlaybackStateChanged(isPlaying);
+        if(this.observer != null) this.observer.onPlaybackStateChanged(isPlaying);
+    }
+    @Override
+    public void onCurrentSongChanged(NowPlaying.SongInfo song) {
+        if(this.observer != null) this.observer.onCurrentSongChanged(song);
+    }
+    public void onPlayerAvailable(IPlayer player) {
+        if(this.observer != null) {
+            onPlaybackStateChanged(player.isPlaying());
+            onCurrentSongChanged(player.getCurrentSong());
+        }
     }
 
 
@@ -83,30 +93,36 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
             playOnServiceBound = true;
             startAndBindService();
         } else {
-            playerService.startPlaying();
+            playerService.play();
         }
     }
 
     @Override
     public synchronized void stop() {
         if(playerService != null) {
-            playerService.stopPlaying();
+            playerService.stop();
         }
         playOnServiceBound = false;
     }
 
     @Override
-    public synchronized void togglePlaying() {
+    public synchronized boolean togglePlaying() {
         if(playerService == null) {
             play();
+            return true;
         } else {
             boolean isPlaying = playerService.togglePlaying();
             if(!isPlaying) {
                 stopService();
             }
+            return isPlaying;
         }
     }
 
+    @Override
+    public synchronized NowPlaying.SongInfo getCurrentSong() {
+        return playerService != null ? playerService.getCurrentSong() : null;
+    }
 
     protected synchronized void startAndBindService() {
         if(context != null) {
@@ -121,12 +137,12 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
         this.playerService = playerService;
         if(playerService != null) {
             Log.d(LOG_TAG, "onServiceBound(); isPlaying ==" + String.valueOf(this.playerService.isPlaying()));
-            onPlaybackStateChanged(this.playerService.isPlaying());
+            onPlayerAvailable(this.playerService);
             this.playerService.setPlayerObserver(this);
 
             if(playOnServiceBound) {
                 playOnServiceBound = false;
-                playerService.startPlaying();
+                playerService.play();
             }
         }
     }
