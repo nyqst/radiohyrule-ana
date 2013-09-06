@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -283,8 +284,27 @@ public class Queue {
         }
         private boolean parseSongInfo(JSONObject json, NowPlaying.SongInfo result) {
             result.setTimeStarted(parseJsonLong(json, "started"));
-            result.setDuration(parseJsonDouble(json, "duration"));
+            result.setNumListeners(parseJsonLong(json, "listeners"));
+
+            result.setRequestUsername(parseJsonString(json, "request_user"));
+            result.setRequestUrl(parseJsonString(json, "request_user_url"));
+
             result.setTitle(parseJsonString(json, "title"));
+            result.setAlbum(parseJsonString(json, "album"));
+            result.setAlbumCover(parseJsonString(json, "albumcover"));
+            result.setSongUrl(parseJsonString(json, "song_url"));
+            result.setDuration(parseJsonDouble(json, "duration"));
+
+            result.clearArtists();
+            try {
+                JSONArray artistArrayJson = json.getJSONArray("artist");
+                for(int i = 0; i < artistArrayJson.length(); ++i) {
+                    try {
+                        result.addArtist(artistArrayJson.getString(i));
+                    } catch(JSONException e) { /* ignore */ }
+                }
+            } catch(JSONException e) { /* ignore */ }
+
             return true;
         }
 
