@@ -165,9 +165,13 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
 
     @Override
-    public void onPlaybackStateChanged(boolean isPlaying) {
-        if(this.buttonPlayStop != null) {
-            this.buttonPlayStop.setSelected(isPlaying);
+    public void onPlaybackStateChanged(final boolean isPlaying) {
+        final ImageButton buttonPlayStop = this.buttonPlayStop;
+        if(buttonPlayStop != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() { buttonPlayStop.setSelected(isPlaying); }
+            });
         }
     }
 
