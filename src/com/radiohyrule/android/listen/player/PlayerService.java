@@ -139,8 +139,10 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
     }
     public synchronized void setPlaying(boolean playing) {
         this.isPlaying = playing;
-        if(this.playerObserver != null)
+        if(this.playerObserver != null) {
             this.playerObserver.onPlaybackStateChanged(this.isPlaying);
+            this.playerObserver.onCurrentSongChanged(getCurrentSong());
+        }
     }
     @Override
     public synchronized void play() {
@@ -170,7 +172,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
 
     @Override
     public synchronized NowPlaying.SongInfo getCurrentSong() {
-        return songQueue.getCurrentSong();
+        return isPlaying() ? songQueue.getCurrentSong() : null;
     }
 
 

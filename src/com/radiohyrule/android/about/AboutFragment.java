@@ -4,7 +4,7 @@ import com.radiohyrule.android.app.BaseFragment;
 
 public class AboutFragment extends BaseFragment {
     @Override
-    public String getTitle() {
+    public String getTitleText() {
         return "About Radio Hyrule";
     }
 }

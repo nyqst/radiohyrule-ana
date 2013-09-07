@@ -134,7 +134,7 @@ public class NavigationManager {
 
         @Override
         public String getTitle() {
-            return getFragment().getTitle();
+            return getFragment().getTitleText();
         }
 
         @Override

@@ -1,5 +1,6 @@
 package com.radiohyrule.android.listen;
 
+import android.app.Activity;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -16,24 +17,44 @@ import com.radiohyrule.android.listen.player.IPlayer;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageView imageCover, imageBackground;
-    protected TextView textArtist, textTitle, textAlbum;
+    protected TextView textArtist, textArtistTitleSeparator, textTitle, textAlbum;
+    protected View layoutArtistTitleLine;
     protected TextView textRequestedBy, textNumListeners;
     protected TextView textTimeElapsed, textTimeRemaining;
     protected ProgressBar progressTime;
     protected ImageButton buttonShowInLibrary, buttonPlayStop, buttonFavourite;
+    protected View titleView;
 
     protected static final String saveKey_buttonFavourite_isSelected = "buttonFavourite_isSelected";
 
 
     @Override
-    public String getTitle() {
+    public String getTitleText() {
         return "Listen";
     }
-
+    @Override
+    public Object getTitle() {
+        IPlayer player = getPlayer();
+        if(player != null && player.getCurrentSong() != null && titleView != null) {
+            return titleView;
+        } else {
+            return super.getTitle();
+        }
+    }
+    protected void onTitleChanged() {
+        MainActivity mainActivity = (MainActivity)getActivity();
+        if(mainActivity != null) {
+            mainActivity.onTitleChanged(this.getTitle());
+        }
+    }
 
     protected IPlayer getPlayer() {
         MainActivity mainActivity = (MainActivity) getActivity();
-        return mainActivity.getPlayer();
+        if(mainActivity != null) {
+            return mainActivity.getPlayer();
+        } else {
+            return null;
+        }
     }
 
 
@@ -62,6 +83,18 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         textArtist = (TextView) rootView.findViewById(R.id.listen_text_artist);
         textTitle = (TextView) rootView.findViewById(R.id.listen_text_title);
         textAlbum = (TextView) rootView.findViewById(R.id.listen_text_album);
+        if(textArtist == null || textTitle == null || textAlbum == null) {
+            titleView = inflater.inflate(R.layout.fragment_listen_title, null);
+            textArtist = (TextView) titleView.findViewById(R.id.listen_text_artist);
+            textArtistTitleSeparator = (TextView) titleView.findViewById(R.id.listen_text_artist_title_separator);
+            textTitle = (TextView) titleView.findViewById(R.id.listen_text_title);
+            textAlbum = (TextView) titleView.findViewById(R.id.listen_text_album);
+            layoutArtistTitleLine = titleView.findViewById(R.id.listen_layout_artist_title_line);
+        } else {
+            titleView = null;
+            textArtistTitleSeparator = null;
+            layoutArtistTitleLine = null;
+        }
 
         textRequestedBy = (TextView) rootView.findViewById(R.id.listen_text_requested_by);
         textNumListeners = (TextView) rootView.findViewById(R.id.listen_text_num_listeners);
@@ -99,6 +132,13 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        onTitleChanged();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -110,31 +150,52 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         if(song != null) {
             // TODO imageCover, imageBackground
 
-            if(textArtist != null) {
+            String defaultTitleText = titleView == null ? "--" : "";
+            if(textTitle != null) {
+                textArtist.setText(defaultTitleText);
                 Iterable<String> artists = song.getArtists();
                 if(artists != null) {
                     StringBuilder sb = new StringBuilder();
                     boolean first = true;
-                    for(String artist : song.getArtists()) {
+                    for(String artist : artists) {
                         if(artist != null) {
                             if(!first) sb.append(", ");
                             sb.append(artist);
                             first = false;
                         }
                     }
-                    textArtist.setText(sb.toString());
-                } else {
-                    textArtist.setText("--");
+                    if(sb.length() > 0) textArtist.setText(sb.toString());
                 }
             }
-            if(textTitle != null) textTitle.setText(song.getTitle() != null ? song.getTitle() : "--");
-            if(textAlbum != null) textAlbum.setText(song.getAlbum() != null ? song.getAlbum() : "--");
+            if(textTitle != null) textTitle.setText(song.getTitle() != null ? song.getTitle() : defaultTitleText);
+            if(textAlbum != null) textAlbum.setText(song.getAlbum() != null ? song.getAlbum() : defaultTitleText);
+            if(titleView != null) {
+                if(textArtist != null) textArtist.setVisibility(textArtist.getText().length() == 0 ? View.GONE : View.VISIBLE);
+                if(textTitle != null) textTitle.setVisibility(textTitle.getText().length() == 0 ? View.GONE : View.VISIBLE);
+                if(textAlbum != null) textAlbum.setVisibility(textAlbum.getText().length() == 0 ? View.GONE : View.VISIBLE);
+                if(textArtistTitleSeparator != null) {
+                    if(textArtist == null || textArtist.getVisibility() == View.GONE || textTitle == null || textTitle.getVisibility() == View.GONE) {
+                        textArtistTitleSeparator.setVisibility(View.GONE);
+                    } else {
+                        textArtistTitleSeparator.setVisibility(View.VISIBLE);
+                    }
+                }
+                if(layoutArtistTitleLine != null) {
+                    if((textArtist == null || textArtist.getVisibility() == View.GONE) && (textTitle == null || textTitle.getVisibility() == View.GONE)) {
+                        layoutArtistTitleLine.setVisibility(View.GONE);
+                    } else {
+                        layoutArtistTitleLine.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
 
             if(textRequestedBy != null) {
                 if(song.getRequestUsername() != null) {
                     textRequestedBy.setText("Requested by " + song.getRequestUsername());
+                    textRequestedBy.setVisibility(View.VISIBLE);
                 } else {
                     textRequestedBy.setText(null);
+                    textRequestedBy.setVisibility(View.GONE);
                 }
             }
             if(textNumListeners != null) textNumListeners.setText(String.valueOf(song.getNumListenersValue()));
@@ -142,7 +203,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             // TODO textTimeElapsed
             if(textTimeRemaining != null) {
                 int secondsRemaining = (int) Math.floor(song.getDurationValue() + 0.5); // TODO
-                String timeRemaining = "-"+String.valueOf(secondsRemaining/60)+":"+String.valueOf(secondsRemaining%60);
+                String timeRemaining = String.format("%d:%02d", secondsRemaining/60, secondsRemaining%60);
                 textTimeRemaining.setText(timeRemaining);
             }
             // TODO progressTime
@@ -150,11 +211,20 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         } else {
             // TODO imageCover, imageBackground
 
-            if(textArtist != null) textArtist.setText("--");
-            if(textTitle  != null) textTitle.setText("--");
-            if(textAlbum  != null) textAlbum.setText("--");
+            if(titleView != null) {
+                if(textArtist != null) textArtist.setText(null);
+                if(textTitle != null) textTitle.setText(null);
+                if(textAlbum != null) textAlbum.setText(null);
+            } else {
+                if(textArtist != null) textArtist.setText("--");
+                if(textTitle != null) textTitle.setText("--");
+                if(textAlbum != null) textAlbum.setText("--");
+            }
 
-            if(textRequestedBy  != null) textRequestedBy.setText(null);
+            if(textRequestedBy  != null) {
+                textRequestedBy.setText(null);
+                textRequestedBy.setVisibility(View.GONE);
+            }
             if(textNumListeners != null) textNumListeners.setText("--");
 
             if(textTimeElapsed   != null) textTimeElapsed.setText("-:--");
@@ -170,8 +240,17 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         if(buttonPlayStop != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
-                public void run() { buttonPlayStop.setSelected(isPlaying); }
+                public void run() {
+                    buttonPlayStop.setSelected(isPlaying);
+                    IPlayer player = getPlayer();
+                    if(player != null) {
+                        showCurrentSongInfo(player.getCurrentSong());
+                    }
+                }
             });
+        }
+        if(titleView != null) {
+            onTitleChanged();
         }
     }
 
@@ -181,5 +260,8 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             @Override
             public void run() { showCurrentSongInfo(song); }
         });
+        if(titleView != null) {
+            onTitleChanged();
+        }
     }
 }

@@ -73,7 +73,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
     }
 
     @Override
-    public String getTitle() {
+    public String getTitleText() {
         return "Library";
     }
 

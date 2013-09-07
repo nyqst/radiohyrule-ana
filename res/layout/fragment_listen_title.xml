@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.radiohyrule.android.util.LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    >
+
+    <com.radiohyrule.android.util.AutoResizeTextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textColor="@android:color/secondary_text_dark"
+        android:text="Artist"
+        android:id="@+id/listen_text_artist"
+        />
+
+    <com.radiohyrule.android.util.AutoResizeTextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary"
+        android:text="Title"
+        android:id="@+id/listen_text_title"
+        />
+
+    <com.radiohyrule.android.util.AutoResizeTextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorSecondary"
+        android:text="Album"
+        android:id="@+id/listen_text_album"
+        />
+
+</com.radiohyrule.android.util.LinearLayout>

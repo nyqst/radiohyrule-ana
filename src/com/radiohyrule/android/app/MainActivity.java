@@ -1,18 +1,18 @@
 package com.radiohyrule.android.app;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.R;
@@ -34,8 +34,7 @@ public class MainActivity
 
     protected NavigationManager navigationManager;
 
-    protected CharSequence title;
-    protected CharSequence navigationDrawerTitle;
+    protected Object title;
 
     // App logic
 
@@ -61,7 +60,7 @@ public class MainActivity
         navigationManager = new NavigationManager(this);
         navigationManager.setNavigationItemChangedListener(this);
 
-        title = navigationDrawerTitle = getTitle();
+        setTitle(getResources().getString(R.string.app_name));
         navigationDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationListView = (ListView) findViewById(R.id.navigation_drawer);
 
@@ -72,9 +71,7 @@ public class MainActivity
         navigationListView.setAdapter(navigationManager.getListAdapter());
         navigationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) { selectItem(position); }
         });
 
         // enable ActionBar app icon to behave as action to toggle navigation drawer
@@ -85,12 +82,11 @@ public class MainActivity
         // between the sliding drawer and the action bar app icon
         navigationDrawerToggle = new ActionBarDrawerToggle(this, navigationDrawerLayout,
                 R.drawable.ic_navigation_drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            public void onDrawerClosed(View view) {
-                setActionBarTitle(title);
-            }
-
             public void onDrawerOpened(View drawerView) {
-                setActionBarTitle(navigationDrawerTitle);
+                updateTitle(null);
+            }
+            public void onDrawerClosed(View view) {
+                updateTitle(title);
             }
         };
         navigationDrawerLayout.setDrawerListener(navigationDrawerToggle);
@@ -167,13 +163,43 @@ public class MainActivity
 
     @Override
     public void setTitle(CharSequence title) {
-        this.title = title;
-        setActionBarTitle(title);
+        setTitle((Object)title);
     }
+    public void setTitle(final Object title) {
+        if(this.title != title) {
+            this.title = title;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() { updateTitle(title); }
+            });
+        }
+    }
+    public void updateTitle(Object title) {
+        // set activity title text or view
+        if(title instanceof CharSequence) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setDisplayShowCustomEnabled(false);
+            getSupportActionBar().setTitle((CharSequence)title);
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    void setActionBarTitle(CharSequence title) {
-        getSupportActionBar().setTitle(title);
+        } else {
+            if(title instanceof View) {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+                getSupportActionBar().setDisplayShowCustomEnabled(true);
+                getSupportActionBar().setCustomView((View)title, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            } else {
+                if(title != null) {
+                    Log.w(tagMainActivity, "invalid title type " + String.valueOf(title));
+                }
+                // fall back to application name
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                getSupportActionBar().setDisplayShowCustomEnabled(false);
+                getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+            }
+        }
+    }
+    public void onTitleChanged(Object title) {
+        setTitle(title);
     }
 
     @Override
