@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPreparedListener, Queue.QueueObserver, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener {
-    protected static final String LOG_TAG = "com.radiohyrule.android.listen.player.PlayerService";
+    protected static final String LOG_TAG = PlayerService.class.getCanonicalName();
     protected Binder binder;
 
     protected MediaPlayer mediaPlayer;
@@ -151,10 +151,10 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
     }
 
 
-    protected synchronized void startForgroundIntent() {
-        startForgroundIntent(getCurrentSong());
+    protected synchronized void startForegroundIntent() {
+        startForegroundIntent(getCurrentSong());
     }
-    protected synchronized void startForgroundIntent(NowPlaying.SongInfo song) {
+    protected synchronized void startForegroundIntent(NowPlaying.SongInfo song) {
         String notificationText = "Now Playing";
         if(song != null && song.getTitle() != null) {
             notificationText += " \"" + song.getTitle() + "\"";
@@ -193,7 +193,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
     public synchronized void play() {
         if(!isPlaying) {
             startMediaPlayer();
-            startForgroundIntent();
+            startForegroundIntent();
             setPlaying(true);
         }
     }
@@ -235,7 +235,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
     public synchronized void onCurrentSongChanged(NowPlaying.SongInfo song) {
         Log.i(LOG_TAG, "onCurrentSongChanged(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
         // update song information in service notification
-        startForgroundIntent(song);
+        startForegroundIntent(song);
 
         // inform observer
         if(playerObserver != null) playerObserver.onCurrentSongChanged(song);

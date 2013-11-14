@@ -21,8 +21,6 @@ import com.radiohyrule.android.library.LibraryFragment;
 import com.radiohyrule.android.listen.ListenFragment;
 
 public class NavigationManager {
-    protected static final String tagNavigationManager = "com.radiohyrule.android.app.NavigationManager";
-
     protected Context context;
     protected NavigationItemChangedListener navigationItemChangedListener;
 

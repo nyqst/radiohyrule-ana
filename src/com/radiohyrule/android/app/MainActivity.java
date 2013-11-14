@@ -23,8 +23,8 @@ public class MainActivity
         extends SherlockFragmentActivity
         implements NavigationManager.NavigationItemChangedListener {
 
-    protected static final String tagMainActivity = "com.radiohyrule.android.radiohyrule.MainActivity";
-    public static final String EXTRA_SELECT_NAVIGATION_ITEM_LISTEN = "com.radiohyrule.android.radiohyrule.MainActivity.EXTRA_SELECT_NAVIGATION_ITEM_LISTEN";
+    protected static final String LOG_TAG = MainActivity.class.getCanonicalName();
+    public static final String EXTRA_SELECT_NAVIGATION_ITEM_LISTEN = MainActivity.class.getCanonicalName()+".EXTRA_SELECT_NAVIGATION_ITEM_LISTEN";
 
     // UI
 
@@ -138,12 +138,12 @@ public class MainActivity
         // get fragment for selected position
         BaseFragment fragment = navigationManager.prepareFragmentForDisplay(position);
         if(fragment == null) {
-            Log.e(tagMainActivity, "no fragment for position " + String.valueOf(position));
+            Log.e(LOG_TAG, "no fragment for position " + String.valueOf(position));
             position = navigationManager.getDefaultNavigationItemPosition();
             fragment = navigationManager.prepareFragmentForDisplay(position);
 
             if(fragment == null) {
-                Log.e(tagMainActivity, "no fragment for fallback position " + String.valueOf(position));
+                Log.e(LOG_TAG, "no fragment for fallback position " + String.valueOf(position));
                 return;
             }
         }
@@ -189,7 +189,7 @@ public class MainActivity
 
             } else {
                 if(title != null) {
-                    Log.w(tagMainActivity, "invalid title type " + String.valueOf(title));
+                    Log.w(LOG_TAG, "invalid title type " + String.valueOf(title));
                 }
                 // fall back to application name
                 getSupportActionBar().setDisplayShowTitleEnabled(true);

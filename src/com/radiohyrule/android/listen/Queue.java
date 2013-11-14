@@ -19,7 +19,7 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class Queue {
-    protected static final String LOG_TAG = "com.radiohyrule.android.listen.Queue";
+    protected static final String LOG_TAG = Queue.class.getCanonicalName();
 
     protected static final int maxShortDelayRetries = 3;
     protected static final int shortRetryDelay = 2000; // milliseconds

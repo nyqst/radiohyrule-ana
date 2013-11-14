@@ -14,7 +14,7 @@ import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.app.NavigationManager;
 
 public class LibraryFragment extends BaseFragment implements OnTabChangeListener {
-    protected static final String tagLibraryFragment = "com.radiohyrule.android.library.LibraryFragment";
+    protected static final String LOG_TAG = LibraryFragment.class.getCanonicalName();
 
     protected NavigationManager navigationManager;
     protected List<TabSpec> tabSpecs;
@@ -114,7 +114,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
         for(TabSpec tab : tabSpecs)
             if(tab.tag.equals(tag))
                 return tab;
-        Log.e(tagLibraryFragment, "no tab spec for tag " + tag);
+        Log.e(LOG_TAG, "no tab spec for tag " + tag);
         return null;
     }
 
@@ -122,7 +122,7 @@ public class LibraryFragment extends BaseFragment implements OnTabChangeListener
         for(TabSpec tab : tabSpecs)
             if(tab.viewId.equals(viewId))
                 return tab;
-        Log.e(tagLibraryFragment, "no tab spec for view id " + viewId.toString());
+        Log.e(LOG_TAG, "no tab spec for view id " + viewId.toString());
         return null;
     }
 

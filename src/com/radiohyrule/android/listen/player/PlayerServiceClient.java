@@ -8,7 +8,7 @@ import android.util.Log;
 import com.radiohyrule.android.listen.NowPlaying;
 
 public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
-    private static final String LOG_TAG = "com.radiohyrule.android.listen.player.PlayerServiceClient";
+    private static final String LOG_TAG = PlayerServiceClient.class.getCanonicalName();
 
     protected Context context;
 
