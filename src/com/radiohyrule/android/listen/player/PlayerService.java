@@ -15,8 +15,11 @@ import com.radiohyrule.android.listen.NowPlaying;
 import com.radiohyrule.android.listen.Queue;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
-public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPreparedListener, Queue.QueueObserver {
+public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPreparedListener, Queue.QueueObserver, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener {
     protected static final String LOG_TAG = "com.radiohyrule.android.listen.player.PlayerService";
     protected Binder binder;
 
@@ -25,32 +28,40 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
     protected boolean startWhenPrepared = false;
     protected boolean isPlaying = false;
 
+    protected ScheduledExecutorService changeCurrentSongService;
+    protected Future<?> changeCurrentSongServiceTask;
+    protected Long bufferingStartTime;
+    protected long bufferingTimeSum;
+
     protected IPlayer.IPlayerObserver playerObserver;
 
     protected Queue songQueue = new Queue();
 
 
-    public void setPlayerObserver(IPlayer.IPlayerObserver playerObserver) {
+    public synchronized void setPlayerObserver(IPlayerObserver playerObserver) {
         this.playerObserver = playerObserver;
     }
 
     @Override
-    public void removePlayerObserver(IPlayerObserver observer) {
-
+    public synchronized void removePlayerObserver(IPlayerObserver observer) {
+        this.playerObserver = null;
     }
 
     @Override
-    public void onCreate() {
+    public synchronized void onCreate() {
         super.onCreate();
         binder = new Binder();
         songQueue.setObserver(this);
+        changeCurrentSongService = Executors.newSingleThreadScheduledExecutor();
     }
 
     @Override
-    public void onDestroy() {
+    public synchronized void onDestroy() {
         super.onDestroy();
-
         stop();
+        binder = null;
+        songQueue.setObserver(null);
+        changeCurrentSongService = null;
     }
 
     protected synchronized MediaPlayer getMediaPlayer(boolean startWhenPrepared) {
@@ -66,7 +77,10 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
 
                 preparingMediaPlayer = mediaPlayer;
                 this.startWhenPrepared = this.startWhenPrepared || startWhenPrepared;
+                bufferingTimeSum = 0; bufferingStartTime = null;
                 mediaPlayer.setOnPreparedListener(this);
+                mediaPlayer.setOnErrorListener(this);
+                mediaPlayer.setOnInfoListener(this);
                 mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
                 mediaPlayer.prepareAsync();
 
@@ -108,9 +122,40 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
         }
     }
 
+    @Override
+    public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
+        Log.e(LOG_TAG, "media player error: " + what + ", " + extra);
+        // TODO improve error handling
+        stop();
+        return true;
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+        Log.i(LOG_TAG, "media player info: " + what + ", " + extra);
+
+        switch(what) {
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                bufferingStartTime = System.nanoTime();
+                break;
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                if(bufferingStartTime != null) {
+                    bufferingTimeSum += (System.nanoTime() - bufferingStartTime);
+                    bufferingStartTime = null;
+                    Log.i(LOG_TAG, "media player buffering time: " + bufferingTimeSum + "ns");
+                }
+                break;
+        }
+
+        return false;
+    }
+
+
     protected synchronized void startForgroundIntent() {
+        startForgroundIntent(getCurrentSong());
+    }
+    protected synchronized void startForgroundIntent(NowPlaying.SongInfo song) {
         String notificationText = "Now Playing";
-        NowPlaying.SongInfo song = songQueue.getCurrentSong();
         if(song != null && song.getTitle() != null) {
             notificationText += " \"" + song.getTitle() + "\"";
         }
@@ -158,6 +203,8 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
             releaseMediaPlayer();
             stopForegroundIntent();
             setPlaying(false);
+
+            if(changeCurrentSongServiceTask != null) changeCurrentSongServiceTask.cancel(false);
         }
     }
     @Override
@@ -177,15 +224,18 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
 
 
     @Override
-    public void onNewPendingSong(NowPlaying.SongInfo song) {
+    public synchronized void onNewPendingSong(NowPlaying.SongInfo song) {
         Log.i(LOG_TAG, "onNewPendingSong(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
+
+        // XXX
+        onCurrentSongChanged(song);
     }
 
     @Override
-    public void onCurrentSongChanged(NowPlaying.SongInfo song) {
+    public synchronized void onCurrentSongChanged(NowPlaying.SongInfo song) {
         Log.i(LOG_TAG, "onCurrentSongChanged(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
         // update song information in service notification
-        startForgroundIntent();
+        startForgroundIntent(song);
 
         // inform observer
         if(playerObserver != null) playerObserver.onCurrentSongChanged(song);

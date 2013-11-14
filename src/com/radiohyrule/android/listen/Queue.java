@@ -31,6 +31,7 @@ public class Queue {
     protected ScheduledExecutorService queryService;
     protected Future<?> queryServiceTask, scheduledQueryServiceTask;
     protected int queryRetryCount;
+    protected boolean initialQuery;
 
     protected java.util.Queue<NowPlaying.SongInfo> songInfoQueue = new java.util.LinkedList<NowPlaying.SongInfo>();
 
@@ -49,8 +50,9 @@ public class Queue {
     }
 
 
-    public void onPlayerConnectingToStream(boolean resetConnection) {
+    public synchronized void onPlayerConnectingToStream(boolean resetConnection) {
         // reset, but only if this is a new connection attempt (not a reconnection attempt due to network issues)
+        initialQuery = true;
         if(resetConnection) {
             reset();
             queryNextSongInfo();
@@ -67,8 +69,8 @@ public class Queue {
 
         cancelQuery();
         songInfoQueue.clear();
-//        [self.metadataChangedEvents removeAllObjects];
         queryRetryCount = 0;
+        initialQuery = true;
     }
 
     protected synchronized void cancelQuery() {
@@ -146,7 +148,10 @@ public class Queue {
 
         // it's a new song
 
-        queryRetryCount = 0; // reset
+        // reset query state
+        boolean wasInitialQuery = initialQuery;
+        initialQuery = false;
+        queryRetryCount = 0;
 
 //        newSong.initialProgress = 0; // assume we start at the beginning of the song by default
 
@@ -186,31 +191,6 @@ public class Queue {
         if (songInfoQueue.size() == 1) {
             // if this is the first song in the songInfoQueue
             // inform the observer that this is the current song item
-
-            // TODO
-//            // if this is the first song in the songInfoQueue and the
-//            // metadataChangedEvents queue is not empty, this is the current item
-//            // and we are late delivering the it.
-//            // (It wasn't there on metadataChanged yet.)
-//            if(self.metadataChangedEvents.count > 0) {
-//                NSNumber* audioPlayerStartTime = self.metadataChangedEvents[0];
-//                newSong.audioPlayerStartTime = audioPlayerStartTime.doubleValue;
-//                [self.metadataChangedEvents removeObjectAtIndex:0];
-//            } else {
-//                // It is the current song in the songInfoQueue and metadataChanged
-//                // has not been fired yet. This means this is the very first song played.
-//
-//                // save time that has already elapsed
-//                newSong.initialProgress = timeElapsed;
-//
-//                // We must add this song twice, because we expect a metadataChanged
-//                // event and would move to the next item by removing the first song from
-//                // the songInfoQueue. So we would actually remove this item too early.
-//                // Adding it twice circumvents this issue.
-//                newSong.duplicateCount++;
-//                NSLogD(@"%@ will be a duplicate", newSong.title);
-//            }
-
             notifyAboutCurrentSongChange();
         }
     }
