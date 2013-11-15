@@ -136,7 +136,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     protected synchronized void onServiceBound(PlayerService playerService) {
         this.playerService = playerService;
         if(playerService != null) {
-            Log.d(LOG_TAG, "onServiceBound(); isPlaying ==" + String.valueOf(this.playerService.isPlaying()));
+            Log.d(LOG_TAG, "onServiceBound(); isPlaying == " + String.valueOf(this.playerService.isPlaying()));
             onPlayerAvailable(this.playerService);
             this.playerService.setPlayerObserver(this);
 
