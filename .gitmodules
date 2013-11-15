@@ -1,0 +1,3 @@
+[submodule "libs/Android-ImageManager"]
+	path = libs/Android-ImageManager
+	url = https://github.com/felipecsl/Android-ImageManager.git
