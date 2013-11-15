@@ -1,3 +1,6 @@
 [submodule "libs/Android-ImageManager"]
 	path = libs/Android-ImageManager
 	url = https://github.com/felipecsl/Android-ImageManager.git
+[submodule "libs/ActionBarSherlock"]
+	path = libs/ActionBarSherlock
+	url = https://github.com/JakeWharton/ActionBarSherlock.git

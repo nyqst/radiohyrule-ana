@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/libs/ActionBarSherlock.iml" filepath="$PROJECT_DIR$/libs/ActionBarSherlock.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/Android-ImageManager.iml" filepath="$PROJECT_DIR$/libs/Android-ImageManager.iml" />
       <module fileurl="file://$PROJECT_DIR$/RadioHyrule.iml" filepath="$PROJECT_DIR$/RadioHyrule.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libs/actionbarsherlock/actionbarsherlock.iml" filepath="$PROJECT_DIR$/libs/actionbarsherlock/actionbarsherlock.iml" />
     </modules>
   </component>
 </project>
