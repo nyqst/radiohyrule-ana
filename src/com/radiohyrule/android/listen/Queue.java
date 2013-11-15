@@ -48,6 +48,10 @@ public class Queue {
     public synchronized NowPlaying.SongInfo getCurrentSong() {
         return songInfoQueue.peek();
     }
+    public synchronized NowPlaying.SongInfo moveToNextSong() {
+        songInfoQueue.poll();
+        return getCurrentSong();
+    }
 
 
     public synchronized void onPlayerConnectingToStream(boolean resetConnection) {
@@ -124,7 +128,8 @@ public class Queue {
             retryQuery(sporadic);
             return;
         }
-        NowPlaying.SongInfo newSong = nowPlayingOrNull.getSong();
+        NowPlaying nowPlaying = nowPlayingOrNull;
+        NowPlaying.SongInfo newSong = nowPlaying.getSong();
 
         // is this a new song?
         boolean songExists = false;
@@ -153,14 +158,13 @@ public class Queue {
         initialQuery = false;
         queryRetryCount = 0;
 
-//        newSong.initialProgress = 0; // assume we start at the beginning of the song by default
+        // save information about elapsed time
+        long timeElasped = nowPlaying.getTimeValue() - newSong.getTimeStartedValue();
+        if(timeElasped < 0) timeElasped = 0;
+        newSong.setTimeElapsedAtStart(timeElasped);
 
         // start timer for querying next song info
-        long timeElasped = 0;
         if(newSong.getDuration() != null) {
-            timeElasped = nowPlayingOrNull.getTimeValue() - newSong.getTimeStartedValue();
-            if(timeElasped < 0) timeElasped = 0;
-
             double timeLeft = 0;
             if(newSong.getDuration() != null) timeLeft = newSong.getDuration() - timeElasped; // playback time left on server
 
@@ -187,18 +191,6 @@ public class Queue {
 
         // notify about pending song info
         if(observer != null) observer.onNewPendingSong(newSong);
-
-        if (songInfoQueue.size() == 1) {
-            // if this is the first song in the songInfoQueue
-            // inform the observer that this is the current song item
-            notifyAboutCurrentSongChange();
-        }
-    }
-
-    protected void notifyAboutCurrentSongChange() {
-        if(observer != null) {
-            observer.onCurrentSongChanged(getCurrentSong());
-        }
     }
 
 
@@ -328,6 +320,5 @@ public class Queue {
 
     public static interface QueueObserver {
         public void onNewPendingSong(NowPlaying.SongInfo song);
-        public void onCurrentSongChanged(NowPlaying.SongInfo song);
     }
 }

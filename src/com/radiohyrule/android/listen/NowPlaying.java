@@ -1,5 +1,6 @@
 package com.radiohyrule.android.listen;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,13 +36,14 @@ public class NowPlaying {
         private String songUrl;
         private Double duration;
 
+        private Calendar timeStartedLocal;
+        private long timeElapsedAtStart;
+
 
         public Long getTimeStarted() {
             return timeStarted;
         }
-        public long getTimeStartedValue() {
-            return timeStarted == null ? 0 : timeStarted;
-        }
+        public long getTimeStartedValue() { return timeStarted == null ? 0 : timeStarted; }
         public void setTimeStarted(Long timeStarted) {
             this.timeStarted = timeStarted;
         }
@@ -49,9 +51,7 @@ public class NowPlaying {
         public Long getNumListeners() {
             return numListeners;
         }
-        public long getNumListenersValue() {
-            return numListeners == null ? 0 : numListeners;
-        }
+        public long getNumListenersValue() { return numListeners == null ? 0 : numListeners; }
         public void setNumListeners(Long numListeners) {
             this.numListeners = numListeners;
         }
@@ -80,12 +80,8 @@ public class NowPlaying {
         public Iterable<String> getArtists() {
             return artists;
         }
-        public void addArtist(String artist) {
-            this.artists.add(artist);
-        }
-        public void clearArtists() {
-            this.artists.clear();
-        }
+        public void addArtist(String artist) { this.artists.add(artist); }
+        public void clearArtists() { this.artists.clear(); }
 
         public String getAlbum() {
             return album;
@@ -111,11 +107,26 @@ public class NowPlaying {
         public Double getDuration() {
             return duration;
         }
-        public Double getDurationValue() {
-            return duration == null ? 0.0 : duration;
-        }
+        public Double getDurationValue() { return duration == null ? 0.0 : duration; }
         public void setDuration(Double duration) {
             this.duration = duration;
+        }
+
+        public Calendar getTimeStartedLocal() { return timeStartedLocal; }
+        public void setTimeStartedLocal(Calendar timeStartedLocal) { this.timeStartedLocal = timeStartedLocal; }
+
+        public long getTimeElapsedAtStart() { return timeElapsedAtStart; }
+        public void setTimeElapsedAtStart(long timeElapsedAtStart) { this.timeElapsedAtStart = timeElapsedAtStart; }
+
+        // all in milliseconds
+        public Long getEstimatedTimeUntilEnd(Calendar relativeToDate, long interruptionTime) {
+            if (timeStartedLocal != null && duration != null && relativeToDate != null) {
+                long timeRemainingAtStartLocal = ((int)(duration*1000.0)-((int)timeElapsedAtStart*1000)); // milliseconds
+                long timeElapsedSinceStartLocal = relativeToDate.getTimeInMillis() - timeStartedLocal.getTimeInMillis();
+                return timeRemainingAtStartLocal - timeElapsedSinceStartLocal + interruptionTime;
+            } else {
+                return null;
+            }
         }
     }
 }
