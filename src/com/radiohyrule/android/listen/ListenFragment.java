@@ -1,10 +1,14 @@
 package com.radiohyrule.android.listen;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.felipecsl.android.imaging.ImageManager;
 import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.R;
 
@@ -14,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.radiohyrule.android.app.MainActivity;
 import com.radiohyrule.android.listen.player.IPlayer;
+import com.radiohyrule.android.util.GraphicsUtil;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageView imageCover, imageBackground;
@@ -42,14 +47,14 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         }
     }
     protected void onTitleChanged() {
-        MainActivity mainActivity = (MainActivity)getActivity();
+        MainActivity mainActivity = getMainActivity();
         if(mainActivity != null) {
             mainActivity.onTitleChanged(this.getTitle());
         }
     }
 
     protected IPlayer getPlayer() {
-        MainActivity mainActivity = (MainActivity) getActivity();
+        MainActivity mainActivity = getMainActivity();
         if(mainActivity != null) {
             return mainActivity.getPlayer();
         } else {
@@ -148,7 +153,21 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
     protected synchronized void showCurrentSongInfo(NowPlaying.SongInfo song) {
         if(song != null) {
-            // TODO imageCover, imageBackground
+            String albumCover = song.getAlbumCover();
+            if (albumCover != null) {
+                ImageManager imageManager = getMainActivity().getImageManager();
+                if (imageManager != null) {
+                    Uri imageUri = Uri.withAppendedPath(Uri.parse("http://radiohyrule.com/cover640/"), song.getAlbumCover());
+                    imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap) {
+                            bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(getActivity(), 5));
+                            imageCover.setImageDrawable(new BitmapDrawable(getActivity().getResources(), bitmap));
+                        }
+                    });
+                    imageManager.loadImage(imageUri.toString());
+                }
+            }
 
             String defaultTitleText = titleView == null ? "--" : "";
             if(textTitle != null) {

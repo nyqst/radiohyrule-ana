@@ -15,6 +15,8 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.felipecsl.android.imaging.CacheableDrawable;
+import com.felipecsl.android.imaging.ImageManager;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.listen.player.IPlayer;
 import com.radiohyrule.android.listen.player.PlayerServiceClient;
@@ -38,16 +40,27 @@ public class MainActivity
 
     // App logic
 
+    protected ImageManager imageManager;
     protected PlayerServiceClient playerServiceClient;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // create service connection (see onRetainCustomNonConfigurationInstance())
-        playerServiceClient = (PlayerServiceClient) getLastCustomNonConfigurationInstance();
-        if(playerServiceClient != null) {
-            playerServiceClient.setContext(this);
-        } else {
+        // retrieve data saved between configuration changes (see onRetainCustomNonConfigurationInstance())
+        CustomNonConfigurationObject customNonConfigurationObject = (CustomNonConfigurationObject)getLastCustomNonConfigurationInstance();
+        if (customNonConfigurationObject != null) {
+            playerServiceClient = customNonConfigurationObject.playerServiceClient;
+            if (playerServiceClient != null) playerServiceClient.setContext(this);
+        }
+
+        // set up the image manager and image cache
+        if (imageManager == null) {
+            imageManager = new ImageManager(this);
+            CacheableDrawable.setShowDebugIndicator(false);
+        }
+
+        // create service connection
+        if (playerServiceClient == null) {
             playerServiceClient = new PlayerServiceClient(this);
         }
 
@@ -113,7 +126,10 @@ public class MainActivity
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
-        return playerServiceClient; // save the service connection instance (see onCreate())
+        // see onCreate()
+        CustomNonConfigurationObject result = new CustomNonConfigurationObject();
+        result.playerServiceClient = playerServiceClient;
+        return result;
     }
 
     @Override
@@ -223,5 +239,12 @@ public class MainActivity
         setTitle(fragment.getTitle());
     }
 
+
+    protected class CustomNonConfigurationObject {
+        public PlayerServiceClient playerServiceClient;
+    }
+
+
     public IPlayer getPlayer() { return playerServiceClient; }
+    public ImageManager getImageManager() { return imageManager; }
 }
