@@ -3,8 +3,9 @@ package com.radiohyrule.android.util;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class FittingSquareLayout extends LinearLayout {
+public class FittingSquareLayout extends RelativeLayout {
     public FittingSquareLayout(Context context) {
         super(context);
     }
