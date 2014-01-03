@@ -1,27 +1,31 @@
 package com.radiohyrule.android.listen;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.opengl.GLSurfaceView;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.felipecsl.android.imaging.ImageManager;
-import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.R;
-
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.app.MainActivity;
 import com.radiohyrule.android.listen.player.IPlayer;
+import com.radiohyrule.android.opengl.BlurredSurfaceRenderer;
+import com.radiohyrule.android.opengl.Util;
 import com.radiohyrule.android.util.GraphicsUtil;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageView imageCover, imageBackground;
+    protected GLSurfaceView surfaceBackground;
+    protected BlurredSurfaceRenderer surfaceRenderer;
     protected TextView textArtist, textArtistTitleSeparator, textTitle, textAlbum;
     protected View layoutArtistTitleLine;
     protected TextView textRequestedBy, textNumListeners;
@@ -84,6 +88,19 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
         imageCover = (ImageView) rootView.findViewById(R.id.listen_image_cover);
         imageBackground = (ImageView) rootView.findViewById(R.id.listen_image_background);
+        if (Util.getOpenGlVersion(getActivity()) >= Util.OPENGL2) {
+            surfaceBackground = new GLSurfaceView(getActivity());
+            surfaceBackground.setEGLContextClientVersion(2);
+            surfaceRenderer = new BlurredSurfaceRenderer(getResources(), R.drawable.sample_cover);
+            surfaceBackground.setRenderer(surfaceRenderer);
+            surfaceBackground.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            ViewGroup backgroundParent = (ViewGroup)imageBackground.getParent();
+            int index = backgroundParent.indexOfChild(imageBackground);
+            backgroundParent.removeViewAt(index);
+            surfaceBackground.setLayoutParams(imageBackground.getLayoutParams());
+            backgroundParent.addView(surfaceBackground, index);
+            imageBackground = null;
+        }
 
         textArtist = (TextView) rootView.findViewById(R.id.listen_text_artist);
         textTitle = (TextView) rootView.findViewById(R.id.listen_text_title);
@@ -161,8 +178,15 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                     imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap) {
-                            bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(getActivity(), 5));
-                            imageCover.setImageDrawable(new BitmapDrawable(getActivity().getResources(), bitmap));
+                            Context context = getActivity();
+                            bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(context, 5));
+                            imageCover.setImageBitmap(bitmap);
+                            if (imageBackground != null) {
+                                imageBackground.setImageBitmap(GraphicsUtil.blurImage(bitmap, context));
+                            } else if (surfaceRenderer != null) {
+                                surfaceRenderer.setNextBitmap(bitmap);
+                                surfaceBackground.requestRender();
+                            }
                         }
                     });
                     imageManager.loadImage(imageUri.toString());
