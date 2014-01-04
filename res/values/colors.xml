@@ -4,6 +4,7 @@
     <color name="radioHyrule_translucentBlackOverlay">#b000</color>
     <color name="radioHyrule_veryTranslucentBlackOverlay">#7000</color>
     <color name="radioHyrule_translucentBlackImageBorder">#80000000</color>
+    <color name="radioHyrule_coverBlankBackground">#ff0f0f0f</color>
 
     <color name="radioHyrule_primaryVeryDark">#2c5560</color>
     <color name="radioHyrule_primary">#00c8e0</color>

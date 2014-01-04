@@ -19,6 +19,7 @@ import java.nio.FloatBuffer;
  */
 public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
     Bitmap nextBitmap; // must be flipped before usage
+    boolean clearBitmap;
 
     BlurredImage blurredImage;
     float[] mProjectionMatrix = new float[16];
@@ -26,10 +27,6 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
     float[] mMVPMatrix = new float[16];
     float imageAspectRatio = 1.0f;
     int[] viewport;
-
-    public BlurredSurfaceRenderer(Resources resources, int resourceId) {
-        setNextBitmap(Util.loadBitmapForTexturing(resources, resourceId, 0, 0, false));
-    }
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
@@ -67,23 +64,38 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        blurredImage.draw(mMVPMatrix, viewport);
+        if (blurredImage != null) {
+            blurredImage.draw(mMVPMatrix, viewport);
+        }
     }
 
 
     public void setNextBitmap(Bitmap bitmap) {
-        this.nextBitmap = bitmap;
+        if (bitmap != null) {
+            nextBitmap = bitmap;
+            clearBitmap = false;
+        } else {
+            nextBitmap = null;
+            clearBitmap = true;
+        }
     }
     protected void updateBitmap() {
         if (nextBitmap != null) {
             this.setBitmap(Util.flipBitmap(nextBitmap));
             nextBitmap = null;
+        } else if (clearBitmap) {
+            this.setBitmap(null);
+            clearBitmap = false;
         }
     }
     protected void setBitmap(Bitmap bitmap) {
         if (blurredImage != null) blurredImage.close();
-        blurredImage = new BlurredImage(bitmap, 5, 3);
-        imageAspectRatio = ((float)bitmap.getWidth()) / ((float)bitmap.getHeight());
+        if (bitmap != null) {
+            blurredImage = new BlurredImage(bitmap, 5, 3);
+            imageAspectRatio = ((float)bitmap.getWidth()) / ((float)bitmap.getHeight());
+        } else {
+            blurredImage = null;
+        }
     }
 
 

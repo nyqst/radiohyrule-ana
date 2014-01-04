@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/sample_cover_blurred"
+        android:src="@drawable/cover_blank_background"
         android:scaleType="centerCrop"
         android:id="@+id/listen_image_background"
         />
@@ -285,7 +285,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:adjustViewBounds="true"
-                android:src="@drawable/sample_cover"
+                android:src="@drawable/cover_blank"
                 android:background="@drawable/rounded_border"
                 android:id="@+id/listen_image_cover"
                 />

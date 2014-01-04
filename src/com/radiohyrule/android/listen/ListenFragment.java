@@ -91,7 +91,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         if (Util.getOpenGlVersion(getActivity()) >= Util.OPENGL2) {
             surfaceBackground = new GLSurfaceView(getActivity());
             surfaceBackground.setEGLContextClientVersion(2);
-            surfaceRenderer = new BlurredSurfaceRenderer(getResources(), R.drawable.sample_cover);
+            surfaceRenderer = new BlurredSurfaceRenderer();
             surfaceBackground.setRenderer(surfaceRenderer);
             surfaceBackground.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
             ViewGroup backgroundParent = (ViewGroup)imageBackground.getParent();
@@ -182,7 +182,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                             bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(context, 5));
                             imageCover.setImageBitmap(bitmap);
                             if (imageBackground != null) {
-                                imageBackground.setImageBitmap(GraphicsUtil.blurImage(bitmap, context));
+                                //imageBackground.setImageBitmap(GraphicsUtil.blurImage(bitmap, context));
                             } else if (surfaceRenderer != null) {
                                 surfaceRenderer.setNextBitmap(bitmap);
                                 surfaceBackground.requestRender();
@@ -253,6 +253,13 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
         } else {
             // TODO imageCover, imageBackground
+            imageCover.setImageResource(R.drawable.cover_blank);
+            if (imageBackground != null) {
+                imageBackground.setImageResource(R.drawable.cover_blank_background);
+            } else if (surfaceRenderer != null) {
+                surfaceRenderer.setNextBitmap(null);
+                surfaceBackground.requestRender();
+            }
 
             if(titleView != null) {
                 if(textArtist != null) textArtist.setText(null);
