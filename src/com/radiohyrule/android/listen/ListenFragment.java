@@ -1,8 +1,6 @@
 package com.radiohyrule.android.listen;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -13,14 +11,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.felipecsl.android.imaging.ImageManager;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.app.MainActivity;
 import com.radiohyrule.android.listen.player.IPlayer;
 import com.radiohyrule.android.opengl.BlurredSurfaceRenderer;
 import com.radiohyrule.android.opengl.Util;
-import com.radiohyrule.android.util.GraphicsUtil;
+import com.squareup.picasso.Picasso;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     protected ImageView imageCover, imageBackground;
@@ -172,24 +169,28 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         if(song != null) {
             String albumCover = song.getAlbumCover();
             if (albumCover != null) {
-                ImageManager imageManager = getMainActivity().getImageManager();
+                Picasso imageManager = getMainActivity().getImageManager();
                 if (imageManager != null) {
                     Uri imageUri = Uri.withAppendedPath(Uri.parse("http://radiohyrule.com/cover640/"), song.getAlbumCover());
-                    imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap) {
-                            Context context = getActivity();
-                            bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(context, 5));
-                            imageCover.setImageBitmap(bitmap);
-                            if (imageBackground != null) {
-                                //imageBackground.setImageBitmap(GraphicsUtil.blurImage(bitmap, context));
-                            } else if (surfaceRenderer != null) {
-                                surfaceRenderer.setNextBitmap(bitmap);
-                                surfaceBackground.requestRender();
-                            }
-                        }
-                    });
-                    imageManager.loadImage(imageUri.toString());
+                    imageManager
+                            .load(imageUri)
+                            .placeholder(R.drawable.cover_default)
+                            .into(imageCover);
+//                    imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
+//                        @Override
+//                        public void onBitmapLoaded(Bitmap bitmap) {
+//                            Context context = getActivity();
+//                            bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(context, 5));
+//                            imageCover.setImageBitmap(bitmap);
+//                            if (imageBackground != null) {
+//                                //imageBackground.setImageBitmap(GraphicsUtil.blurImage(bitmap, context));
+//                            } else if (surfaceRenderer != null) {
+//                                surfaceRenderer.setNextBitmap(bitmap);
+//                                surfaceBackground.requestRender();
+//                            }
+//                        }
+//                    });
+//                    imageManager.loadImage(imageUri.toString());
                 }
             }
 

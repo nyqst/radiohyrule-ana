@@ -15,11 +15,10 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.felipecsl.android.imaging.CacheableDrawable;
-import com.felipecsl.android.imaging.ImageManager;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.listen.player.IPlayer;
 import com.radiohyrule.android.listen.player.PlayerServiceClient;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity
         extends SherlockFragmentActivity
@@ -40,7 +39,6 @@ public class MainActivity
 
     // App logic
 
-    protected ImageManager imageManager;
     protected PlayerServiceClient playerServiceClient;
 
 
@@ -53,11 +51,8 @@ public class MainActivity
             if (playerServiceClient != null) playerServiceClient.setContext(this);
         }
 
-        // set up the image manager and image cache
-        if (imageManager == null) {
-            imageManager = new ImageManager(this);
-            CacheableDrawable.setShowDebugIndicator(false);
-        }
+        // set up the image downloader
+        Picasso.with(this).setIndicatorsEnabled(true);
 
         // create service connection
         if (playerServiceClient == null) {
@@ -246,5 +241,5 @@ public class MainActivity
 
 
     public IPlayer getPlayer() { return playerServiceClient; }
-    public ImageManager getImageManager() { return imageManager; }
+    public Picasso getImageManager() { return Picasso.with(this); }
 }
