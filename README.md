@@ -14,6 +14,6 @@
     - Extras / Android Support Repository (rev. 6)
     - Extras / Android Support Library (rev. 20)
 - Run the `gradlew` script to set up gradle
-> 
-- Either build the app on command line using `gradlew assemble` (etc, see `gradlew tasks`)
-- Or import the project into your favorite IDE (as long as it is gradle wrapper-aware), and build from there
+- To build
+    - Either run `gradlew assemble` on command line (see `gradlew tasks`),
+    - Or import the project into your favorite IDE (as long as it is gradle wrapper-aware), and build from there
