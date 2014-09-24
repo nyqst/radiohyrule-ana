@@ -2,11 +2,15 @@
 /.idea
 /*.iml
 
+# Eclipse
+/.project
+/.classpath
+
 # Gradle
 /.gradle
 /local.properties
 
-# Android Generated Java code
+# Android Generated Java Code
 /gen
 
 # Built Results
