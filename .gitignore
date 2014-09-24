@@ -1,6 +1,15 @@
+# IntelliJ IDEA
+/.idea
+/*.iml
+
+# Gradle
 /.gradle
+/local.properties
+
+# Android Generated Java code
+/gen
+
+# Built Results
 /bin
 /build
-/gen
-/local.properties
 /out
