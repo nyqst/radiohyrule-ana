@@ -36,6 +36,7 @@ public class NavigationManager {
                 return new ListenFragment();
             }
         });
+		/*
         ParentNavigationItem<LibraryFragment> libraryItem = new ParentNavigationItem<LibraryFragment>(R.drawable.ic_navigation_item_library) {
             @Override
             public LibraryFragment createFragment() {
@@ -48,6 +49,7 @@ public class NavigationManager {
         navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_albums, "Albums", LibraryFragment.ViewId.Albums));
         navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_artists, "Artists", LibraryFragment.ViewId.Artists));
         navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_songs, "Songs", LibraryFragment.ViewId.Songs));
+		*/
         navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.ic_navigation_item_about) {
             @Override
             public AboutFragment createFragment() {
