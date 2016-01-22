@@ -1,6 +1,7 @@
 package com.radiohyrule.android.listen;
 
 import android.util.Log;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,12 +20,15 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class Queue {
+    public interface QueueObserver {
+        void onNewPendingSong(NowPlaying.SongInfo song);
+    }
+
     protected static final String LOG_TAG = Queue.class.getCanonicalName();
 
     protected static final int maxShortDelayRetries = 3;
     protected static final int shortRetryDelay = 2000; // milliseconds
     protected static final int longRetryDelay = 10000; // milliseconds
-
 
     protected QueueObserver observer;
 
@@ -34,7 +38,6 @@ public class Queue {
     protected boolean initialQuery;
 
     protected java.util.Queue<NowPlaying.SongInfo> songInfoQueue = new java.util.LinkedList<NowPlaying.SongInfo>();
-
 
     public Queue() {
         queryService = Executors.newSingleThreadScheduledExecutor();
@@ -48,16 +51,16 @@ public class Queue {
     public synchronized NowPlaying.SongInfo getCurrentSong() {
         return songInfoQueue.peek();
     }
+
     public synchronized NowPlaying.SongInfo moveToNextSong() {
         songInfoQueue.poll();
         return getCurrentSong();
     }
 
-
     public synchronized void onPlayerConnectingToStream(boolean resetConnection) {
         // reset, but only if this is a new connection attempt (not a reconnection attempt due to network issues)
         initialQuery = true;
-        if(resetConnection) {
+        if (resetConnection) {
             reset();
             queryNextSongInfo();
         }
@@ -66,7 +69,6 @@ public class Queue {
     public void onPlayerStopRequested() {
         reset();
     }
-
 
     protected synchronized void reset() {
         Log.d(LOG_TAG, "reset");
@@ -79,20 +81,23 @@ public class Queue {
 
     protected synchronized void cancelQuery() {
         // current loading operation
-        if(queryServiceTask != null) {
+        if (queryServiceTask != null) {
             queryServiceTask.cancel(true);
             queryServiceTask = null;
         }
         // scheduled loading operation
-        if(scheduledQueryServiceTask != null) {
+        if (scheduledQueryServiceTask != null) {
             scheduledQueryServiceTask.cancel(false);
             scheduledQueryServiceTask = null;
         }
     }
 
-    protected void queryNextSongInfo() { queryNextSongInfo(false); }
+    protected void queryNextSongInfo() {
+        queryNextSongInfo(false);
+    }
+
     protected synchronized void queryNextSongInfo(boolean sporadic) {
-        if(queryServiceTask != null) return; // only one fetch operation at all times
+        if (queryServiceTask != null) return; // only one fetch operation at all times
         Log.d(LOG_TAG, "queryNextSongInfo");
 
         queryServiceTask = queryService.submit(new QueryRunnable(sporadic));
@@ -105,7 +110,7 @@ public class Queue {
         // (if we had metadatachanged in our player, we would not do retries with long delays and wait for
         // metadatachanged instead)
         long delay = longRetryDelay;
-        if(!sporadic && queryRetryCount < maxShortDelayRetries) {
+        if (!sporadic && queryRetryCount < maxShortDelayRetries) {
             delay = shortRetryDelay;
             queryRetryCount++;
         }
@@ -116,36 +121,37 @@ public class Queue {
         // schedule next query
         scheduledQueryServiceTask = queryService.schedule(new Runnable() {
             @Override
-            public void run() { queryNextSongInfo(sporadic); }
+            public void run() {
+                queryNextSongInfo(sporadic);
+            }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized void onQueryFinished(NowPlaying nowPlayingOrNull, Calendar queryStartTime, boolean sporadic) {
+    protected synchronized void onQueryFinished(NowPlaying nowPlaying, Calendar queryStartTime, boolean sporadic) {
         queryServiceTask = null;
         Log.v(LOG_TAG, "onQueryFinished");
 
-        if(nowPlayingOrNull == null) {
+        if (nowPlaying == null) {
             retryQuery(sporadic);
             return;
         }
-        NowPlaying nowPlaying = nowPlayingOrNull;
         NowPlaying.SongInfo newSong = nowPlaying.getSong();
 
         // is this a new song?
         boolean songExists = false;
-        for(NowPlaying.SongInfo queueSong : songInfoQueue) {
+        for (NowPlaying.SongInfo queueSong : songInfoQueue) {
             Long newSongTimeStarted = newSong.getTimeStarted();
-            if(newSongTimeStarted != null) {
+            if (newSongTimeStarted != null) {
                 Long queueSongTimeStarted = queueSong.getTimeStarted();
-                if(queueSongTimeStarted != null) {
-                    if(newSongTimeStarted.compareTo(queueSongTimeStarted) <= 0) {
+                if (queueSongTimeStarted != null) {
+                    if (newSongTimeStarted.compareTo(queueSongTimeStarted) <= 0) {
                         songExists = true;
                         break;
                     }
                 }
             }
         }
-        if(songExists) {
+        if (songExists) {
             // this is still an old song, we are waiting for the new one
             retryQuery(sporadic);
             return;
@@ -154,30 +160,31 @@ public class Queue {
         // it's a new song
 
         // reset query state
-        boolean wasInitialQuery = initialQuery;
         initialQuery = false;
         queryRetryCount = 0;
 
         // save information about elapsed time
-        long timeElasped = nowPlaying.getTimeValue() - newSong.getTimeStartedValue();
-        if(timeElasped < 0) timeElasped = 0;
-        newSong.setTimeElapsedAtStart(timeElasped);
+        long timeElapsed = nowPlaying.getTimeValue() - newSong.getTimeStartedValue();
+        if (timeElapsed < 0) timeElapsed = 0;
+        newSong.setTimeElapsedAtStart(timeElapsed);
 
         // start timer for querying next song info
-        if(newSong.getDuration() != null) {
-            double timeLeft = 0;
-            if(newSong.getDuration() != null) timeLeft = newSong.getDuration() - timeElasped; // playback time left on server
+        if (newSong.getDuration() != null) {
+            double timeLeft = newSong.getDuration() - timeElapsed;
 
             // Add a small additional delay to reduce the probability that we arrive too early at the server.
             // We also randomize the delay so that not all users of this app query the server at the same time.
-            timeLeft += 1 + new Random().nextDouble(); // + 1..2
+            timeLeft += 1 + Math.random(); // + 1..2
 
-            Calendar expectedPlaybackEndOnServer = queryStartTime; queryStartTime = null;
-            expectedPlaybackEndOnServer.add(Calendar.MILLISECOND, (int)(timeLeft * 1000.0));
-            long delay = expectedPlaybackEndOnServer.getTimeInMillis() - Calendar.getInstance(expectedPlaybackEndOnServer.getTimeZone()).getTimeInMillis();
+            //noinspection UnnecessaryLocalVariable
+            Calendar expectedPlaybackEndOnServer = queryStartTime; //todo switch all this calendar nonsense to longs in epoch time
+            expectedPlaybackEndOnServer.add(Calendar.MILLISECOND, (int) (timeLeft * 1000.0));
+            long delay = expectedPlaybackEndOnServer.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
             scheduledQueryServiceTask = queryService.schedule(new Runnable() {
                 @Override
-                public void run() { queryNextSongInfo(); }
+                public void run() {
+                    queryNextSongInfo();
+                }
             }, delay, TimeUnit.MILLISECONDS);
 
         } else {
@@ -190,11 +197,11 @@ public class Queue {
         songInfoQueue.add(newSong);
 
         // notify about pending song info
-        if(observer != null) observer.onNewPendingSong(newSong);
+        if (observer != null) observer.onNewPendingSong(newSong);
     }
 
-
     class QueryRunnable implements Runnable {
+        //todo rip literally all of this out, replace with retrofit
         protected boolean sporadic;
 
         public QueryRunnable(boolean sporadic) {
@@ -207,7 +214,7 @@ public class Queue {
             NowPlaying nowPlaying = null;
             try {
                 nowPlaying = fetchNowPlaying();
-            } catch(Throwable e) {
+            } catch (Throwable e) {
                 // TODO: better error handling
                 Log.e(LOG_TAG, "Querying new song info failed with error: " + e.getMessage());
             } finally {
@@ -224,7 +231,7 @@ public class Queue {
 
             Log.v(LOG_TAG, response.getStatusLine().toString());
             HttpEntity entity = response.getEntity();
-            if(entity != null) {
+            if (entity != null) {
                 InputStream instream = entity.getContent();
                 try {
                     String responseBody = convertStreamToString(instream);
@@ -232,7 +239,7 @@ public class Queue {
 
                     // parse JSON
                     nowPlaying = new NowPlaying();
-                    if(!parseNowPlaying(nowPlayingJson, nowPlaying)) {
+                    if (!parseNowPlaying(nowPlayingJson, nowPlaying)) {
                         Log.e(LOG_TAG, "Failed to parse nowplaying.json from\n" + responseBody);
                         nowPlaying = null;
                     }
@@ -241,7 +248,6 @@ public class Queue {
                     instream.close();
                 }
             }
-
             return nowPlaying;
         }
 
@@ -250,10 +256,11 @@ public class Queue {
 
             try {
                 return parseSongInfo(json.getJSONObject("nowplaying"), result.getSong());
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 return false;
             }
         }
+
         private boolean parseSongInfo(JSONObject json, NowPlaying.SongInfo result) {
             result.setTimeStarted(parseJsonLong(json, "started"));
             result.setNumListeners(parseJsonLong(json, "listeners"));
@@ -270,29 +277,37 @@ public class Queue {
             result.clearArtists();
             try {
                 JSONArray artistArrayJson = json.getJSONArray("artist");
-                for(int i = 0; i < artistArrayJson.length(); ++i) {
+                for (int i = 0; i < artistArrayJson.length(); ++i) {
                     try {
                         result.addArtist(artistArrayJson.getString(i));
-                    } catch(JSONException e) { /* ignore */ }
+                    } catch (JSONException e) { /* ignore */ }
                 }
-            } catch(JSONException e) { /* ignore */ }
+            } catch (JSONException e) { /* ignore */ }
 
             return true;
         }
 
         private Long parseJsonLong(JSONObject json, String name) {
             Long result = null;
-            try { result = json.getLong(name); } catch(JSONException e) { /* ignore */ }
+            try {
+                result = json.getLong(name);
+            } catch (JSONException e) { /* ignore */ }
             return result;
         }
+
         private Double parseJsonDouble(JSONObject json, String name) {
             Double result = null;
-            try { result = json.getDouble(name); } catch(JSONException e) { /* ignore */ }
+            try {
+                result = json.getDouble(name);
+            } catch (JSONException e) { /* ignore */ }
             return result;
         }
+
         private String parseJsonString(JSONObject json, String name) {
             String result = null;
-            try { result = json.getString(name); } catch(JSONException e) { /* ignore */ }
+            try {
+                result = json.getString(name);
+            } catch (JSONException e) { /* ignore */ }
             return result;
         }
 
@@ -302,15 +317,15 @@ public class Queue {
             try {
                 char[] buffer = new char[512];
                 int charsRead;
-                while((charsRead = reader.read(buffer, 0, 512)) != -1) {
+                while ((charsRead = reader.read(buffer, 0, 512)) != -1) {
                     sb.append(buffer, 0, charsRead);
                 }
-            } catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
                     is.close();
-                } catch(IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -318,7 +333,4 @@ public class Queue {
         }
     }
 
-    public static interface QueueObserver {
-        public void onNewPendingSong(NowPlaying.SongInfo song);
-    }
 }
