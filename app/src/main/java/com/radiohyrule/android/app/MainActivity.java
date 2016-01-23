@@ -21,7 +21,7 @@ import com.radiohyrule.android.listen.player.PlayerServiceClient;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity
-        extends SherlockFragmentActivity
+        extends SherlockFragmentActivity //todo drop ActionBarSherlock
         implements NavigationManager.NavigationItemChangedListener {
 
     protected static final String LOG_TAG = MainActivity.class.getCanonicalName();
