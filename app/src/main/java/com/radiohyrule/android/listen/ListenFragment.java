@@ -171,7 +171,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             if (albumCover != null) {
                 Picasso imageManager = getMainActivity().getImageManager();
                 if (imageManager != null) {
-                    Uri imageUri = Uri.withAppendedPath(Uri.parse("http://radiohyrule.com/cover640/"), song.getAlbumCover());
+                    Uri imageUri = Uri.withAppendedPath(Uri.parse("https://radiohyrule.com/cover640/"), song.getAlbumCover());
                     imageManager
                             .load(imageUri)
                             .placeholder(R.drawable.cover_default)
