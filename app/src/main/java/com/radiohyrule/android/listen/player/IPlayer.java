@@ -1,6 +1,6 @@
 package com.radiohyrule.android.listen.player;
 
-import com.radiohyrule.android.listen.NowPlaying;
+import com.radiohyrule.android.listen.SongInfo;
 
 public interface IPlayer {
     public boolean isPlaying();
@@ -9,13 +9,13 @@ public interface IPlayer {
     public void stop();
     public boolean togglePlaying();
 
-    public NowPlaying.SongInfo getCurrentSong();
+    public SongInfo getCurrentSong();
 
     public void setPlayerObserver(IPlayerObserver observer);
     public void removePlayerObserver(IPlayerObserver observer);
 
     public interface IPlayerObserver {
         public void onPlaybackStateChanged(boolean isPlaying);
-        public void onCurrentSongChanged(NowPlaying.SongInfo song);
+        public void onCurrentSongChanged(SongInfo song);
     }
 }

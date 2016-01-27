@@ -15,6 +15,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.radiohyrule.android.BuildConfig;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.listen.player.IPlayer;
 import com.radiohyrule.android.listen.player.PlayerServiceClient;
@@ -41,7 +42,6 @@ public class MainActivity
 
     protected PlayerServiceClient playerServiceClient;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // retrieve data saved between configuration changes (see onRetainCustomNonConfigurationInstance())
@@ -52,7 +52,8 @@ public class MainActivity
         }
 
         // set up the image downloader
-        Picasso.with(this).setIndicatorsEnabled(true);
+        Picasso.with(this).setIndicatorsEnabled(BuildConfig.DEBUG);
+        //Picasso.with(this).setLoggingEnabled(true); //Do not leave enabled, not even for debug builds. Local temp use only
 
         // create service connection
         if (playerServiceClient == null) {

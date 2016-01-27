@@ -5,7 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import com.radiohyrule.android.listen.NowPlaying;
+
+import com.radiohyrule.android.listen.SongInfo;
 
 public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     private static final String LOG_TAG = PlayerServiceClient.class.getCanonicalName();
@@ -67,7 +68,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
         if(this.observer != null) this.observer.onPlaybackStateChanged(isPlaying);
     }
     @Override
-    public void onCurrentSongChanged(NowPlaying.SongInfo song) {
+    public void onCurrentSongChanged(SongInfo song) {
         if(this.observer != null) this.observer.onCurrentSongChanged(song);
     }
     public void onPlayerAvailable(IPlayer player) {
@@ -120,7 +121,7 @@ public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     }
 
     @Override
-    public synchronized NowPlaying.SongInfo getCurrentSong() {
+    public synchronized SongInfo getCurrentSong() {
         return playerService != null ? playerService.getCurrentSong() : null;
     }
 

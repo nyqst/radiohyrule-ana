@@ -20,6 +20,7 @@ import com.radiohyrule.android.opengl.Util;
 import com.squareup.picasso.Picasso;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
+    public static final String ALBUM_ART_URL_BASE = "https://radiohyrule.com/cover640/";
     protected ImageView imageCover, imageBackground;
     protected GLSurfaceView surfaceBackground;
     protected BlurredSurfaceRenderer surfaceRenderer;
@@ -62,7 +63,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             return null;
         }
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -165,13 +165,13 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
     }
 
 
-    protected synchronized void showCurrentSongInfo(NowPlaying.SongInfo song) {
+    protected synchronized void showCurrentSongInfo(SongInfo song) {
         if(song != null) {
-            String albumCover = song.getAlbumCover();
+            String albumCover = song.albumCover;
             if (albumCover != null) {
                 Picasso imageManager = getMainActivity().getImageManager();
                 if (imageManager != null) {
-                    Uri imageUri = Uri.withAppendedPath(Uri.parse("https://radiohyrule.com/cover640/"), song.getAlbumCover());
+                    Uri imageUri = Uri.withAppendedPath(Uri.parse(ALBUM_ART_URL_BASE), song.albumCover);
                     imageManager
                             .load(imageUri)
                             .placeholder(R.drawable.cover_default)
@@ -197,7 +197,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             String defaultTitleText = titleView == null ? "--" : "";
             if(textTitle != null) {
                 textArtist.setText(defaultTitleText);
-                Iterable<String> artists = song.getArtists();
+                Iterable<String> artists = song.artists;
                 if(artists != null) {
                     StringBuilder sb = new StringBuilder();
                     boolean first = true;
@@ -211,8 +211,8 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                     if(sb.length() > 0) textArtist.setText(sb.toString());
                 }
             }
-            if(textTitle != null) textTitle.setText(song.getTitle() != null ? song.getTitle() : defaultTitleText);
-            if(textAlbum != null) textAlbum.setText(song.getAlbum() != null ? song.getAlbum() : defaultTitleText);
+            if(textTitle != null) textTitle.setText(!song.title.isEmpty() ? song.title : defaultTitleText);
+            if(textAlbum != null) textAlbum.setText(!song.album.isEmpty() ? song.album : defaultTitleText);
             if(titleView != null) {
                 if(textArtist != null) textArtist.setVisibility(textArtist.getText().length() == 0 ? View.GONE : View.VISIBLE);
                 if(textTitle != null) textTitle.setVisibility(textTitle.getText().length() == 0 ? View.GONE : View.VISIBLE);
@@ -234,19 +234,19 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             }
 
             if(textRequestedBy != null) {
-                if(song.getRequestUsername() != null) {
-                    textRequestedBy.setText("Requested by " + song.getRequestUsername());
+                if(song.requestUsername != null) {
+                    textRequestedBy.setText("Requested by " + song.requestUsername);
                     textRequestedBy.setVisibility(View.VISIBLE);
                 } else {
                     textRequestedBy.setText(null);
                     textRequestedBy.setVisibility(View.GONE);
                 }
             }
-            if(textNumListeners != null) textNumListeners.setText(String.valueOf(song.getNumListenersValue()));
+            if(textNumListeners != null) textNumListeners.setText(String.valueOf(song.numListeners));
 
             // TODO textTimeElapsed
             if(textTimeRemaining != null) {
-                int secondsRemaining = (int) Math.floor(song.getDurationValue() + 0.5); // TODO
+                int secondsRemaining = (int) Math.floor(song.getDuration() + 0.5); // TODO
                 String timeRemaining = String.format("%d:%02d", secondsRemaining/60, secondsRemaining%60);
                 textTimeRemaining.setText(timeRemaining);
             }
@@ -306,7 +306,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
     }
 
     @Override
-    public void onCurrentSongChanged(final NowPlaying.SongInfo song) {
+    public void onCurrentSongChanged(final SongInfo song) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() { showCurrentSongInfo(song); }

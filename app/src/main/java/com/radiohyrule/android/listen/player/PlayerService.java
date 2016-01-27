@@ -11,8 +11,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.MainActivity;
-import com.radiohyrule.android.listen.NowPlaying;
-import com.radiohyrule.android.listen.Queue;
+import com.radiohyrule.android.listen.OldSongInfoQueue;
+import com.radiohyrule.android.listen.SongInfo;
+import com.radiohyrule.android.listen.SongInfoQueue;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -21,7 +22,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPreparedListener, Queue.QueueObserver, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener {
+public class PlayerService extends Service implements IPlayer, SongInfoQueue.QueueObserver, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener {
     protected static final String LOG_TAG = PlayerService.class.getCanonicalName();
     protected Binder binder;
 
@@ -37,10 +38,9 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
 
     protected IPlayer.IPlayerObserver playerObserver;
 
-    protected Queue songQueue = new Queue();
+    protected SongInfoQueue songQueue = new OldSongInfoQueue();
     protected boolean hasCurrentSong = false;
     protected Calendar nextSongTimeStartedLocal;
-
 
     public synchronized void setPlayerObserver(IPlayerObserver playerObserver) {
         this.playerObserver = playerObserver;
@@ -113,7 +113,6 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
         startWhenPrepared = false;
     }
 
-
     @Override
     public synchronized void onPrepared(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
@@ -122,7 +121,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
 
         // update song timing information in order to estimate when the next song will start
         this.nextSongTimeStartedLocal = Calendar.getInstance();
-        NowPlaying.SongInfo currentSong = songQueue.getCurrentSong();
+        SongInfo currentSong = songQueue.getCurrentSong();
         if (currentSong != null) onNewPendingSong(currentSong);
 
         // start now
@@ -161,14 +160,13 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
         return false;
     }
 
-
     protected synchronized void startForegroundIntent() {
         startForegroundIntent(getCurrentSong());
     }
-    protected synchronized void startForegroundIntent(NowPlaying.SongInfo song) {
-        String notificationText = "Now Playing";
-        if(song != null && song.getTitle() != null) {
-            notificationText += " \"" + song.getTitle() + "\"";
+    protected synchronized void startForegroundIntent(SongInfo song) {
+        String notificationText = "Now Playing"; //todo localize, and stringbuild
+        if(song != null && song.title != null) {
+            notificationText += " \"" + song.title + "\"";
         }
         Log.d(LOG_TAG, "notificationText = " + notificationText);
 
@@ -200,6 +198,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
             this.playerObserver.onCurrentSongChanged(getCurrentSong());
         }
     }
+
     @Override
     public synchronized void play() {
         if(!isPlaying) {
@@ -208,6 +207,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
             setPlaying(true);
         }
     }
+
     @Override
     public synchronized void stop() {
         if(isPlaying) {
@@ -221,6 +221,7 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
             }
         }
     }
+
     @Override
     public synchronized boolean togglePlaying() {
         if(!isPlaying) {
@@ -232,19 +233,18 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
     }
 
     @Override
-    public synchronized NowPlaying.SongInfo getCurrentSong() {
+    public synchronized SongInfo getCurrentSong() {
         return isPlaying() ? songQueue.getCurrentSong() : null;
     }
 
-
     @Override
-    public synchronized void onNewPendingSong(NowPlaying.SongInfo song) {
-        Log.i(LOG_TAG, "onNewPendingSong(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
+    public synchronized void onNewPendingSong(SongInfo song) {
+        Log.i(LOG_TAG, "onNewPendingSong(" + (song != null ? String.valueOf(song.title) : null) + ")");
 
         if (song != null) {
             // update song timing information in order to estimate when the next song will start
             if (nextSongTimeStartedLocal != null) {
-                song.setTimeStartedLocal(nextSongTimeStartedLocal);
+                song.setExpectedLocalStartTime(nextSongTimeStartedLocal);
                 nextSongTimeStartedLocal = null;
                 updateScheduledCurrentSongChange(song, false);
             } else {
@@ -259,8 +259,8 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
         }
     }
 
-    protected synchronized void onCurrentSongChanged(NowPlaying.SongInfo song, boolean updateScheduledCurrentSongChange) {
-        Log.i(LOG_TAG, "onCurrentSongChanged(" + (song != null ? String.valueOf(song.getTitle()) : null) + ")");
+    protected synchronized void onCurrentSongChanged(SongInfo song, boolean updateScheduledCurrentSongChange) {
+        Log.i(LOG_TAG, "onCurrentSongChanged(" + (song != null ? String.valueOf(song.title) : null) + ")");
         // update song information in service notification
         startForegroundIntent(song);
 
@@ -272,14 +272,14 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
         if(playerObserver != null) playerObserver.onCurrentSongChanged(song);
     }
 
-    protected synchronized void updateScheduledCurrentSongChange(NowPlaying.SongInfo song, boolean onlyIfNotScheduled) {
+    protected synchronized void updateScheduledCurrentSongChange(SongInfo song, boolean onlyIfNotScheduled) {
         if (changeCurrentSongServiceTask != null) {
             if (onlyIfNotScheduled) return;
             changeCurrentSongServiceTask.cancel(false);
             changeCurrentSongServiceTask = null;
         }
         if (song != null) {
-            Long timeUntilEnd = song.getEstimatedTimeUntilEnd(Calendar.getInstance(), bufferingTimeSum);
+            Long timeUntilEnd = song.getEstimatedTimeUntilEnd(System.currentTimeMillis(), bufferingTimeSum);
             if (timeUntilEnd != null) {
                 Log.d(LOG_TAG, "updateScheduledCurrentSongChange(); next song in " + timeUntilEnd/1000.0f + "s");
                 changeCurrentSongServiceTask = changeCurrentSongService.schedule(new Runnable() {
@@ -291,16 +291,15 @@ public class PlayerService extends Service implements IPlayer, MediaPlayer.OnPre
 
     protected synchronized void onChangeCurrentSong() {
         Log.i(LOG_TAG, "onChangeCurrentSong()");
-        NowPlaying.SongInfo song = songQueue.moveToNextSong();
+        SongInfo song = songQueue.moveToNextSong();
         if (song != null) {
-            song.setTimeStartedLocal(Calendar.getInstance());
+            song.setExpectedLocalStartTime(Calendar.getInstance());
             onCurrentSongChanged(song, true);
         } else {
             nextSongTimeStartedLocal = Calendar.getInstance();
             hasCurrentSong = false;
         }
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {

@@ -12,16 +12,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.*;
 
-public class Queue {
-    public interface QueueObserver {
-        void onNewPendingSong(NowPlaying.SongInfo song);
-    }
+public class OldSongInfoQueue implements SongInfoQueue {
 
-    protected static final String LOG_TAG = Queue.class.getCanonicalName();
+    protected static final String LOG_TAG = OldSongInfoQueue.class.getCanonicalName();
 
     protected static final int maxShortDelayRetries = 3;
     protected static final int shortRetryDelay = 2000; // milliseconds
@@ -34,26 +32,30 @@ public class Queue {
     protected int queryRetryCount;
     protected boolean initialQuery;
 
-    protected java.util.Queue<NowPlaying.SongInfo> songInfoQueue = new java.util.LinkedList<>();
+    protected java.util.Queue<SongInfo> songInfoQueue = new java.util.LinkedList<>();
 
-    public Queue() {
+    public OldSongInfoQueue() {
         queryService = Executors.newSingleThreadScheduledExecutor();
         reset();
     }
 
+    @Override
     public void setObserver(QueueObserver observer) {
         this.observer = observer;
     }
 
-    public synchronized NowPlaying.SongInfo getCurrentSong() {
+    @Override
+    public synchronized SongInfo getCurrentSong() {
         return songInfoQueue.peek();
     }
 
-    public synchronized NowPlaying.SongInfo moveToNextSong() {
+    @Override
+    public synchronized SongInfo moveToNextSong() {
         songInfoQueue.poll();
         return getCurrentSong();
     }
 
+    @Override
     public synchronized void onPlayerConnectingToStream(boolean resetConnection) {
         // reset, but only if this is a new connection attempt (not a reconnection attempt due to network issues)
         initialQuery = true;
@@ -63,6 +65,7 @@ public class Queue {
         }
     }
 
+    @Override
     public void onPlayerStopRequested() {
         reset();
     }
@@ -124,28 +127,24 @@ public class Queue {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized void onQueryFinished(NowPlaying nowPlaying, Calendar queryStartTime, boolean sporadic) {
+    protected synchronized void onQueryFinished(SongInfo songInfo, Calendar queryStartTime, boolean sporadic) {
         queryServiceTask = null;
         Log.v(LOG_TAG, "onQueryFinished");
 
-        if (nowPlaying == null) {
+        if (songInfo == null) {
             retryQuery(sporadic);
             return;
         }
-        NowPlaying.SongInfo newSong = nowPlaying.getSong();
 
         // is this a new song?
         boolean songExists = false;
-        for (NowPlaying.SongInfo queueSong : songInfoQueue) {
-            Long newSongTimeStarted = newSong.getTimeStarted();
-            if (newSongTimeStarted != null) {
-                Long queueSongTimeStarted = queueSong.getTimeStarted();
-                if (queueSongTimeStarted != null) {
-                    if (newSongTimeStarted.compareTo(queueSongTimeStarted) <= 0) {
-                        songExists = true;
-                        break;
-                    }
-                }
+        for (SongInfo queueSong : songInfoQueue) {
+            Long newSongTimeStarted = songInfo.timeStarted;
+            Long queueSongTimeStarted = queueSong.timeStarted;
+            if (newSongTimeStarted.compareTo(queueSongTimeStarted) <= 0) {
+                //newSong started at or before a song in queue, it can't be new
+                songExists = true;
+                break;
             }
         }
         if (songExists) {
@@ -161,13 +160,13 @@ public class Queue {
         queryRetryCount = 0;
 
         // save information about elapsed time
-        long timeElapsed = nowPlaying.getTimeValue() - newSong.getTimeStartedValue();
+        long timeElapsed = songInfo.timeStamp - songInfo.timeStarted;
         if (timeElapsed < 0) timeElapsed = 0;
-        newSong.setTimeElapsedAtStart(timeElapsed);
+        songInfo.setTimeElapsedAtStart(timeElapsed);
 
         // start timer for querying next song info
-        if (newSong.getDuration() != null) {
-            double timeLeft = newSong.getDuration() - timeElapsed;
+        if (songInfo.duration != null && songInfo.duration != 0) {
+            double timeLeft = songInfo.duration - timeElapsed;
 
             // Add a small additional delay to reduce the probability that we arrive too early at the server.
             // We also randomize the delay so that not all users of this app query the server at the same time.
@@ -191,10 +190,10 @@ public class Queue {
         }
 
         // append to songInfoQueue
-        songInfoQueue.add(newSong);
+        songInfoQueue.add(songInfo);
 
         // notify about pending song info
-        if (observer != null) observer.onNewPendingSong(newSong);
+        if (observer != null) observer.onNewPendingSong(songInfo);
     }
 
     class QueryRunnable implements Runnable {
@@ -215,7 +214,7 @@ public class Queue {
                 // TODO: better error handling
                 Log.e(LOG_TAG, "Querying new song info failed with error", e);
             } finally {
-                onQueryFinished(nowPlaying, startTime, sporadic);
+                onQueryFinished(nowPlaying != null ? nowPlaying.getSong() : null, startTime, sporadic);
             }
         }
 
@@ -247,6 +246,7 @@ public class Queue {
 
         private boolean parseNowPlaying(JSONObject json, NowPlaying result) {
             result.setTime(parseJsonLong(json, "time"));
+            //todo we probably don't need the 'time' field in json; the date header in the response works just fine, which means we can switch to the shorter url
 
             try {
                 return parseSongInfo(json.getJSONObject("nowplaying"), result.getSong());
@@ -255,34 +255,33 @@ public class Queue {
             }
         }
 
-        private boolean parseSongInfo(JSONObject json, NowPlaying.SongInfo result) {
-            result.setTimeStarted(parseJsonLong(json, "started"));
-            result.setNumListeners(parseJsonLong(json, "listeners"));
+        private boolean parseSongInfo(JSONObject json, SongInfo result) {
+            result.timeStarted = (parseJsonLong(json, "started"));
+            result.numListeners = (int) parseJsonLong(json, "listeners");
 
-            result.setRequestUsername(parseJsonString(json, "request_user"));
-            result.setRequestUrl(parseJsonString(json, "request_user_url"));
+            result.requestUsername = (parseJsonString(json, "request_user"));
+            result.requestUrl = (parseJsonString(json, "request_user_url"));
 
-            result.setTitle(parseJsonString(json, "title"));
-            result.setAlbum(parseJsonString(json, "album"));
-            result.setAlbumCover(parseJsonString(json, "albumcover"));
-            result.setSongUrl(parseJsonString(json, "song_url"));
-            result.setDuration(parseJsonDouble(json, "duration"));
+            result.title = (parseJsonString(json, "title"));
+            result.album = (parseJsonString(json, "album"));
+            result.albumCover = (parseJsonString(json, "albumcover"));
+            result.songUrl = (parseJsonString(json, "song_url"));
+            result.duration = (parseJsonDouble(json, "duration"));
 
-            result.clearArtists();
+            result.artists = new ArrayList<>(1);
             try {
                 JSONArray artistArrayJson = json.getJSONArray("artist");
                 for (int i = 0; i < artistArrayJson.length(); ++i) {
                     try {
-                        result.addArtist(artistArrayJson.getString(i));
+                        result.artists.add(artistArrayJson.getString(i));
                     } catch (JSONException e) { /* ignore */ }
                 }
             } catch (JSONException e) { /* ignore */ }
-
             return true;
         }
 
-        private Long parseJsonLong(JSONObject json, String name) {
-            Long result = null;
+        private long parseJsonLong(JSONObject json, String name) {
+            long result = 0;
             try {
                 result = json.getLong(name);
             } catch (JSONException e) { /* ignore */ }
