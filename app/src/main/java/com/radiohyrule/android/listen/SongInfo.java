@@ -16,7 +16,7 @@ public class SongInfo {
     public String songUrl;
 
     @SerializedName("song_nid")
-    public String songId;
+    public int songId;
 
     @SerializedName("artist")
     @Nullable
@@ -36,7 +36,7 @@ public class SongInfo {
     @SerializedName("started")
     public long timeStarted; //seconds
 
-    @Nullable public Double duration; //seconds, or null for special things?
+    public double duration; //seconds, or null for special things?
 
     public String source;
 
@@ -52,11 +52,13 @@ public class SongInfo {
     transient public long expectedLocalStartTime;
     transient public long timeElapsedAtStart;
 
-    //Methods and stuff
-
-    public Double getDuration() {
-        return duration != null ? duration : 0;
+    public SongInfo(){
+        //assign some default values so we don't NPE all the time
+        songId = -1;
+        duration = 5.0;
     }
+
+    //Methods and stuff
 
     public void setExpectedLocalStartTime(Calendar cal) { this.expectedLocalStartTime = cal.getTimeInMillis(); }
 
@@ -65,12 +67,8 @@ public class SongInfo {
     // all in milliseconds
     public Long getEstimatedTimeUntilEnd(Long relativeTime, long interruptionTime) {
         //todo I still don't 100% get this. Hopefully rendered irrelevant on switch to less buffer-y mediaplayer lib
-        if (duration != null) {
             long timeRemainingAtStartLocal = ((long) (duration * 1000.0) - (timeElapsedAtStart * 1000)); // milliseconds
             long timeElapsedSinceStartLocal = relativeTime - expectedLocalStartTime;
-            return timeRemainingAtStartLocal - timeElapsedSinceStartLocal + interruptionTime;
-        } else {
-            return null;
-        }
+            return Math.max(0, timeRemainingAtStartLocal - timeElapsedSinceStartLocal + interruptionTime);
     }
 }

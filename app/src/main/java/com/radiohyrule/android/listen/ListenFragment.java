@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -169,13 +170,13 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         if(song != null) {
             String albumCover = song.albumCover;
             if (albumCover != null) {
-                Picasso imageManager = getMainActivity().getImageManager();
-                if (imageManager != null) {
-                    Uri imageUri = Uri.withAppendedPath(Uri.parse(ALBUM_ART_URL_BASE), song.albumCover);
-                    imageManager
-                            .load(imageUri)
-                            .placeholder(R.drawable.cover_default)
-                            .into(imageCover);
+                Uri imageUri = Uri.withAppendedPath(Uri.parse(ALBUM_ART_URL_BASE), song.albumCover);
+                Picasso.with(getActivity())
+                        .load(imageUri)
+                        .placeholder(R.drawable.cover_default)
+                        .error(R.drawable.cover_default)
+                        .into(imageCover);
+                Log.v(ListenFragment.class.getSimpleName(), "Loaded album art: " + albumCover);
 //                    imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
 //                        @Override
 //                        public void onBitmapLoaded(Bitmap bitmap) {
@@ -191,7 +192,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 //                        }
 //                    });
 //                    imageManager.loadImage(imageUri.toString());
-                }
             }
 
             String defaultTitleText = titleView == null ? "--" : "";
@@ -212,7 +212,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                 }
             }
             if(textTitle != null) textTitle.setText(!song.title.isEmpty() ? song.title : defaultTitleText);
-            if(textAlbum != null) textAlbum.setText(!song.album.isEmpty() ? song.album : defaultTitleText);
+            if(textAlbum != null) textAlbum.setText(song.album != null && !song.album.isEmpty() ? song.album : defaultTitleText);
             if(titleView != null) {
                 if(textArtist != null) textArtist.setVisibility(textArtist.getText().length() == 0 ? View.GONE : View.VISIBLE);
                 if(textTitle != null) textTitle.setVisibility(textTitle.getText().length() == 0 ? View.GONE : View.VISIBLE);
@@ -246,7 +246,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
             // TODO textTimeElapsed
             if(textTimeRemaining != null) {
-                int secondsRemaining = (int) Math.floor(song.getDuration() + 0.5); // TODO
+                int secondsRemaining = (int) Math.floor(song.duration + 0.5); // TODO
                 String timeRemaining = String.format("%d:%02d", secondsRemaining/60, secondsRemaining%60);
                 textTimeRemaining.setText(timeRemaining);
             }
@@ -288,7 +288,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
     @Override
     public void onPlaybackStateChanged(final boolean isPlaying) {
         final ImageButton buttonPlayStop = this.buttonPlayStop;
-        if(buttonPlayStop != null) {
+        if(buttonPlayStop != null && getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -307,10 +307,14 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
     @Override
     public void onCurrentSongChanged(final SongInfo song) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() { showCurrentSongInfo(song); }
-        });
+        if(getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showCurrentSongInfo(song);
+                }
+            });
+        }
         if(titleView != null) {
             onTitleChanged();
         }

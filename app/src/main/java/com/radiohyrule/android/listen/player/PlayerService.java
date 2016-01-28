@@ -11,9 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.MainActivity;
-import com.radiohyrule.android.listen.OldSongInfoQueue;
-import com.radiohyrule.android.listen.SongInfo;
 import com.radiohyrule.android.listen.SongInfoQueue;
+import com.radiohyrule.android.listen.SongInfo;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -38,7 +37,7 @@ public class PlayerService extends Service implements IPlayer, SongInfoQueue.Que
 
     protected IPlayer.IPlayerObserver playerObserver;
 
-    protected SongInfoQueue songQueue = new OldSongInfoQueue();
+    protected SongInfoQueue songQueue = new SongInfoQueue();
     protected boolean hasCurrentSong = false;
     protected Calendar nextSongTimeStartedLocal;
 
@@ -88,7 +87,7 @@ public class PlayerService extends Service implements IPlayer, SongInfoQueue.Que
                 mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
                 mediaPlayer.prepareAsync();
 
-                songQueue.onPlayerConnectingToStream(true);
+                songQueue.onPlayerConnectingToStream();
             }
         } else if(startWhenPrepared) {
             mediaPlayer.start();

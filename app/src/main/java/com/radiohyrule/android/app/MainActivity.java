@@ -242,5 +242,4 @@ public class MainActivity
 
 
     public IPlayer getPlayer() { return playerServiceClient; }
-    public Picasso getImageManager() { return Picasso.with(this); }
 }
