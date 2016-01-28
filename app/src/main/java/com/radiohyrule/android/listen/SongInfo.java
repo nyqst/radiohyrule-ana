@@ -8,67 +8,81 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class SongInfo {
-    //todo Make most of these final once Old queue is dead
-
-    public String title;
+    public final String title;
 
     @SerializedName("song_url")
-    public String songUrl;
+    public final String songUrl;
 
     @SerializedName("song_nid")
-    public int songId;
+    public final int songId;
 
     @SerializedName("artist")
-    @Nullable
-    public ArrayList<String> artists;
+    public final ArrayList<String> artists;
 
     @SerializedName("artist_url")
-    @Nullable public ArrayList<String> artistsUrl;
+    public final ArrayList<String> artistsUrl;
 
-    @Nullable public String album;
+    @Nullable
+    public final String album;
 
     @SerializedName("album_url")
-    @Nullable public String albumUrl;
+    @Nullable
+    public final String albumUrl;
 
     @SerializedName("albumcover")
-    @Nullable public String albumCover;
+    @Nullable
+    public final String albumCover;
 
     @SerializedName("started")
-    public long timeStarted; //seconds
+    public final long timeStarted; //seconds
 
-    public double duration; //seconds, or null for special things?
+    public final double duration; //seconds, or null for special things?
 
-    public String source;
+    public final String source;
 
     @SerializedName("listeners")
-    public int numListeners; //this really ought to be a separate api call
+    public final int numListeners; //this really ought to be a separate api call
 
     @SerializedName("request_username")
-    @Nullable public String requestUsername;
+    @Nullable
+    public final String requestUsername;
+
     @SerializedName("request_url")
-    @Nullable public String requestUrl;
+    @Nullable
+    public final String requestUrl;
 
     transient public long timeStamp; //when data came from server. Seconds
-    transient public long expectedLocalStartTime;
-    transient public long timeElapsedAtStart;
+    transient public long expectedLocalStartTime; //ms
+    transient public long timeElapsedAtStart; //seconds
 
-    public SongInfo(){
+    public SongInfo() {
         //assign some default values so we don't NPE all the time
         songId = -1;
         duration = 5.0;
+
+        title = songUrl = album = albumUrl = albumCover = source = requestUsername = requestUrl = null;
+        timeStarted = 0;
+        numListeners = 0;
+
+        artists = new ArrayList<>();
+        artistsUrl = new ArrayList<>();
     }
 
     //Methods and stuff
 
-    public void setExpectedLocalStartTime(Calendar cal) { this.expectedLocalStartTime = cal.getTimeInMillis(); }
+    public void setExpectedLocalStartTime(Calendar cal) {
+        this.expectedLocalStartTime = cal.getTimeInMillis();
+    }
 
-    public void setTimeElapsedAtStart(long timeElapsedAtStart) { this.timeElapsedAtStart = timeElapsedAtStart; }
+    public void setTimeElapsedAtStart(long timeElapsedAtStart) {
+        this.timeElapsedAtStart = timeElapsedAtStart;
+    }
 
     // all in milliseconds
-    public Long getEstimatedTimeUntilEnd(Long relativeTime, long interruptionTime) {
+    public Long getEstimatedTimeUntilEnd(Long relativeTimeMs, long interruptionTime) {
         //todo I still don't 100% get this. Hopefully rendered irrelevant on switch to less buffer-y mediaplayer lib
-            long timeRemainingAtStartLocal = ((long) (duration * 1000.0) - (timeElapsedAtStart * 1000)); // milliseconds
-            long timeElapsedSinceStartLocal = relativeTime - expectedLocalStartTime;
-            return Math.max(0, timeRemainingAtStartLocal - timeElapsedSinceStartLocal + interruptionTime);
+        long timeRemainingAtStartLocal = ((long) (duration * 1000.0) - (timeElapsedAtStart * 1000)); // milliseconds
+        long timeElapsedSinceStartLocal = relativeTimeMs - expectedLocalStartTime;
+        return Math.max(0, timeRemainingAtStartLocal - timeElapsedSinceStartLocal + interruptionTime);
     }
 }

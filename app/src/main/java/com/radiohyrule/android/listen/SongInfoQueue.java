@@ -163,6 +163,7 @@ public class SongInfoQueue {
                         SongInfo songInfo = response.body();
                         Date date = response.headers().getDate("Date");
                         songInfo.timeStamp = date != null ? date.getTime() / 1000 : System.currentTimeMillis() / 1000;
+                        songInfo.setTimeElapsedAtStart(songInfo.timeStamp - songInfo.timeStarted);
                         if(date != null) Log.v(LOG_TAG, "Time offset: " + (System.currentTimeMillis() - date.getTime()));
                         onSongFetched(songInfo);
                     } else {
