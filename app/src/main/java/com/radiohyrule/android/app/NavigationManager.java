@@ -1,8 +1,5 @@
 package com.radiohyrule.android.app;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
@@ -16,9 +13,12 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.about.AboutFragment;
+import com.radiohyrule.android.about.HelpAboutFragment;
 import com.radiohyrule.android.library.LibraryFragment;
 import com.radiohyrule.android.listen.ListenFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NavigationManager {
     protected Context context;
@@ -26,10 +26,10 @@ public class NavigationManager {
 
     protected List<NavigationItem> navigationItems;
 
-    public NavigationManager(Context context) {
+    public NavigationManager(final Context context) {
         this.context = context;
 
-        navigationItems = new ArrayList<NavigationItem>();
+        navigationItems = new ArrayList<>();
         navigationItems.add(new ParentNavigationItem<ListenFragment>(R.drawable.ic_navigation_item_listen) {
             @Override
             public ListenFragment createFragment() {
@@ -50,10 +50,10 @@ public class NavigationManager {
         navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_artists, "Artists", LibraryFragment.ViewId.Artists));
         navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_songs, "Songs", LibraryFragment.ViewId.Songs));
 		*/
-        navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.ic_navigation_item_about) {
+        navigationItems.add(new ParentNavigationItem<HelpAboutFragment>(R.drawable.ic_navigation_item_about) {
             @Override
-            public AboutFragment createFragment() {
-                return new AboutFragment();
+            public HelpAboutFragment createFragment() {
+                return HelpAboutFragment.newInstance(R.raw.about_rh);
             }
         });
     }
