@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.BaseFragment;
 import com.radiohyrule.android.app.MainActivity;
@@ -19,6 +20,8 @@ import com.radiohyrule.android.listen.player.IPlayer;
 import com.radiohyrule.android.opengl.BlurredSurfaceRenderer;
 import com.radiohyrule.android.opengl.Util;
 import com.squareup.picasso.Picasso;
+
+import java.util.Locale;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     public static final String ALBUM_ART_URL_BASE = "https://radiohyrule.com/cover640/";
@@ -82,7 +85,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_listen, container, false);
-        if(rootView == null) return null;
 
         imageCover = (ImageView) rootView.findViewById(R.id.listen_image_cover);
         imageBackground = (ImageView) rootView.findViewById(R.id.listen_image_background);
@@ -103,7 +105,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         textArtist = (TextView) rootView.findViewById(R.id.listen_text_artist);
         textTitle = (TextView) rootView.findViewById(R.id.listen_text_title);
         textAlbum = (TextView) rootView.findViewById(R.id.listen_text_album);
-        if(textArtist == null || textTitle == null || textAlbum == null) {
+        if(textArtist == null || textTitle == null || textAlbum == null) { //todo what is going on here
             titleView = inflater.inflate(R.layout.fragment_listen_title, null);
             textArtist = (TextView) titleView.findViewById(R.id.listen_text_artist);
             textArtistTitleSeparator = (TextView) titleView.findViewById(R.id.listen_text_artist_title_separator);
@@ -173,8 +175,8 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                 Uri imageUri = Uri.withAppendedPath(Uri.parse(ALBUM_ART_URL_BASE), song.albumCover);
                 Picasso.with(getActivity())
                         .load(imageUri)
-                        .placeholder(R.drawable.cover_default)
-                        .error(R.drawable.cover_default)
+                        .placeholder(R.raw.cover_default)
+                        .error(R.raw.cover_default)
                         .into(imageCover);
                 Log.v(ListenFragment.class.getSimpleName(), "Loaded album art: " + albumCover);
 //                    imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
@@ -247,14 +249,14 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             // TODO textTimeElapsed
             if(textTimeRemaining != null) {
                 int secondsRemaining = (int) Math.floor(song.duration + 0.5); // TODO
-                String timeRemaining = String.format("%d:%02d", secondsRemaining/60, secondsRemaining%60);
+                String timeRemaining = String.format(Locale.ENGLISH, "%d:%02d", secondsRemaining/60, secondsRemaining%60);
                 textTimeRemaining.setText(timeRemaining);
             }
             // TODO progressTime
 
         } else {
             // TODO imageCover, imageBackground
-            imageCover.setImageResource(R.drawable.cover_blank);
+            Picasso.with(getActivity()).load(R.raw.cover_blank).into(imageCover);
             if (imageBackground != null) {
                 imageBackground.setImageResource(R.drawable.cover_blank_background);
             } else if (surfaceRenderer != null) {

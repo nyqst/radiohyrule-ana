@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
     <color name="radioHyrule_lighterDarkBackground">#656565</color>
     <color name="radioHyrule_translucentBlackOverlay">#b000</color>
     <color name="radioHyrule_veryTranslucentBlackOverlay">#7000</color>

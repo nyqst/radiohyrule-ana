@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
-    
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
     defaultConfig {
         applicationId "com.radiohyrule.android"
         minSdkVersion 16
@@ -11,7 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    
+
     buildTypes {
         release {
             minifyEnabled false
@@ -20,13 +20,15 @@ android {
     }
 
     lintOptions {
-      abortOnError false
+        abortOnError false
+        warning 'InvalidPackage'
+        ignore 'ContentDescription' //should fix ContentDescription eventually for accessibility
     }
 }
 
 
 dependencies {
-    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar' //todo drop ActionBarSherlock
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'

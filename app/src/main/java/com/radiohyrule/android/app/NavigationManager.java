@@ -1,8 +1,5 @@
 package com.radiohyrule.android.app;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
@@ -19,6 +16,9 @@ import com.radiohyrule.android.R;
 import com.radiohyrule.android.about.AboutFragment;
 import com.radiohyrule.android.library.LibraryFragment;
 import com.radiohyrule.android.listen.ListenFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NavigationManager {
     protected Context context;
@@ -288,7 +288,7 @@ public class NavigationManager {
 
             // label
             TextView textView = new TextView(NavigationManager.this.context, null, android.R.attr.textAppearanceMedium);
-            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             textView.setTextColor(NavigationManager.this.context.getResources().getColorStateList(android.R.color.secondary_text_dark));
             textView.setShadowLayer(2, 0, 2, Color.BLACK);
             textView.setText(getItemTitle(position));

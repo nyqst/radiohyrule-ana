@@ -1,182 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <ImageView
+        android:id="@+id/listen_image_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/cover_blank_background"
         android:scaleType="centerCrop"
-        android:id="@+id/listen_image_background"
-        />
+        android:src="@drawable/cover_blank_background" />
 
     <com.radiohyrule.android.util.LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_gravity="center"
-            >
+            android:layout_weight="1">
 
             <com.radiohyrule.android.util.FittingSquareLayout
-                android:padding="25dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                >
+                android:padding="25dp">
 
                 <ImageView
+                    android:id="@+id/listen_image_cover"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/cover_blank"
                     android:background="@drawable/rounded_border"
-                    android:id="@+id/listen_image_cover"
-                    />
+                    android:src="@raw/cover_blank" />
             </com.radiohyrule.android.util.FittingSquareLayout>
 
         </RelativeLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/radioHyrule_translucentBlackOverlay"
-            android:padding="10dp"
-            >
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <TextView
-                android:orientation="horizontal"
+                android:id="@+id/listen_text_requested_by"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@android:color/secondary_text_dark"
-                android:text="Requested by lykchen"
-                android:id="@+id/listen_text_requested_by"
-                />
+                tools:text="Requested by lykchen" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginBottom="5dp"
-                >
+                android:orientation="horizontal">
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/listen_text_time_elapsed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="2:59"
-                    android:id="@+id/listen_text_time_elapsed"
-                    />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="2:59" />
 
                 <ProgressBar
+                    android:id="@+id/listen_progress_time"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
+                    android:layout_weight="1"
                     android:progress="45"
-                    android:progressDrawable="@drawable/progressbar"
-                    android:id="@+id/listen_progress_time"
-                    />
+                    android:progressDrawable="@drawable/progressbar" />
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/listen_text_time_remaining"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="-3:38"
-                    android:id="@+id/listen_text_time_remaining"
-                    />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="-3:38" />
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                >
+                android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_num_listeners"
-                    android:scaleType="fitEnd"
+                    android:layout_marginEnd="5dp"
                     android:layout_marginRight="5dp"
-                    />
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_num_listeners" />
 
                 <TextView
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:layout_weight="1"
+                    android:id="@+id/listen_text_num_listeners"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="43"
-                    android:id="@+id/listen_text_num_listeners"
-                    />
+                    android:layout_weight="1"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="43" />
             </LinearLayout>
 
-            <com.radiohyrule.android.util.LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                >
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    />
+                android:gravity="center">
 
                 <ImageButton
+                    android:id="@+id/listen_button_show_in_library"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_info"
                     android:background="@drawable/button_round_background"
-                    android:id="@+id/listen_button_show_in_library"
-                    />
+                    android:src="@drawable/ic_info" />
 
                 <ImageButton
+                    android:id="@+id/listen_button_play_stop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:src="@drawable/button_play_stop"
                     android:background="@drawable/button_round_background"
-                    android:id="@+id/listen_button_play_stop"
-                    />
+                    android:src="@drawable/button_play_stop" />
 
                 <ImageButton
+                    android:id="@+id/listen_button_favourite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/button_favourite"
                     android:background="@drawable/button_round_background"
-                    android:id="@+id/listen_button_favourite"
-                    />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
-            </com.radiohyrule.android.util.LinearLayout>
+                    android:src="@drawable/button_favourite" />
+            </LinearLayout>
         </LinearLayout>
 
     </com.radiohyrule.android.util.LinearLayout>
