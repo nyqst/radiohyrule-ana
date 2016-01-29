@@ -1,4 +1,4 @@
-package com.radiohyrule.android.listen.player;
+package com.radiohyrule.android.player;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.radiohyrule.android.listen.SongInfo;
+import com.radiohyrule.android.songinfo.SongInfo;
 
 public class PlayerServiceClient implements IPlayer, IPlayer.IPlayerObserver {
     private static final String LOG_TAG = PlayerServiceClient.class.getCanonicalName();

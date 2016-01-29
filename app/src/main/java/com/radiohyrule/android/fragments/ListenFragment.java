@@ -1,8 +1,7 @@
-package com.radiohyrule.android.listen;
+package com.radiohyrule.android.fragments;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,30 +13,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.app.BaseFragment;
-import com.radiohyrule.android.app.MainActivity;
-import com.radiohyrule.android.listen.player.IPlayer;
-import com.radiohyrule.android.opengl.BlurredSurfaceRenderer;
-import com.radiohyrule.android.opengl.Util;
+import com.radiohyrule.android.activities.MainActivity;
+import com.radiohyrule.android.player.IPlayer;
+import com.radiohyrule.android.songinfo.SongInfo;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     public static final String ALBUM_ART_URL_BASE = "https://radiohyrule.com/cover640/";
-    protected ImageView imageCover, imageBackground;
-    protected GLSurfaceView surfaceBackground;
-    protected BlurredSurfaceRenderer surfaceRenderer;
+    protected ImageView imageCover;
     protected TextView textArtist, textArtistTitleSeparator, textTitle, textAlbum;
     protected View layoutArtistTitleLine;
     protected TextView textRequestedBy, textNumListeners;
     protected TextView textTimeElapsed, textTimeRemaining;
     protected ProgressBar progressTime;
-    protected ImageButton buttonShowInLibrary, buttonPlayStop, buttonFavourite;
+    protected ImageButton buttonPlayStop;
     protected View titleView;
-
-    protected static final String saveKey_buttonFavourite_isSelected = "buttonFavourite_isSelected";
-
 
     @Override
     public String getTitleText() {
@@ -87,20 +79,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         View rootView = inflater.inflate(R.layout.fragment_listen, container, false);
 
         imageCover = (ImageView) rootView.findViewById(R.id.listen_image_cover);
-        imageBackground = (ImageView) rootView.findViewById(R.id.listen_image_background);
-        if (Util.getOpenGlVersion(getActivity()) >= Util.OPENGL2) {
-            surfaceBackground = new GLSurfaceView(getActivity());
-            surfaceBackground.setEGLContextClientVersion(2);
-            surfaceRenderer = new BlurredSurfaceRenderer();
-            surfaceBackground.setRenderer(surfaceRenderer);
-            surfaceBackground.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-            ViewGroup backgroundParent = (ViewGroup)imageBackground.getParent();
-            int index = backgroundParent.indexOfChild(imageBackground);
-            backgroundParent.removeViewAt(index);
-            surfaceBackground.setLayoutParams(imageBackground.getLayoutParams());
-            backgroundParent.addView(surfaceBackground, index);
-            imageBackground = null;
-        }
 
         textArtist = (TextView) rootView.findViewById(R.id.listen_text_artist);
         textTitle = (TextView) rootView.findViewById(R.id.listen_text_title);
@@ -125,8 +103,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         textTimeRemaining = (TextView) rootView.findViewById(R.id.listen_text_time_remaining);
         progressTime = (ProgressBar) rootView.findViewById(R.id.listen_progress_time);
 
-        buttonShowInLibrary = (ImageButton) rootView.findViewById(R.id.listen_button_show_in_library);
-
         buttonPlayStop = (ImageButton) rootView.findViewById(R.id.listen_button_play_stop);
         if(buttonPlayStop != null) {
             buttonPlayStop.setOnClickListener(new View.OnClickListener() {
@@ -137,16 +113,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             });
         }
         onPlaybackStateChanged(getPlayer().isPlaying());
-
-        buttonFavourite = (ImageButton) rootView.findViewById(R.id.listen_button_favourite);
-        if(buttonFavourite != null) {
-            buttonFavourite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) { view.setSelected(!view.isSelected()); }
-            });
-            if(savedInstanceState != null)
-                buttonFavourite.setSelected(savedInstanceState.getBoolean(saveKey_buttonFavourite_isSelected));
-        }
 
         showCurrentSongInfo(getPlayer().getCurrentSong());
 
@@ -160,14 +126,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         onTitleChanged();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(saveKey_buttonFavourite_isSelected, buttonFavourite.isSelected());
-    }
-
-
     protected synchronized void showCurrentSongInfo(SongInfo song) {
         if(song != null) {
             String albumCover = song.albumCover;
@@ -179,21 +137,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                         .error(R.raw.cover_default)
                         .into(imageCover);
                 Log.v(ListenFragment.class.getSimpleName(), "Loaded album art: " + albumCover);
-//                    imageManager.setBitmapCallback(new ImageManager.BitmapCallback() {
-//                        @Override
-//                        public void onBitmapLoaded(Bitmap bitmap) {
-//                            Context context = getActivity();
-//                            bitmap = GraphicsUtil.getRoundedCorners(bitmap, GraphicsUtil.dpToPx(context, 5));
-//                            imageCover.setImageBitmap(bitmap);
-//                            if (imageBackground != null) {
-//                                //imageBackground.setImageBitmap(GraphicsUtil.blurImage(bitmap, context));
-//                            } else if (surfaceRenderer != null) {
-//                                surfaceRenderer.setNextBitmap(bitmap);
-//                                surfaceBackground.requestRender();
-//                            }
-//                        }
-//                    });
-//                    imageManager.loadImage(imageUri.toString());
             }
 
             String defaultTitleText = titleView == null ? "--" : "";
@@ -257,12 +200,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         } else {
             // TODO imageCover, imageBackground
             Picasso.with(getActivity()).load(R.raw.cover_blank).into(imageCover);
-            if (imageBackground != null) {
-                imageBackground.setImageResource(R.drawable.cover_blank_background);
-            } else if (surfaceRenderer != null) {
-                surfaceRenderer.setNextBitmap(null);
-                surfaceBackground.requestRender();
-            }
 
             if(titleView != null) {
                 if(textArtist != null) textArtist.setText(null);

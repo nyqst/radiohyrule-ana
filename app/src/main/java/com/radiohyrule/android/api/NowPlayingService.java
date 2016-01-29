@@ -1,6 +1,6 @@
 package com.radiohyrule.android.api;
 
-import com.radiohyrule.android.listen.SongInfo;
+import com.radiohyrule.android.songinfo.SongInfo;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

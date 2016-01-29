@@ -1,6 +1,4 @@
-package com.radiohyrule.android.about;
-
-import com.radiohyrule.android.app.BaseFragment;
+package com.radiohyrule.android.fragments;
 
 public class AboutFragment extends BaseFragment {
     @Override

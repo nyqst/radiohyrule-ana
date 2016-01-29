@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppBaseTheme" parent="android:Theme.Holo">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+        <item name="android:colorPrimary">@color/rh_primary</item>
+        <item name="android:colorPrimaryDark">@color/rh_primary_dk</item>
+        <item name="android:colorAccent">@color/rh_accent</item>
+    </style>
+</resources>

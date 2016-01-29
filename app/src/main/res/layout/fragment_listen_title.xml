@@ -2,46 +2,47 @@
 
 <com.radiohyrule.android.util.LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="40dp"
+    android:orientation="vertical"
     >
 
-    <com.radiohyrule.android.util.AutoResizeTextView
+    <com.radiohyrule.android.views.AutoResizeTextView
+        android:id="@+id/listen_text_artist"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="3"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold"
         android:textColor="@android:color/secondary_text_dark"
-        android:text="Artist"
-        android:id="@+id/listen_text_artist"
+        android:textStyle="bold"
+        tools:text="Artist"
         />
 
-    <com.radiohyrule.android.util.AutoResizeTextView
+    <com.radiohyrule.android.views.AutoResizeTextView
+        android:id="@+id/listen_text_title"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="4"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold"
         android:textColor="?android:attr/textColorPrimary"
-        android:text="Title"
-        android:id="@+id/listen_text_title"
+        android:textStyle="bold"
+        tools:text="Title"
         />
 
-    <com.radiohyrule.android.util.AutoResizeTextView
+    <com.radiohyrule.android.views.AutoResizeTextView
+        android:id="@+id/listen_text_album"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="3"
         android:layout_marginBottom="1dp"
+        android:layout_weight="3"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold"
         android:textColor="?android:attr/textColorSecondary"
-        android:text="Album"
-        android:id="@+id/listen_text_album"
+        android:textStyle="bold"
+        tools:text="Album"
         />
 
 </com.radiohyrule.android.util.LinearLayout>

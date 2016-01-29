@@ -1,4 +1,4 @@
-package com.radiohyrule.android.app;
+package com.radiohyrule.android.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -17,8 +17,10 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.BuildConfig;
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.listen.player.IPlayer;
-import com.radiohyrule.android.listen.player.PlayerServiceClient;
+import com.radiohyrule.android.app.NavigationManager;
+import com.radiohyrule.android.fragments.BaseFragment;
+import com.radiohyrule.android.player.IPlayer;
+import com.radiohyrule.android.player.PlayerServiceClient;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity

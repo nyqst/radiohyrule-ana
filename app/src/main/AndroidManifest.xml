@@ -19,7 +19,7 @@
         <!--TODO Set RTL to true once supported-->
 
         <activity
-            android:name=".app.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name=".listen.player.PlayerService"
+            android:name=".player.PlayerService"
             android:exported="false" />
 
     </application>

@@ -1,4 +1,4 @@
-package com.radiohyrule.android.listen;
+package com.radiohyrule.android.songinfo;
 
 import android.support.annotation.Nullable;
 

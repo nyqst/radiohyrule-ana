@@ -1,4 +1,4 @@
-package com.radiohyrule.android.listen.player;
+package com.radiohyrule.android.player;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -6,13 +6,15 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.*;
+import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.app.MainActivity;
-import com.radiohyrule.android.listen.SongInfoQueue;
-import com.radiohyrule.android.listen.SongInfo;
+import com.radiohyrule.android.activities.MainActivity;
+import com.radiohyrule.android.songinfo.SongInfo;
+import com.radiohyrule.android.songinfo.SongInfoQueue;
 
 import java.io.IOException;
 import java.util.Calendar;

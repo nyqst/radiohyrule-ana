@@ -1,6 +1,6 @@
-package com.radiohyrule.android.listen.player;
+package com.radiohyrule.android.player;
 
-import com.radiohyrule.android.listen.SongInfo;
+import com.radiohyrule.android.songinfo.SongInfo;
 
 public interface IPlayer {
     public boolean isPlaying();

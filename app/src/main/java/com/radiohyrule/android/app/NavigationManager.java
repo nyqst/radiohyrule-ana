@@ -13,9 +13,9 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.about.AboutFragment;
-import com.radiohyrule.android.library.LibraryFragment;
-import com.radiohyrule.android.listen.ListenFragment;
+import com.radiohyrule.android.fragments.AboutFragment;
+import com.radiohyrule.android.fragments.BaseFragment;
+import com.radiohyrule.android.fragments.ListenFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,27 +29,13 @@ public class NavigationManager {
     public NavigationManager(Context context) {
         this.context = context;
 
-        navigationItems = new ArrayList<NavigationItem>();
+        navigationItems = new ArrayList<>();
         navigationItems.add(new ParentNavigationItem<ListenFragment>(R.drawable.ic_navigation_item_listen) {
             @Override
             public ListenFragment createFragment() {
                 return new ListenFragment();
             }
         });
-		/*
-        ParentNavigationItem<LibraryFragment> libraryItem = new ParentNavigationItem<LibraryFragment>(R.drawable.ic_navigation_item_library) {
-            @Override
-            public LibraryFragment createFragment() {
-                LibraryFragment result = new LibraryFragment();
-                result.setNavigationManager(NavigationManager.this);
-                return result;
-            }
-        };
-        navigationItems.add(libraryItem);
-        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_albums, "Albums", LibraryFragment.ViewId.Albums));
-        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_artists, "Artists", LibraryFragment.ViewId.Artists));
-        navigationItems.add(new LibraryChildNavigationItem(libraryItem, R.drawable.ic_navigation_item_library_songs, "Songs", LibraryFragment.ViewId.Songs));
-		*/
         navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.ic_navigation_item_about) {
             @Override
             public AboutFragment createFragment() {
@@ -82,37 +68,16 @@ public class NavigationManager {
         return -1;
     }
 
-    // XXX this is really really ugly. will need to refactor the navigation items, base fragment and navigation manager
-    public void OnSelectedLibraryChildChanged(LibraryFragment fragment, LibraryFragment.ViewId viewId) {
-        if(this.navigationItemChangedListener != null) {
-            boolean found = false;
-            int position = 0;
-            for(NavigationItem item : navigationItems) {
-                if(item instanceof LibraryChildNavigationItem) {
-                    LibraryChildNavigationItem child = (LibraryChildNavigationItem) item;
-                    if(child.getViewId() == viewId) {
-                        found = true;
-                        break;
-                    }
-                }
-                ++position;
-            }
-            if(found) {
-                this.navigationItemChangedListener.OnSelectedNavigationItemChanged(position, fragment);
-            }
-        }
-    }
-
     protected interface NavigationItem {
-        public String getTitle();
+        String getTitle();
 
-        public int getIconResource();
+        int getIconResource();
 
-        public boolean isIndented();
+        boolean isIndented();
 
-        public BaseFragment getFragment();
+        BaseFragment getFragment();
 
-        public BaseFragment prepareFragmentForDisplay();
+        BaseFragment prepareFragmentForDisplay();
     }
 
     protected static abstract class ParentNavigationItem<F extends BaseFragment> implements NavigationItem {
@@ -153,71 +118,12 @@ public class NavigationManager {
         }
     }
 
-    protected static class ChildNavigationItem<F extends BaseFragment> implements NavigationItem {
-        protected ParentNavigationItem<F> parent;
-        protected int iconResource;
-        protected String title;
-
-        public ChildNavigationItem(ParentNavigationItem<F> parent, int iconResource, String title) {
-            this.parent = parent;
-            this.iconResource = iconResource;
-            this.title = title;
-        }
-
-        public synchronized F getFragment() {
-            return parent.getFragment();
-        }
-
-        @Override
-        public String getTitle() {
-            return title;
-        }
-
-        @Override
-        public int getIconResource() {
-            return iconResource;
-        }
-
-        @Override
-        public boolean isIndented() {
-            return true;
-        }
-
-        @Override
-        public BaseFragment prepareFragmentForDisplay() {
-            return getFragment();
-        }
-    }
-
-    protected static class LibraryChildNavigationItem extends ChildNavigationItem<LibraryFragment> {
-        protected LibraryFragment.ViewId viewId;
-
-        public LibraryFragment.ViewId getViewId() {
-            return viewId;
-        }
-
-        public LibraryChildNavigationItem(ParentNavigationItem<LibraryFragment> parent, int iconResource, String navigationListTitle, LibraryFragment.ViewId viewId) {
-            super(parent, iconResource, navigationListTitle);
-            this.viewId = viewId;
-        }
-
-        @Override
-        public BaseFragment prepareFragmentForDisplay() {
-            BaseFragment fragment = super.prepareFragmentForDisplay();
-            if(fragment != null) {
-                ((LibraryFragment) fragment).switchToSubview(viewId);
-            }
-            return fragment;
-        }
-    }
-
     public ListAdapter getListAdapter() {
         return new NavigationListAdapter();
     }
 
     protected class NavigationListAdapter extends BaseAdapter implements ListAdapter {
         protected final int itemHeight = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_height);
-        protected final int itemLeftPaddingLevel0 = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_left_padding_level_0);
         protected final int itemLeftPaddingLevel1 = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_left_padding_level_1);
         protected final int itemRightPadding = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_item_right_padding);
         protected final int iconRightMargin = NavigationManager.this.context.getResources().getDimensionPixelSize(R.dimen.navigation_drawer_icon_right_margin);
@@ -272,12 +178,8 @@ public class NavigationManager {
             LinearLayout layout = new LinearLayout(NavigationManager.this.context);
             layout.setOrientation(LinearLayout.HORIZONTAL);
             layout.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, itemHeight));
-            if(!isItemIndented(position)) {
-                layout.setPadding(itemLeftPaddingLevel0, 0, itemRightPadding, 0);
-            } else {
-                layout.setPadding(itemLeftPaddingLevel1, 0, itemRightPadding, 0);
-                layout.setBackgroundResource(R.drawable.navigation_drawer_item_level1_background);
-            }
+            layout.setPadding(itemLeftPaddingLevel1, 0, itemRightPadding, 0);
+            layout.setBackgroundResource(R.drawable.dark_trans_selector);
 
             // icon
             ImageView imageView = new ImageView(NavigationManager.this.context);
@@ -289,8 +191,7 @@ public class NavigationManager {
             // label
             TextView textView = new TextView(NavigationManager.this.context, null, android.R.attr.textAppearanceMedium);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            textView.setTextColor(NavigationManager.this.context.getResources().getColorStateList(android.R.color.secondary_text_dark));
-            textView.setShadowLayer(2, 0, 2, Color.BLACK);
+            textView.setTextColor(Color.LTGRAY);
             textView.setText(getItemTitle(position));
             layout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
@@ -298,7 +199,7 @@ public class NavigationManager {
         }
     }
 
-    public static interface NavigationItemChangedListener {
-        public void OnSelectedNavigationItemChanged(int position, BaseFragment fragment);
+    public interface NavigationItemChangedListener {
+        void OnSelectedNavigationItemChanged(int position, BaseFragment fragment);
     }
 }
