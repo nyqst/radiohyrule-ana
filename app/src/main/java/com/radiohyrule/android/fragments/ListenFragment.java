@@ -86,14 +86,10 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
         if(textArtist == null || textTitle == null || textAlbum == null) { //todo what is going on here
             titleView = inflater.inflate(R.layout.fragment_listen_title, null);
             textArtist = (TextView) titleView.findViewById(R.id.listen_text_artist);
-            textArtistTitleSeparator = (TextView) titleView.findViewById(R.id.listen_text_artist_title_separator);
             textTitle = (TextView) titleView.findViewById(R.id.listen_text_title);
             textAlbum = (TextView) titleView.findViewById(R.id.listen_text_album);
-            layoutArtistTitleLine = titleView.findViewById(R.id.listen_layout_artist_title_line);
         } else {
             titleView = null;
-            textArtistTitleSeparator = null;
-            layoutArtistTitleLine = null;
         }
 
         textRequestedBy = (TextView) rootView.findViewById(R.id.listen_text_requested_by);
@@ -162,20 +158,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                 if(textArtist != null) textArtist.setVisibility(textArtist.getText().length() == 0 ? View.GONE : View.VISIBLE);
                 if(textTitle != null) textTitle.setVisibility(textTitle.getText().length() == 0 ? View.GONE : View.VISIBLE);
                 if(textAlbum != null) textAlbum.setVisibility(textAlbum.getText().length() == 0 ? View.GONE : View.VISIBLE);
-                if(textArtistTitleSeparator != null) {
-                    if(textArtist == null || textArtist.getVisibility() == View.GONE || textTitle == null || textTitle.getVisibility() == View.GONE) {
-                        textArtistTitleSeparator.setVisibility(View.GONE);
-                    } else {
-                        textArtistTitleSeparator.setVisibility(View.VISIBLE);
-                    }
-                }
-                if(layoutArtistTitleLine != null) {
-                    if((textArtist == null || textArtist.getVisibility() == View.GONE) && (textTitle == null || textTitle.getVisibility() == View.GONE)) {
-                        layoutArtistTitleLine.setVisibility(View.GONE);
-                    } else {
-                        layoutArtistTitleLine.setVisibility(View.VISIBLE);
-                    }
-                }
             }
 
             if(textRequestedBy != null) {
