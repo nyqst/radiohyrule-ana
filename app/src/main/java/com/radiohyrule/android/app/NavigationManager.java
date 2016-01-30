@@ -13,10 +13,9 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.fragments.BaseFragment;
 import com.radiohyrule.android.about.HelpAboutFragment;
-import com.radiohyrule.android.library.LibraryFragment;
-import com.radiohyrule.android.listen.ListenFragment;
+import com.radiohyrule.android.fragments.BaseFragment;
+import com.radiohyrule.android.fragments.ListenFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,14 +148,6 @@ public class NavigationManager {
                 return getNavigationItems().get(position).getTitle();
             } else {
                 return null;
-            }
-        }
-
-        protected boolean isItemIndented(int position) {
-            if(position >= 0 && position < getNavigationItems().size()) {
-                return getNavigationItems().get(position).isIndented();
-            } else {
-                return false;
             }
         }
 

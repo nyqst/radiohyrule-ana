@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.app.BaseFragment;
+import com.radiohyrule.android.fragments.BaseFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
