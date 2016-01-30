@@ -13,9 +13,10 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.fragments.AboutFragment;
 import com.radiohyrule.android.fragments.BaseFragment;
-import com.radiohyrule.android.fragments.ListenFragment;
+import com.radiohyrule.android.about.HelpAboutFragment;
+import com.radiohyrule.android.library.LibraryFragment;
+import com.radiohyrule.android.listen.ListenFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class NavigationManager {
 
     protected List<NavigationItem> navigationItems;
 
-    public NavigationManager(Context context) {
+    public NavigationManager(final Context context) {
         this.context = context;
 
         navigationItems = new ArrayList<>();
@@ -36,10 +37,10 @@ public class NavigationManager {
                 return new ListenFragment();
             }
         });
-        navigationItems.add(new ParentNavigationItem<AboutFragment>(R.drawable.ic_navigation_item_about) {
+        navigationItems.add(new ParentNavigationItem<HelpAboutFragment>(R.drawable.ic_navigation_item_about) {
             @Override
-            public AboutFragment createFragment() {
-                return new AboutFragment();
+            public HelpAboutFragment createFragment() {
+                return HelpAboutFragment.newInstance(R.raw.about_rh);
             }
         });
     }
