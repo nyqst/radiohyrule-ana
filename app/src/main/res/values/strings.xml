@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Radio Hyrule</string>
-    
+    <string name="app_name">@string/radio_hyrule</string>
+
+    <string name="radio_hyrule">Radio Hyrule</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="listen">Listen</string>
+    <string name="about">About</string>
+
+    <string name="playing">Playing</string>
+    <string name="paused">Paused</string>
+
 
 </resources>

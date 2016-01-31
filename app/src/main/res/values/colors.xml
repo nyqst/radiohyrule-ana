@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
 
-    <color name="rh_primary">@color/rh_blue</color>
+    <color name="rh_primary">@color/rh_blue_dk</color>
     <color name="rh_primary_dk">@color/rh_blue_vdk</color>
     <color name="rh_accent">@color/rh_orange</color>
 
@@ -15,6 +15,7 @@
     <color name="rh_white">#fff</color>
 
     <color name="rh_blue_vdk">#2c5560</color>
+    <color name="rh_blue_dk">#168fa0</color>
     <color name="rh_blue">#00c8e0</color>
     <color name="rh_blue_lt">#71e1ff</color>
     <color name="rh_blue_vlt">#e9faff</color>

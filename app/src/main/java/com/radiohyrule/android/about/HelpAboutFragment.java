@@ -9,23 +9,18 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.fragments.BaseFragment;
+import com.radiohyrule.android.fragments.Fragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HelpAboutFragment extends BaseFragment {
-    @Override
-    public String getTitleText() {
-        return "Radio Hyrule";
-    }
+public class HelpAboutFragment extends Fragment {
 
     private static final String EXTRA_RAW_RESID = "HelpAboutFragment.RAW_RESID";
     WebView webView;
 
     public static HelpAboutFragment newInstance(@RawRes int resId) {
-
         HelpAboutFragment fragment = new HelpAboutFragment();
         Bundle args = new Bundle();
         args.putInt(EXTRA_RAW_RESID, resId);
@@ -37,10 +32,11 @@ public class HelpAboutFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
         webView = (WebView) rootView.findViewById(R.id.webview);
-
-        int resId = getArguments().getInt(EXTRA_RAW_RESID);
-
-        String body = readTextFromResource(resId);
+        String body = "";
+        if(getArguments() != null) {
+            int resId = getArguments().getInt(EXTRA_RAW_RESID);
+            body = readTextFromResource(resId);
+        }
 
         webView.getSettings().setSupportZoom(false);
         webView.setBackgroundColor(Color.LTGRAY);

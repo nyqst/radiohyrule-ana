@@ -7,21 +7,21 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/listen_text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Song Title"
-        android:id="@+id/listen_text_title"
-        android:textColor="@color/rh_white"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="3dp"
-        android:layout_gravity="center_horizontal"/>
+        android:textColor="@color/rh_white"
+        tools:text="Song Title"/>
 
     <TextView
+        android:id="@+id/listen_text_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Artist Name"
-        android:id="@+id/listen_text_artist"
+        android:layout_gravity="center_horizontal"
         android:textAppearance="@style/textAppearanceFootnote"
-        android:layout_gravity="center_horizontal"/>
+        tools:text="Artist Name"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,67 +59,36 @@
             tools:text="-3:38"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/listen_button_play_stop"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_margin="20dp"
-        android:gravity="center">
+        android:background="@drawable/button_round_background"
+        android:src="@drawable/ic_av_play_grey"/>
 
-        <ImageButton
-            android:id="@+id/listen_button_show_in_library"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_round_background"
-            android:src="@drawable/ic_info"/>
-
-        <ImageButton
-            android:id="@+id/listen_button_play_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:background="@drawable/button_round_background"
-            android:src="@drawable/button_play_stop"/>
-
-        <ImageButton
-            android:id="@+id/listen_button_favourite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_round_background"
-            android:src="@drawable/button_favourite"/>
-    </LinearLayout>
-
+    <TextView
+        android:id="@+id/listen_text_num_listeners"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:drawableLeft="@drawable/ic_social_people"
+        android:drawablePadding="2dp"
+        android:drawableStart="@drawable/ic_social_people"
+        android:textAppearance="@style/textAppearanceFootnote"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="43"/>
 
     <TextView
         android:id="@+id/listen_text_requested_by"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="5dp"
         android:orientation="horizontal"
         android:textAppearance="@style/textAppearanceCaption"
         tools:text="Requested by lykchen"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
-            android:src="@drawable/ic_num_listeners"/>
-        <!--todo get an appropriately sized version of this-->
-        <!--so it can be used as a compound drawable-->
-
-        <TextView
-            android:id="@+id/listen_text_num_listeners"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/textAppearanceFootnote"
-            tools:text="43"/>
-    </LinearLayout>
 </LinearLayout>
