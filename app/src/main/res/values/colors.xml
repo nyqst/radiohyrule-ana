@@ -7,10 +7,12 @@
     <color name="rh_accent">@color/rh_orange</color>
 
     <color name="rh_grey_40">#666</color>
+    <color name="rh_grey_66">#aaa</color>
     <color name="rh_grey_80">#cdcdcd</color>
     <color name="rh_black_trans_75">#c0000000</color>
     <color name="rh_black_trans_50">#80000000</color>
     <color name="rh_almost_black">#ff0f0f0f</color>
+    <color name="rh_white">#fff</color>
 
     <color name="rh_blue_vdk">#2c5560</color>
     <color name="rh_blue">#00c8e0</color>

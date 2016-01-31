@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="textAppearanceBody">
+        <!--This is the default style for textviews. Doesn't need to be manually applied-->
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/rh_grey_80</item>
+    </style>
+
+    <style name="textAppearanceFootnote" parent="textAppearanceBody">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/rh_grey_66</item>
+    </style>
+
+    <style name="textAppearanceHeadline" parent="textAppearanceBody">
+        <item name="android:textColor">@color/rh_white</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="textAppearanceSubHeadline" parent="textAppearanceBody">
+        <item name="android:textColor">@color/rh_grey_66</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="textAppearanceCaption" parent="textAppearanceBody">
+        <item name="android:textColor">@color/rh_white</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>

@@ -2,7 +2,10 @@
 <resources>
 
     <style name="AppTheme" parent="AppBaseTheme">
+        <!--Global theme goes here-->
         <item name="android:windowBackground">@color/rh_almost_black</item>
+        <item name="android:textViewStyle">@style/RH.TextView.Primary</item>
+
     </style>
 
     <style name="AppBaseTheme" parent="android:Theme.Holo">

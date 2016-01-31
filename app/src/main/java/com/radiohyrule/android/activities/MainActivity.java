@@ -1,5 +1,6 @@
 package com.radiohyrule.android.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -7,14 +8,11 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.radiohyrule.android.BuildConfig;
 import com.radiohyrule.android.R;
 import com.radiohyrule.android.app.NavigationManager;
@@ -24,7 +22,7 @@ import com.radiohyrule.android.player.PlayerServiceClient;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity
-        extends SherlockFragmentActivity //todo drop ActionBarSherlock
+        extends Activity //todo drop ActionBarSherlock
         implements NavigationManager.NavigationItemChangedListener {
 
     protected static final String LOG_TAG = MainActivity.class.getCanonicalName();
@@ -38,7 +36,7 @@ public class MainActivity
 
     protected NavigationManager navigationManager;
 
-    protected Object title;
+    protected String title;
 
     // App logic
 
@@ -46,12 +44,6 @@ public class MainActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // retrieve data saved between configuration changes (see onRetainCustomNonConfigurationInstance())
-        CustomNonConfigurationObject customNonConfigurationObject = (CustomNonConfigurationObject)getLastCustomNonConfigurationInstance();
-        if (customNonConfigurationObject != null) {
-            playerServiceClient = customNonConfigurationObject.playerServiceClient;
-            if (playerServiceClient != null) playerServiceClient.setContext(this);
-        }
 
         // set up the image downloader
         Picasso.with(this).setIndicatorsEnabled(BuildConfig.DEBUG);
@@ -64,7 +56,6 @@ public class MainActivity
 
         // setup UI
 
-        setTheme(R.style.Theme_Sherlock); // http://stackoverflow.com/questions/12864298/java-lang-runtimeexception-theme-sherlock
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -86,8 +77,8 @@ public class MainActivity
         });
 
         // enable ActionBar app icon to behave as action to toggle navigation drawer
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -123,14 +114,6 @@ public class MainActivity
     }
 
     @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        // see onCreate()
-        CustomNonConfigurationObject result = new CustomNonConfigurationObject();
-        result.playerServiceClient = playerServiceClient;
-        return result;
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
 
@@ -163,7 +146,7 @@ public class MainActivity
         }
 
         // set new fragment
-        getSupportFragmentManager()
+        getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
@@ -175,12 +158,8 @@ public class MainActivity
         navigationDrawerLayout.closeDrawer(navigationListView);
     }
 
-    @Override
-    public void setTitle(CharSequence title) {
-        setTitle((Object)title);
-    }
-    public void setTitle(final Object title) {
-        if(this.title != title) {
+    public void setTitle(final String title) {
+        if(!this.title.equals(title)) {
             this.title = title;
             runOnUiThread(new Runnable() {
                 @Override
@@ -188,31 +167,14 @@ public class MainActivity
             });
         }
     }
-    public void updateTitle(Object title) {
-        // set activity title text or view
-        if(title instanceof CharSequence) {
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            getSupportActionBar().setDisplayShowCustomEnabled(false);
-            getSupportActionBar().setTitle((CharSequence)title);
 
-        } else {
-            if(title instanceof View) {
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-                getSupportActionBar().setDisplayShowCustomEnabled(true);
-                getSupportActionBar().setCustomView((View)title, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            } else {
-                if(title != null) {
-                    Log.w(LOG_TAG, "invalid title type " + String.valueOf(title));
-                }
-                // fall back to application name
-                getSupportActionBar().setDisplayShowTitleEnabled(true);
-                getSupportActionBar().setDisplayShowCustomEnabled(false);
-                getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
-            }
+    public void updateTitle(String title) {
+        if(getActionBar() != null){
+            getActionBar().setTitle(title != null ? title : getString(R.string.app_name));
         }
     }
-    public void onTitleChanged(Object title) {
+
+    public void onTitleChanged(String title) {
         setTitle(title);
     }
 
@@ -236,12 +198,6 @@ public class MainActivity
         // set activity title
         setTitle(fragment.getTitle());
     }
-
-
-    protected class CustomNonConfigurationObject {
-        public PlayerServiceClient playerServiceClient;
-    }
-
 
     public IPlayer getPlayer() { return playerServiceClient; }
 }

@@ -1,3 +1,8 @@
 <resources>
 
+    <style name="RH.TextView.Primary" parent="@android:style/Widget.TextView">
+        <item name="android:textAppearance">@style/textAppearanceBody</item>
+    </style>
+
+
 </resources>

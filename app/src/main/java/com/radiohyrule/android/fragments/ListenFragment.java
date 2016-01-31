@@ -23,26 +23,20 @@ import java.util.Locale;
 public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObserver {
     public static final String ALBUM_ART_URL_BASE = "https://radiohyrule.com/cover640/";
     protected ImageView imageCover;
-    protected TextView textArtist, textArtistTitleSeparator, textTitle, textAlbum;
-    protected View layoutArtistTitleLine;
+    protected TextView textArtist, textTitle;
     protected TextView textRequestedBy, textNumListeners;
     protected TextView textTimeElapsed, textTimeRemaining;
     protected ProgressBar progressTime;
     protected ImageButton buttonPlayStop;
-    protected View titleView;
 
     @Override
     public String getTitleText() {
         return "Listen";
     }
     @Override
-    public Object getTitle() {
+    public String getTitle() {
         IPlayer player = getPlayer();
-        if(player != null && player.getCurrentSong() != null && titleView != null) {
-            return titleView;
-        } else {
-            return super.getTitle();
-        }
+        return super.getTitle();
     }
     protected void onTitleChanged() {
         MainActivity mainActivity = getMainActivity();
@@ -82,15 +76,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
 
         textArtist = (TextView) rootView.findViewById(R.id.listen_text_artist);
         textTitle = (TextView) rootView.findViewById(R.id.listen_text_title);
-        textAlbum = (TextView) rootView.findViewById(R.id.listen_text_album);
-        if(textArtist == null || textTitle == null || textAlbum == null) { //todo what is going on here
-            titleView = inflater.inflate(R.layout.fragment_listen_title, null);
-            textArtist = (TextView) titleView.findViewById(R.id.listen_text_artist);
-            textTitle = (TextView) titleView.findViewById(R.id.listen_text_title);
-            textAlbum = (TextView) titleView.findViewById(R.id.listen_text_album);
-        } else {
-            titleView = null;
-        }
 
         textRequestedBy = (TextView) rootView.findViewById(R.id.listen_text_requested_by);
         textNumListeners = (TextView) rootView.findViewById(R.id.listen_text_num_listeners);
@@ -135,30 +120,24 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                 Log.v(ListenFragment.class.getSimpleName(), "Loaded album art: " + albumCover);
             }
 
-            String defaultTitleText = titleView == null ? "--" : "";
+            String defaultTitleText = "Radio Hyrule";
             if(textTitle != null) {
                 textArtist.setText(defaultTitleText);
                 Iterable<String> artists = song.artists;
-                if(artists != null) {
-                    StringBuilder sb = new StringBuilder();
-                    boolean first = true;
-                    for(String artist : artists) {
-                        if(artist != null) {
-                            if(!first) sb.append(", ");
-                            sb.append(artist);
-                            first = false;
-                        }
+                StringBuilder sb = new StringBuilder();
+                boolean first = true;
+                for(String artist : artists) {
+                    if(artist != null) {
+                        if(!first) sb.append(", ");
+                        sb.append(artist);
+                        first = false;
                     }
-                    if(sb.length() > 0) textArtist.setText(sb.toString());
                 }
+                if(sb.length() > 0) textArtist.setText(sb.toString());
             }
             if(textTitle != null) textTitle.setText(!song.title.isEmpty() ? song.title : defaultTitleText);
-            if(textAlbum != null) textAlbum.setText(song.album != null && !song.album.isEmpty() ? song.album : defaultTitleText);
-            if(titleView != null) {
-                if(textArtist != null) textArtist.setVisibility(textArtist.getText().length() == 0 ? View.GONE : View.VISIBLE);
-                if(textTitle != null) textTitle.setVisibility(textTitle.getText().length() == 0 ? View.GONE : View.VISIBLE);
-                if(textAlbum != null) textAlbum.setVisibility(textAlbum.getText().length() == 0 ? View.GONE : View.VISIBLE);
-            }
+            if(textArtist != null) textArtist.setVisibility(textArtist.getText().length() == 0 ? View.GONE : View.VISIBLE);
+            if(textTitle != null) textTitle.setVisibility(textTitle.getText().length() == 0 ? View.GONE : View.VISIBLE);
 
             if(textRequestedBy != null) {
                 if(song.requestUsername != null) {
@@ -183,15 +162,8 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
             // TODO imageCover, imageBackground
             Picasso.with(getActivity()).load(R.raw.cover_blank).into(imageCover);
 
-            if(titleView != null) {
-                if(textArtist != null) textArtist.setText(null);
-                if(textTitle != null) textTitle.setText(null);
-                if(textAlbum != null) textAlbum.setText(null);
-            } else {
-                if(textArtist != null) textArtist.setText("--");
-                if(textTitle != null) textTitle.setText("--");
-                if(textAlbum != null) textAlbum.setText("--");
-            }
+            if(textTitle != null) textTitle.setText(getString(R.string.app_name));
+            if(textArtist != null) textArtist.setText(null);
 
             if(textRequestedBy  != null) {
                 textRequestedBy.setText(null);
@@ -221,9 +193,7 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                 }
             });
         }
-        if(titleView != null) {
-            onTitleChanged();
-        }
+        onTitleChanged();
     }
 
     @Override
@@ -236,8 +206,6 @@ public class ListenFragment extends BaseFragment implements IPlayer.IPlayerObser
                 }
             });
         }
-        if(titleView != null) {
-            onTitleChanged();
-        }
+        onTitleChanged();
     }
 }
