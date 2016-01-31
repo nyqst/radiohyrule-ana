@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -36,7 +37,7 @@ public class MainActivity
 
     protected NavigationManager navigationManager;
 
-    protected String title;
+    @Nullable protected String title;
 
     // App logic
 
@@ -159,7 +160,7 @@ public class MainActivity
     }
 
     public void setTitle(final String title) {
-        if(!this.title.equals(title)) {
+        if(this.title == null || !this.title.equals(title)) {
             this.title = title;
             runOnUiThread(new Runnable() {
                 @Override
