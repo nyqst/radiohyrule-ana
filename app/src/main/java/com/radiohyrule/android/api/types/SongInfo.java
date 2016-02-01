@@ -62,4 +62,8 @@ public class SongInfo {
         artists = new ArrayList<>();
         artistsUrl = new ArrayList<>();
     }
+
+    public long getEndTime(){
+        return (long) (timeStarted + duration);
+    }
 }

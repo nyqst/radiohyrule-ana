@@ -183,10 +183,16 @@ public class ExoService extends Service {
 
     private void onSongInfoFetched(SongInfo songInfo) {
         cachedSongInfo = songInfo;
+        if(songInfo.duration != 0 && (System.currentTimeMillis()/1000.0) > songInfo.getEndTime() - 10){
+            //the song has ended or will end in less than 10 seconds, try to get metadata again
+            Log.d(LOG_TAG, "Fetched Stale Metadata, expires in: " + ((System.currentTimeMillis()/1000.0) - songInfo.getEndTime()));
+            fetchAfterDelay(true);
+        }
         if(exoPlayer.getPlayWhenReady()) {
             startForeground(NOTIFICATION_ID, createNotification(songInfo));
         }
         notifyMetadata(songInfo);
+
     }
 
     private Notification createNotification(@Nullable final SongInfo songInfo) {
