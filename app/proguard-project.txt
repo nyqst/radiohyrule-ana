@@ -19,11 +19,40 @@
 #   public *;
 #}
 
+# Make retraced stacks a bit more intelligible
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
+
 # remove logging
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
 }
+
+# Picasso
+-dontwarn com.squareup.okhttp.**
+-dontwarn okio.**
+
+# Butter Knife
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+
+# OkHttp
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-dontwarn com.squareup.okhttp.**
 
 ### Retrofit ###
 -dontwarn retrofit2.**
