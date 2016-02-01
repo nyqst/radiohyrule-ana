@@ -13,6 +13,7 @@
 
     <string name="playing">Playing</string>
     <string name="paused">Paused</string>
+    <string name="placeholder_empty_time">0:00</string>
 
 
 </resources>

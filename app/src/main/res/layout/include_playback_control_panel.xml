@@ -37,7 +37,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="2:59"/>
+            android:text="@string/placeholder_empty_time"
+            tools:text="2:11"/>
 
         <ProgressBar
             android:id="@+id/listen_progress_time"
@@ -51,12 +52,13 @@
             android:progressDrawable="@drawable/progressbar"/>
 
         <TextView
-            android:id="@+id/listen_text_time_remaining"
+            android:id="@+id/listen_text_time_total"
             android:layout_width="48sp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="-3:38"/>
+            android:text="@string/placeholder_empty_time"
+            tools:text="4:22"/>
     </LinearLayout>
 
     <ImageButton

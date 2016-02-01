@@ -39,6 +39,7 @@ import com.radiohyrule.android.activities.NewMainActivity;
 import com.radiohyrule.android.api.NowPlayingService;
 import com.radiohyrule.android.api.types.SongInfo;
 
+import java.net.HttpURLConnection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -173,6 +174,14 @@ public class ExoService extends Service {
         return cachedSongInfo;
     }
 
+    /**
+     * Local - offset = server
+     * offset = local - server
+     */
+    public double getTimeOffset() {
+        return timeOffset;
+    }
+
     //call this anywhere state changes to not playing or buffering
     private void onPlaybackStopped() {
         Log.v(LOG_TAG, "Stopped");
@@ -299,7 +308,7 @@ public class ExoService extends Service {
                     } else {
                         Log.e(LOG_TAG, "HTTP Error Fetching SongInfo: " + response.code() + " - " + response.message());
                         //if this is anything other than 5xx, this is probably unrecoverable.
-                        if (response.code() >= 500) {
+                        if (response.code() >= 500 || response.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
                             fetchAfterDelay(true);
                         } //Todo notify user of unrecoverable failure? log Runtime Exception?
                     }

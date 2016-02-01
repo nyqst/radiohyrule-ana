@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,16 +41,28 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
     @Bind(R.id.listen_text_title) TextView textSongTitle;
     @Bind(R.id.listen_text_artist) TextView textSongArtist;
     @Bind(R.id.listen_text_time_elapsed) TextView textTimeElapsed;
-    @Bind(R.id.listen_text_time_remaining) TextView textTimeLeft; //todo handle these
+    @Bind(R.id.listen_text_time_total) TextView textTimeTotal;
     @Bind(R.id.listen_text_requested_by) TextView textRequester;
     @Bind(R.id.listen_text_num_listeners) TextView textListenerCount;
 
-    @Bind(R.id.listen_progress_time) ProgressBar seekBar;
+    @Bind(R.id.listen_progress_time) ProgressBar progressBar;
     @Bind(R.id.listen_image_cover) ImageView albumArtView;
 
     @Nullable
     private ExoService exoService;
     private Application appContext;
+    private Handler handler = new Handler();
+
+    private Runnable timeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(exoService != null) {
+                updateTimeline(exoService.getCachedSongInfo(), exoService.getTimeOffset());
+                handler.removeCallbacks(timeRunnable);
+                handler.postDelayed(timeRunnable, 500);
+            }
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,7 +127,7 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
                     break;
                 case PAUSED:
                     playButton.setImageResource(R.drawable.ic_av_play_white);
-                    //todo clear info
+                    //todo clear info?
                     break;
                 case BUFFERING:
                 default:
@@ -148,8 +161,25 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
                         .fit().centerInside()
                         .into(albumArtView);
             }
+            handler.post(timeRunnable);
+
         }
     };
+
+    private void updateTimeline(SongInfo songInfo, double offset){
+        if(songInfo != null) {
+            double serverTime = (System.currentTimeMillis() / 1000.0) - offset*2;
+            double timeElapsed = serverTime - songInfo.timeStarted;
+            String elapsed = doubleToMinuteSeconds(Math.min(timeElapsed,songInfo.duration));
+            textTimeElapsed.setText(elapsed);
+            textTimeTotal.setText(doubleToMinuteSeconds(songInfo.duration));
+            progressBar.setProgress((int) (progressBar.getMax() * (timeElapsed/songInfo.duration)));
+        }
+    }
+
+    private String doubleToMinuteSeconds(double seconds){
+        return String.format(Locale.ENGLISH, "%d:%02.0f", (long) Math.floor(seconds / 60), Math.floor(seconds % 60));
+    }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
