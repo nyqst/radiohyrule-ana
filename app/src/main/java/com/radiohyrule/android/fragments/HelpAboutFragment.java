@@ -1,4 +1,4 @@
-package com.radiohyrule.android.about;
+package com.radiohyrule.android.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.fragments.Fragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

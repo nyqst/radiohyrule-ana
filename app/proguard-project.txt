@@ -46,6 +46,11 @@
     @butterknife.* <methods>;
 }
 
+# Crashlytics
+-keep class com.crashlytics.** { *; }
+-keep class com.crashlytics.android.**
+-keepattributes SourceFile,LineNumberTable,*Annotation*
+
 
 # OkHttp
 -keepattributes Signature

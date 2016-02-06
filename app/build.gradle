@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 ext {
     support_version = '23.1.1'
@@ -21,6 +22,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
+        debug{
+            ext.enableCrashlytics = false
+        }
     }
 
     lintOptions {
@@ -29,7 +33,6 @@ android {
         ignore 'ContentDescription' //should fix ContentDescription eventually for accessibility
     }
 }
-
 
 dependencies {
     compile "com.android.support:support-v4:$support_version"
@@ -41,5 +44,6 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.0-RC1'
     compile 'com.google.android.exoplayer:exoplayer:r1.5.4'
+    compile('com.crashlytics.sdk.android:crashlytics:2.3.2@aar') { transitive = true }
 //    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta3' //TODO: SOON
 }

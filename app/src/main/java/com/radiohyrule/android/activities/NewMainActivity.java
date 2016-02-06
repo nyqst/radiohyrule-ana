@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.radiohyrule.android.R;
-import com.radiohyrule.android.about.HelpAboutFragment;
+import com.radiohyrule.android.fragments.HelpAboutFragment;
 import com.radiohyrule.android.fragments.NewListenFragment;
 
 import butterknife.Bind;
