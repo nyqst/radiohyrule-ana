@@ -167,13 +167,17 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
     };
 
     private void updateTimeline(SongInfo songInfo, double offset){
-        if(songInfo != null) {
+        if(songInfo != null && songInfo.duration > 0) {
             double serverTime = (System.currentTimeMillis() / 1000.0) - offset*2;
             double timeElapsed = serverTime - songInfo.timeStarted;
             String elapsed = doubleToMinuteSeconds(Math.min(timeElapsed,songInfo.duration));
             textTimeElapsed.setText(elapsed);
             textTimeTotal.setText(doubleToMinuteSeconds(songInfo.duration));
             progressBar.setProgress((int) (progressBar.getMax() * (timeElapsed/songInfo.duration)));
+        } else {
+            progressBar.setProgress(0);
+            textTimeElapsed.setText("");
+            textTimeTotal.setText("");
         }
     }
 

@@ -53,7 +53,7 @@ public class SongInfo {
     public SongInfo() {
         //assign some default values so we don't NPE all the time
         songId = -1;
-        duration = 5.0;
+        duration = -1;
 
         title = songUrl = album = albumUrl = albumCover = source = requestUsername = requestUrl = null;
         timeStarted = 0;
