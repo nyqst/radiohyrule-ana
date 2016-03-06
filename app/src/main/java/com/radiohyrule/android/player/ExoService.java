@@ -3,6 +3,7 @@ package com.radiohyrule.android.player;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,6 +55,8 @@ import retrofit2.Retrofit;
 
 public class ExoService extends Service {
 
+    private AudioManager audioManager;
+
     public enum PlaybackStatus {
         PLAYING, PAUSED, BUFFERING
     }
@@ -81,6 +84,8 @@ public class ExoService extends Service {
     private int retryCount;
     private SongInfo cachedSongInfo;
     private double timeOffset = 0; //seconds
+
+    private int lastAudioFocusState = -999;
 
     @Nullable
     private Call<SongInfo> songInfoCall;
@@ -115,6 +120,8 @@ public class ExoService extends Service {
                 .build();
 
         nowPlayingService = retrofit.create(NowPlayingService.class);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
 
         listeners = new HashSet<>(1);
         eventHandler = new Handler();
@@ -141,6 +148,8 @@ public class ExoService extends Service {
             exoPlayer.seekTo(0);
             //move to "live edge" of stream if we are un-pausing
         }
+        audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
         exoPlayer.setPlayWhenReady(true);
         fetchSongInfo(true);
         startForeground(NOTIFICATION_ID, createNotification(cachedSongInfo));
@@ -148,6 +157,7 @@ public class ExoService extends Service {
 
     public void stopPlayback() {
         exoPlayer.setPlayWhenReady(false);
+        audioManager.abandonAudioFocus(audioFocusChangeListener);
         //todo consider leaving running or staying foreground if we want to keep notification around?
         onPlaybackStopped();
     }
@@ -377,6 +387,44 @@ public class ExoService extends Service {
             Log.w(LOG_TAG, error);
             onPlaybackStopped();
             notifyError(error);
+        }
+    };
+
+    AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange){
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    //todo this
+//                    switch(lastAudioFocusState){
+//                        case AudioManager.AUDIOFOCUS_LOSS:
+//
+//                            break;
+//                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+//
+//                            break;
+//                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+//
+//                            break;
+//                    }
+
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    //stop indefinitely
+                    stopPlayback();
+
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    stopPlayback();
+
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    stopPlayback();
+                    //todo: player.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0.2f);
+                    break;
+            }
+
+            lastAudioFocusState = focusChange;
         }
     };
 
