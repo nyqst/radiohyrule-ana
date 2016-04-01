@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 public class SongInfo {
+    @SerializedName("title")
     public final String title;
 
     @SerializedName("song_url")
@@ -21,6 +22,7 @@ public class SongInfo {
     @SerializedName("artist_url")
     public final ArrayList<String> artistsUrl;
 
+    @SerializedName("album")
     @Nullable
     public final String album;
 
@@ -35,8 +37,10 @@ public class SongInfo {
     @SerializedName("started")
     public final long timeStarted; //seconds
 
+    @SerializedName("duration")
     public final double duration; //seconds, or null for special things?
 
+    @SerializedName("source")
     public final String source;
 
     @SerializedName("listeners")
