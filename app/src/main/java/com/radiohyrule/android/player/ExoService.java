@@ -316,6 +316,8 @@ public class ExoService extends Service {
                 if (!localCall.isCanceled()) {
                     songInfoCall = null;
                     if (response.isSuccess()) {
+                        Log.v(LOG_TAG, "Reset retryCount from "+retryCount);
+                        // TODO only reset this when the document changes
                         retryCount = 0;
                         SongInfo songInfo = response.body();
                         Date date = response.headers().getDate("Date");
@@ -358,7 +360,7 @@ public class ExoService extends Service {
             }
         };
         eventHandler.postDelayed(fetchNextSongRunnable, (long) (waitTimeSeconds * 1000));
-        Log.v(LOG_TAG, "Fetching new song in " + waitTimeSeconds + " seconds");
+        Log.v(LOG_TAG, "Fetching new song in " + waitTimeSeconds + " seconds (" + retryCount + ", " + backoffMagnitude + ")");
     }
 
     ExoPlayer.Listener exoPlayerListener = new ExoPlayer.Listener() {
