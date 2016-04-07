@@ -399,32 +399,29 @@ public class ExoService extends Service {
         public void onAudioFocusChange(int focusChange) {
             switch (focusChange){
                 case AudioManager.AUDIOFOCUS_GAIN:
-                    //todo this
-//                    switch(lastAudioFocusState){
-//                        case AudioManager.AUDIOFOCUS_LOSS:
-//
-//                            break;
-//                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-//
-//                            break;
-//                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-//
-//                            break;
-//                    }
-                    //exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 1.0f);
+                    switch(lastAudioFocusState){
+                        case AudioManager.AUDIOFOCUS_LOSS:
+                            // Why would this ever happen?
+                            break;
+                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                            // TODO reconnect audio
+                            break;
+                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                            exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 1.0f);
+                            break;
+                    }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
                     //stop indefinitely
                     stopPlayback();
-
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    // TODO keep processing stream for metadata for up to 70 seconds (e.g. there's an incoming phone call)
                     stopPlayback();
-
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                    stopPlayback();
-                    //exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0.2f);
+                    //stopPlayback();
+                    exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0.2f);
                     break;
             }
 
