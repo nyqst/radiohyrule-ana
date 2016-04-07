@@ -78,6 +78,7 @@ public class ExoService extends Service {
     }
 
     private ExoPlayer exoPlayer;
+    private MediaCodecAudioTrackRenderer exoPlayerRender;
     private Handler eventHandler;
     private NowPlayingService nowPlayingService;
 
@@ -142,7 +143,8 @@ public class ExoService extends Service {
     public void startPlayback() {
         startSelf();
         if (exoPlayer.getPlaybackState() == ExoPlayer.STATE_IDLE) {
-            exoPlayer.prepare(createTrackRenderer());
+            exoPlayerRender = createTrackRenderer();
+            exoPlayer.prepare(exoPlayerRender);
             Log.v(LOG_TAG, "exoPlayer preparing");
         } else if (!exoPlayer.getPlayWhenReady()) {
             exoPlayer.seekTo(0);
@@ -407,7 +409,7 @@ public class ExoService extends Service {
 //
 //                            break;
 //                    }
-
+                    //exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 1.0f);
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
                     //stop indefinitely
@@ -420,7 +422,7 @@ public class ExoService extends Service {
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                     stopPlayback();
-                    //todo: player.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0.2f);
+                    //exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0.2f);
                     break;
             }
 
