@@ -111,6 +111,8 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
                         break;
                 }
 
+            }else{
+                Log.e(LOG_TAG, "No exoService to start/stop playback");
             }
         }
     };
