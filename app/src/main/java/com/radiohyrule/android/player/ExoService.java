@@ -3,8 +3,10 @@ package com.radiohyrule.android.player;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -20,6 +22,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
@@ -92,6 +95,36 @@ public class ExoService extends Service {
     private Call<SongInfo> songInfoCall;
     private Set<PlaybackStatusListener> listeners;
 
+    private IntentFilter mediaActionIntentFilter;
+    private BroadcastReceiver mediaActionBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //handle media button and headphone unplug events
+            if (intent.getAction().equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+                stopPlayback(); //headphones or somesuch got unplugged.
+            } else if (intent.getAction().equals(Intent.ACTION_MEDIA_BUTTON)) {
+                KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
+                if (keyEvent == null || keyEvent.getAction() != KeyEvent.ACTION_DOWN)
+                    return;
+                switch (keyEvent.getKeyCode()) {
+                    case KeyEvent.KEYCODE_HEADSETHOOK: //apparently a compatibility thing http://tiny.cc/vyoicy
+                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                        togglePlayback();
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PLAY:
+                        startPlayback(); //NB this won't actually work right now, since we don't currently receive broadcasts while paused
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                        stopPlayback();
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_STOP:
+                        stopPlayback();
+                        break;
+                }
+            }
+        }
+    };
+
     @Override
     public IBinder onBind(Intent intent) {
         return new PlaybackBinder(this);
@@ -107,7 +140,7 @@ public class ExoService extends Service {
         super.onCreate();
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             //gonna need to switch to injection if this gets any more complex
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -129,6 +162,10 @@ public class ExoService extends Service {
         exoPlayer = ExoPlayer.Factory.newInstance(1, 500, 500);
 
         exoPlayer.addListener(exoPlayerListener);
+
+        mediaActionIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        mediaActionIntentFilter.addAction(Intent.ACTION_MEDIA_BUTTON);
+
     }
 
     @Override
@@ -150,7 +187,13 @@ public class ExoService extends Service {
             exoPlayer.seekTo(0);
             //move to "live edge" of stream if we are un-pausing
         }
-        audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int audioFocusResult = audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        if (audioFocusResult == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            //bail out!
+            stopPlayback();
+            return;
+        }
 
         exoPlayer.setPlayWhenReady(true);
         fetchSongInfo(true);
@@ -158,10 +201,26 @@ public class ExoService extends Service {
     }
 
     public void stopPlayback() {
+        unregisterReceiver(mediaActionBroadcastReceiver);
         exoPlayer.setPlayWhenReady(false);
         audioManager.abandonAudioFocus(audioFocusChangeListener);
         //todo consider leaving running or staying foreground if we want to keep notification around?
         onPlaybackStopped();
+    }
+
+    public void togglePlayback() {
+        //BUFFERING & PLAYING -> PAUSED -> PLAYING
+        PlaybackStatus playbackStatus = getCurrentPlaybackStatus();
+        switch (playbackStatus) {
+            case PAUSED:
+                startPlayback();
+                break;
+            case PLAYING:
+            case BUFFERING:
+            default:
+                stopPlayback();
+                break;
+        }
     }
 
     /**
@@ -316,13 +375,13 @@ public class ExoService extends Service {
                 if (!localCall.isCanceled()) {
                     songInfoCall = null;
                     if (response.isSuccess()) {
-                        Log.v(LOG_TAG, "Reset retryCount from "+retryCount);
+                        Log.v(LOG_TAG, "Reset retryCount from " + retryCount);
                         // TODO only reset this when the document changes
                         retryCount = 0;
                         SongInfo songInfo = response.body();
                         Date date = response.headers().getDate("Date");
                         if (date != null) {
-                            timeOffset = (System.currentTimeMillis() - date.getTime())/1000.0;
+                            timeOffset = (System.currentTimeMillis() - date.getTime()) / 1000.0;
                             Log.v(LOG_TAG, "Time offset: " + timeOffset);
                         }
 
@@ -397,14 +456,15 @@ public class ExoService extends Service {
     AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
-            switch (focusChange){
+            switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_GAIN:
-                    switch(lastAudioFocusState){
+                    registerReceiver(mediaActionBroadcastReceiver, mediaActionIntentFilter);
+                    switch (lastAudioFocusState) {
                         case AudioManager.AUDIOFOCUS_LOSS:
                             // Why would this ever happen?
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                            // TODO reconnect audio
+                            startPlayback();
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                             exoPlayer.sendMessage(exoPlayerRender, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 1.0f);
@@ -412,11 +472,11 @@ public class ExoService extends Service {
                     }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
-                    //stop indefinitely
+                    //long term. eg phone call or other media player. stop indefinitely
                     stopPlayback();
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    // TODO keep processing stream for metadata for up to 70 seconds (e.g. there's an incoming phone call)
+                    // TODO pause or mute instead of stopping outright.
                     stopPlayback();
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -430,7 +490,7 @@ public class ExoService extends Service {
     };
 
     //Convert 2D ExoPlayer status into 1D status for clients
-    private static PlaybackStatus mapPlaybackStatus(boolean playWhenReady, int playbackState) {
+    @CheckResult private static PlaybackStatus mapPlaybackStatus(boolean playWhenReady, int playbackState) {
         PlaybackStatus status;
         switch (playbackState) {
             case ExoPlayer.STATE_READY:

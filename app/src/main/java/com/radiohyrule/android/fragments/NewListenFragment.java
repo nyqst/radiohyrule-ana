@@ -97,20 +97,7 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
         @Override
         public void onClick(View v) {
             if (exoService != null) {
-                ExoService.PlaybackStatus playbackStatus = exoService.getCurrentPlaybackStatus();
-                switch (playbackStatus) {
-                    case PLAYING:
-                        exoService.stopPlayback();
-                        break;
-                    case PAUSED:
-                        exoService.startPlayback();
-                        break;
-                    case BUFFERING:
-                    default:
-                        exoService.stopPlayback();
-                        break;
-                }
-
+                exoService.togglePlayback();
             }else{
                 Log.e(LOG_TAG, "No exoService to start/stop playback");
             }
