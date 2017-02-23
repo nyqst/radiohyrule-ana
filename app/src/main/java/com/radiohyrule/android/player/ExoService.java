@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
@@ -342,6 +343,7 @@ public class ExoService extends Service {
         for (PlaybackStatusListener listener : listeners) {
             listener.onError(throwable);
         }
+        Crashlytics.getInstance().core.logException(throwable);
     }
 
     private void notifyMetadata(SongInfo songInfo) {
@@ -399,6 +401,7 @@ public class ExoService extends Service {
             @Override
             public void onFailure(Throwable t) {
                 Log.w(LOG_TAG, "Error Fetching SongInfo: ", t);
+                Crashlytics.getInstance().core.logException(t);
                 fetchAfterDelay(true);
             }
         });
