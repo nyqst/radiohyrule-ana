@@ -32,29 +32,26 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import com.radiohyrule.android.BuildConfig
 import com.radiohyrule.android.R
 import com.radiohyrule.android.activities.NewMainActivity
-import com.radiohyrule.android.api.NowPlayingService
+import com.radiohyrule.android.api.NowPlayingApi
 import com.radiohyrule.android.api.types.SongInfo
+import com.radiohyrule.android.injection.Injector
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import saschpe.exoplayer2.ext.icy.IcyHttpDataSourceFactory
 import java.net.HttpURLConnection
 import java.util.HashSet
+import javax.inject.Inject
 
 class ExoService : Service() {
 
-    private lateinit var nowPlayingService: NowPlayingService
+    @Inject internal lateinit var nowPlayingApi: NowPlayingApi
+
     private lateinit var audioManager: AudioManager
     private lateinit var exoPlayer: SimpleExoPlayer
-    
-    private var mediaSource: MediaSource? = null
     
     private var eventHandler: Handler = Handler()
 
@@ -164,29 +161,15 @@ class ExoService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        val builder = OkHttpClient.Builder()
-        if (BuildConfig.DEBUG) {
-            //gonna need to switch to injection if this gets any more complex
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            builder.addInterceptor(interceptor)
-        }
+        Injector.getComponent().inject(this)
 
-        val retrofit = Retrofit.Builder()
-                .baseUrl(NowPlayingService.BASE_URL)
-                .client(builder.build())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-        nowPlayingService = retrofit.create<NowPlayingService>(NowPlayingService::class.java)
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this)
         
-
         exoPlayer.addListener(exoPlayerListener)
 
         mediaActionIntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        mediaActionIntentFilter!!.addAction(Intent.ACTION_MEDIA_BUTTON)
+        mediaActionIntentFilter?.addAction(Intent.ACTION_MEDIA_BUTTON)
 
     }
 
@@ -194,15 +177,14 @@ class ExoService : Service() {
         Log.v(LOG_TAG, "Destroyed")
         super.onDestroy()
         eventHandler.removeCallbacksAndMessages(null)
-        if (songInfoCall != null) songInfoCall!!.cancel()
+        songInfoCall?.cancel()
         exoPlayer.release()
     }
 
     fun startPlayback() {
         startSelf()
         if (exoPlayer.playbackState == Player.STATE_IDLE) {
-            mediaSource = createStreamMediaSource()
-            exoPlayer.prepare(mediaSource)
+            exoPlayer.prepare(createStreamMediaSource())
             Log.v(LOG_TAG, "exoPlayer preparing")
         } else if (!exoPlayer.playWhenReady) {
             exoPlayer.seekTo(0)
@@ -321,7 +303,7 @@ class ExoService : Service() {
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             val notificationManager = getSystemService<NotificationManager>(NotificationManager::class.java)
-            notificationManager!!.createNotificationChannel(channel)
+            notificationManager?.createNotificationChannel(channel)
         }
     }
 
@@ -382,13 +364,13 @@ class ExoService : Service() {
         if (songInfoCall != null && !songInfoCall!!.isCanceled) {
             //there is a request running
             if (cancelPending) {
-                songInfoCall!!.cancel()
+                songInfoCall?.cancel()
             } else {
                 return
             }
         }
 
-        val localCall = nowPlayingService.nowPlaying()
+        val localCall = nowPlayingApi.nowPlaying()
         songInfoCall = localCall
 
         localCall.enqueue(object : Callback<SongInfo> {
