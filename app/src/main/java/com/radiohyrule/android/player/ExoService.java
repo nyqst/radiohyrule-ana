@@ -1,6 +1,8 @@
 package com.radiohyrule.android.player;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -13,6 +15,7 @@ import android.media.AudioManager;
 import android.media.MediaCodec;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.CheckResult;
@@ -53,9 +56,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ExoService extends Service {
 
@@ -67,6 +70,8 @@ public class ExoService extends Service {
 
     public static final String URL_HYRULE_STREAM = "http://listen.radiohyrule.com:8000/listen.aac";
     public static final String USER_AGENT_PREFIX = "RadioHyrule-ANA";
+
+    public static final String CHANNEL_ID = "radiohyrule.notification.foreground";
 
     private static final double BACKOFF_COEFFICIENT = 1.0;
 
@@ -194,6 +199,8 @@ public class ExoService extends Service {
             //bail out!
             stopPlayback();
             return;
+        } else {
+            registerReceiver(mediaActionBroadcastReceiver, mediaActionIntentFilter);
         }
 
         exoPlayer.setPlayWhenReady(true);
@@ -285,7 +292,10 @@ public class ExoService extends Service {
     }
 
     private Notification createNotification(@Nullable final SongInfo songInfo) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        createNotificationChannel();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setSmallIcon(R.drawable.ic_player_service_notification); //todo get new icons. Triforce?
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
         builder.setLargeIcon(icon);
@@ -305,6 +315,23 @@ public class ExoService extends Service {
         builder.setContentIntent(pendingIntent);
         return builder.build();
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 
     @NonNull
     private MediaCodecAudioTrackRenderer createTrackRenderer() {
@@ -373,10 +400,10 @@ public class ExoService extends Service {
 
         localCall.enqueue(new Callback<SongInfo>() {
             @Override
-            public void onResponse(Response<SongInfo> response) {
+            public void onResponse(Call<SongInfo> call, Response<SongInfo> response) {
                 if (!localCall.isCanceled()) {
                     songInfoCall = null;
-                    if (response.isSuccess()) {
+                    if (response.isSuccessful()) {
                         Log.v(LOG_TAG, "Reset retryCount from " + retryCount);
                         // TODO only reset this when the document changes
                         retryCount = 0;
@@ -399,7 +426,8 @@ public class ExoService extends Service {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<SongInfo> call, Throwable t) {
+                //todo check call for manual cancellation and swallow errors
                 Log.w(LOG_TAG, "Error Fetching SongInfo: ", t);
                 Crashlytics.getInstance().core.logException(t);
                 fetchAfterDelay(true);
@@ -461,7 +489,6 @@ public class ExoService extends Service {
         public void onAudioFocusChange(int focusChange) {
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_GAIN:
-                    registerReceiver(mediaActionBroadcastReceiver, mediaActionIntentFilter);
                     switch (lastAudioFocusState) {
                         case AudioManager.AUDIOFOCUS_LOSS:
                             // Why would this ever happen?
