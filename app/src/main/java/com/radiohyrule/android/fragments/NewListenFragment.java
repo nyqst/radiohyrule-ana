@@ -28,7 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NewListenFragment extends Fragment implements ServiceConnection{
@@ -36,17 +36,17 @@ public class NewListenFragment extends Fragment implements ServiceConnection{
     public static final String LOG_TAG = NewListenFragment.class.getSimpleName();
     public static final String ALBUM_ART_URL_BASE = "https://radiohyrule.com/cover640/";
 
-    @Bind(R.id.listen_button_play_stop) ImageButton playButton;
+    @BindView(R.id.listen_button_play_stop) ImageButton playButton;
 
-    @Bind(R.id.listen_text_title) TextView textSongTitle;
-    @Bind(R.id.listen_text_artist) TextView textSongArtist;
-    @Bind(R.id.listen_text_time_elapsed) TextView textTimeElapsed;
-    @Bind(R.id.listen_text_time_total) TextView textTimeTotal;
-    @Bind(R.id.listen_text_requested_by) TextView textRequester;
-    @Bind(R.id.listen_text_num_listeners) TextView textListenerCount;
+    @BindView(R.id.listen_text_title) TextView textSongTitle;
+    @BindView(R.id.listen_text_artist) TextView textSongArtist;
+    @BindView(R.id.listen_text_time_elapsed) TextView textTimeElapsed;
+    @BindView(R.id.listen_text_time_total) TextView textTimeTotal;
+    @BindView(R.id.listen_text_requested_by) TextView textRequester;
+    @BindView(R.id.listen_text_num_listeners) TextView textListenerCount;
 
-    @Bind(R.id.listen_progress_time) ProgressBar progressBar;
-    @Bind(R.id.listen_image_cover) ImageView albumArtView;
+    @BindView(R.id.listen_progress_time) ProgressBar progressBar;
+    @BindView(R.id.listen_image_cover) ImageView albumArtView;
 
     @Nullable
     private ExoService exoService;

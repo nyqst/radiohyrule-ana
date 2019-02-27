@@ -30,7 +30,7 @@ public class HelpAboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
-        webView = (WebView) rootView.findViewById(R.id.webview);
+        webView = rootView.findViewById(R.id.webview);
         String body = "";
         if(getArguments() != null) {
             int resId = getArguments().getInt(EXTRA_RAW_RESID);

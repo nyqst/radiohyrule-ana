@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -20,7 +21,7 @@ import com.radiohyrule.android.R;
 import com.radiohyrule.android.fragments.HelpAboutFragment;
 import com.radiohyrule.android.fragments.NewListenFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NewMainActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,9 +37,9 @@ public class NewMainActivity extends Activity implements NavigationView.OnNaviga
         return intent;
     }
 
-    @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
-    @Bind(R.id.navigation_drawer) NavigationView navigationView;
-    @Bind(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.navigation_drawer) NavigationView navigationView;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     private String initialFragTag = TAG_LISTEN;
     private ActionBarDrawerToggle drawerToggle;
@@ -71,7 +72,7 @@ public class NewMainActivity extends Activity implements NavigationView.OnNaviga
                 invalidateOptionsMenu();
             }
         };
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -103,7 +104,7 @@ public class NewMainActivity extends Activity implements NavigationView.OnNaviga
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_item_listen:
                 switchToFragment(TAG_LISTEN);
