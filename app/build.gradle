@@ -7,7 +7,6 @@ apply plugin: "kotlin-kapt"
 ext {
     support_version = '27.1.1'
     dagger_version = '2.10'
-
     butterknife_version = '8.8.1'
 }
 
@@ -60,8 +59,7 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
 
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-
-    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife_version"
+    kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
 
 //    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta3' //TODO: SOMEDAY
 }
