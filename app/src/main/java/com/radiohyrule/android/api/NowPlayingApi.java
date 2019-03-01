@@ -8,8 +8,7 @@ import retrofit2.http.GET;
 /**
  * Service definition for Now Playing API.
  */
-public interface NowPlayingService {
-    String BASE_URL = "https://radiohyrule.com";
+public interface NowPlayingApi {
 
     @GET("nowplaying.json")
     Call<SongInfo> nowPlaying();
