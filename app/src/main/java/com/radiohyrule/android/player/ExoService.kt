@@ -74,7 +74,7 @@ class ExoService : Service() {
     private val mediaActionBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             //handle media button and headphone unplug events
-            if (intent.action == android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+            if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
                 stopPlayback() //headphones or some such got unplugged.
             } else if (intent.action == Intent.ACTION_MEDIA_BUTTON) {
                 val keyEvent = intent.extras?.get(Intent.EXTRA_KEY_EVENT) as KeyEvent?
@@ -97,15 +97,15 @@ class ExoService : Service() {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             val status: PlaybackStatus = mapPlaybackStatus(playWhenReady, playbackState)
 
-            if (playbackState == Player.STATE_READY) {
-                Log.v(LOG_TAG, "exoPlayer Ready")
-            } else if (playbackState == Player.STATE_ENDED) {
-                //This shouldn't happen. If it does, hopefully we can stop & restart
-                exoPlayer.stop()
-                onPlaybackStopped()
-                notifyError(IllegalStateException("ExoPlayer ended playback unexpectedly"))
-            } else {
-                Log.v(LOG_TAG, "exoPlayer waiting: $playbackState")
+            when (playbackState) {
+                Player.STATE_READY -> Log.v(LOG_TAG, "exoPlayer Ready")
+                Player.STATE_ENDED -> {
+                    //This shouldn't happen. If it does, hopefully we can stop & restart
+                    exoPlayer.stop()
+                    onPlaybackStopped()
+                    notifyError(IllegalStateException("ExoPlayer ended playback unexpectedly"))
+                }
+                else -> Log.v(LOG_TAG, "exoPlayer waiting: $playbackState")
             }
 
             notifyStatusChanged(status)
@@ -207,19 +207,24 @@ class ExoService : Service() {
     }
 
     fun stopPlayback() {
-        unregisterReceiver(mediaActionBroadcastReceiver)
+        try {
+            unregisterReceiver(mediaActionBroadcastReceiver)
+        } catch (ignored : IllegalArgumentException){
+            //this will throw if we try to unregister multiple times in a row. Harmless to ignore
+        }
         exoPlayer.playWhenReady = false
+        exoPlayer.stop(true) //fully stop player so we stop streaming.
         audioManager.abandonAudioFocus(audioFocusChangeListener)
         //todo consider leaving running or staying foreground if we want to keep notification around?
         onPlaybackStopped()
     }
 
+    //todo this is not stateful at all
     fun togglePlayback() {
         //BUFFERING & PLAYING -> PAUSED -> PLAYING
-        val playbackStatus = currentPlaybackStatus
-        when (playbackStatus) {
-            ExoService.PlaybackStatus.PAUSED -> startPlayback()
-            ExoService.PlaybackStatus.PLAYING, ExoService.PlaybackStatus.BUFFERING -> stopPlayback()
+        when (currentPlaybackStatus) {
+            PlaybackStatus.PAUSED -> startPlayback()
+            PlaybackStatus.PLAYING, PlaybackStatus.BUFFERING -> stopPlayback()
         }
     }
 
