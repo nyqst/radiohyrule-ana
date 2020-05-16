@@ -22,7 +22,7 @@ import android.support.v4.app.NotificationManagerCompat
 import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
-import com.crashlytics.android.Crashlytics
+//import com.crashlytics.android.Crashlytics
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
@@ -350,7 +350,7 @@ class ExoService : Service() {
         for (listener in listeners) {
             listener.onError(throwable)
         }
-        Crashlytics.getInstance().core.logException(throwable)
+        //Crashlytics.getInstance().core.logException(throwable)
     }
 
     private fun notifyMetadata(songInfo: SongInfo) {
@@ -407,7 +407,7 @@ class ExoService : Service() {
             override fun onFailure(call: Call<SongInfo>, t: Throwable) {
                 //todo check call for manual cancellation and swallow errors
                 Log.w(LOG_TAG, "Error Fetching SongInfo: ", t)
-                Crashlytics.getInstance().core.logException(t)
+                //Crashlytics.getInstance().core.logException(t)
                 fetchAfterDelay(true)
             }
         })

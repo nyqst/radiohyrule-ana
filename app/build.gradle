@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-apply plugin: 'io.fabric'
+//apply plugin: 'io.fabric'
 apply plugin: "kotlin-kapt"
 
 ext {
@@ -31,7 +31,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
         debug{
-            ext.enableCrashlytics = false
+            //ext.enableCrashlytics = false
         }
     }
 
@@ -54,7 +54,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.13.1'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
     implementation 'saschpe.android:exoplayer2-ext-icy:2.1.0'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.3.2@aar') { transitive = true }
+    //implementation('com.crashlytics.sdk.android:crashlytics:2.3.2@aar') { transitive = true }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.google.dagger:dagger:$dagger_version"
 

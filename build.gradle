@@ -6,12 +6,12 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
+        //maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         //Keep version at 3.2.1 until this issue is fixed https://issuetracker.google.com/issues/116408637
         classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'io.fabric.tools:gradle:1.27.1'
+        //classpath 'io.fabric.tools:gradle:1.27.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -20,7 +20,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
+        //maven { url 'https://maven.fabric.io/public' }
     }
 }
 
