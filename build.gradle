@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         //Keep version at 3.2.1 until this issue is fixed https://issuetracker.google.com/issues/116408637
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.6.3'
         //classpath 'io.fabric.tools:gradle:1.27.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -24,7 +24,4 @@ allprojects {
     }
 }
 
-task wrapper(type: Wrapper) { gradleVersion = '2.2.1' }
-
-
-
+wrapper { gradleVersion = '2.2.1' }
