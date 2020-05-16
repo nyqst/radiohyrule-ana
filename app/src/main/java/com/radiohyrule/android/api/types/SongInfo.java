@@ -1,6 +1,6 @@
 package com.radiohyrule.android.api.types;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
