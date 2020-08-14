@@ -44,6 +44,7 @@ import retrofit2.Response
 import saschpe.exoplayer2.ext.icy.IcyHttpDataSourceFactory
 import java.net.HttpURLConnection
 import java.util.HashSet
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ExoService : Service() {
@@ -317,7 +318,9 @@ class ExoService : Service() {
         val userAgent = Util.getUserAgent(this, USER_AGENT_PREFIX)
         // Custom HTTP data source factory which requests Icy metadata and parses it if
         // the stream server supports it
-        val client = OkHttpClient.Builder().build()
+        val client = OkHttpClient.Builder()
+                .readTimeout(5000, TimeUnit.MILLISECONDS)
+                .build()
         val icyHttpDataSourceFactory = IcyHttpDataSourceFactory.Builder(client)
                 .setUserAgent(userAgent)
                 .setIcyHeadersListener { icyHeaders ->
