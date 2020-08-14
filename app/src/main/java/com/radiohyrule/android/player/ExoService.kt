@@ -433,7 +433,7 @@ class ExoService : Service() {
 
     companion object {
 
-        const val URL_HYRULE_STREAM = "http://listen.radiohyrule.com:8000/listen.aac"
+        const val URL_HYRULE_STREAM = "https://radiohyrule.com:8443/listen.aac"
         const val USER_AGENT_PREFIX = "RadioHyrule-ANA"
 
         const val CHANNEL_ID = "radiohyrule.notification.foreground"
